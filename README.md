@@ -54,6 +54,12 @@ The room controller scans the individual objects present in the room.
 Most actions are handled by overloading the Creep prototype with a number of different types of creeps and job activities.
 These are denoted by the folder and array structure in found in memory.
 
+I will revise and elaborate this section in the coming days.
+Additionally I am working on mapping out my code in UML, to brush up on my diagramming skills.
+
+A rough, general map of my AI at this point is as follows:
+<img src="https://github.com/AmandaRekonwith/Screeps-AI/blob/master/Screeps-AI.jpg">
+
 -----------------------------------------------
 CURRENT HANGUPS / PROBLEMS... 
 

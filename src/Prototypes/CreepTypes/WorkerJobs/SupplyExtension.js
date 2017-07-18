@@ -16,8 +16,8 @@ module.exports = function ()
 
 			if (extension.energy == extension.energyCapacity) // job complete
 			{
-				this.room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[index].creep = null;
-				this.room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[index].active = false;
+				this.room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id].creep = null;
+				this.room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id].active = false;
 
 				this.memory.job = null;
 				this.memory.currentTask = null;
@@ -25,7 +25,7 @@ module.exports = function ()
 
 			if (this.carry[RESOURCE_ENERGY] == 0)
 			{
-				this.room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[index].creep = null;
+				this.room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id].creep = null;
 
 				this.memory.job = null;
 				this.memory.currentTask = null;

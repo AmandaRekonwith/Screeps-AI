@@ -16,8 +16,8 @@ module.exports = function ()
 
 			if (spawn.energy == spawn.energyCapacity) // job complete
 			{
-				this.room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[index].creep = null;
-				this.room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[index].active = false;
+				this.room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].creep = null;
+				this.room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].active = false;
 
 				this.memory.job = null;
 				this.memory.currentTask = null;
@@ -25,7 +25,7 @@ module.exports = function ()
 
 			if (this.carry[RESOURCE_ENERGY] == 0)
 			{
-				this.room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[index].creep = null;
+				this.room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].creep = null;
 
 				this.memory.job = null;
 				this.memory.currentTask = null;

@@ -141,10 +141,10 @@ module.exports = function ()
 					this.runWorker();
 					break;
 				case "hauler":
-					this.runHauler();
+					//this.runHauler();
 					break;
 				case "stationary":
-					this.runStationary();
+					//this.runStationary();
 					break;
 				default:
 					"";

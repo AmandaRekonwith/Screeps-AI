@@ -53,6 +53,14 @@ var RoomJobsController =
 			let extension = extensionsArray[x];
 
 			// if the job doesn't exist, or it exists, but the job had been completed before (hence resetting the creep to null and active to false
+			if (!room.memory.jobs.workerJobBoard.routineJobs.supplyExtension)
+			{
+				delete room.memory.jobs.workerJobBoard.routineJobs.rechargeExtension;
+				delete room.memory.jobs.workerJobBoard.routineJobs.rechargeSpawn;
+				room.memory.jobs.workerJobBoard.routineJobs.supplySpawn = {};
+				room.memory.jobs.workerJobBoard.routineJobs.supplyExtension = {};
+			}
+
 			if (!room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id])
 			{
 				room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id] = {};
@@ -83,7 +91,6 @@ var RoomJobsController =
 		for (let x = 0; x < spawnsCount; x++)
 		{
 			let spawn = spawnsArray[x];
-
 			// if the job doesn't exist, or it exists, but the job had been completed before (hence resetting the creep to null and active to false
 			if (!room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id])
 			{
@@ -116,6 +123,7 @@ var RoomJobsController =
 	scanHaulerJobs: function (room)
 	{
 		//create hauler jobs, based on how many storage and containers exist... will fidget with this eventually
+		/*
 		let storageArray = room.memory.structures.storageArray;
 		let storageCount = storageArray.length;
 
@@ -141,11 +149,14 @@ var RoomJobsController =
 
 			room.memory.jobs.haulerJobBoard.jobs = haulerJobs;
 		}
+		*/
 	},
 
 	scanStationaryJobs: function (room)
 	{
 		//stationary harvester
+
+		/*
 		let stationaryHarvesterJobsArray = room.memory.jobs.stationaryJobBoard.harvesterJobs;
 		let stationaryHarvesterJobsCount = stationaryHarvesterJobsArray.length;
 
@@ -166,7 +177,7 @@ var RoomJobsController =
 					numberOfStationaryHarvesterJobsActive += 1;
 				}
 			}
-		}
+		}*/
 
 		/*
 
@@ -176,6 +187,7 @@ var RoomJobsController =
 		//let stationaryJobsActive = {numberOfStationaryHarvesterJobsActive: numberOfStationaryHarvesterJobsActive};
 		//room.memory.stationaryJobsActive = stationaryJobsActive;
 
+		/*
 		let structuresMapArray = room.memory.jobs.stationaryJobBoard.mapArray;
 
 		//scan for stationary harvester jobs in room
@@ -235,6 +247,7 @@ var RoomJobsController =
 				}
 			}
 		}
+		*/
 	},
 
 	addNewStationaryHarvesterJob: function (room, energySourceIndex, newStationaryHarvesterJobPositionX, newStationaryHarvesterJobPositionY, container1PositionX, container1PositionY, container2PositionX, container2PositionY)

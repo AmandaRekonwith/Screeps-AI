@@ -112,34 +112,37 @@ let RoomController =
 
 	scanTerrain: function (room)
 	{
-		//ugly multi-dimensional array instantiation
-		let terrainArray = new Array();
-
-		let roomName = room.name;
-		for (let x = 0; x < 50; x++)
+		if(!room.memory.environment.terrainMapArray)
 		{
-			terrainArray[x] = new Array();
-			for (let y = 0; y < 50; y++)
+			//ugly multi-dimensional array instantiation
+			let terrainArray = new Array();
+
+			let roomName = room.name;
+			for (let x = 0; x < 50; x++)
 			{
-				let terrainName = Game.map.getTerrainAt(x, y, roomName);
-				switch (terrainName)
+				terrainArray[x] = new Array();
+				for (let y = 0; y < 50; y++)
 				{
-					case 'plain':
-						terrainArray[x][y] = 1;
-						break;
-					case 'swamp':
-						terrainArray[x][y] = 2;
-						break;
-					case 'wall':
-						terrainArray[x][y] = 3;
-						break;
-					default:
-						terrainArray[x][y] = 0;
+					let terrainName = Game.map.getTerrainAt(x, y, roomName);
+					switch (terrainName)
+					{
+						case 'plain':
+							terrainArray[x][y] = 1;
+							break;
+						case 'swamp':
+							terrainArray[x][y] = 2;
+							break;
+						case 'wall':
+							terrainArray[x][y] = 3;
+							break;
+						default:
+							terrainArray[x][y] = 0;
+					}
 				}
 			}
-		}
 
-		room.memory.environment.terrainMapArray = terrainArray;
+			room.memory.environment.terrainMapArray = terrainArray;
+		}
 	}
 };
 

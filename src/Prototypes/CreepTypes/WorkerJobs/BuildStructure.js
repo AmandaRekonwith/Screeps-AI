@@ -28,7 +28,6 @@ module.exports = function ()
             }
 
             this.memory.job = null;
-            this.memory.currentTask = null;
         }
     }
 }

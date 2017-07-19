@@ -34,7 +34,6 @@ module.exports = function ()
 		else
 		{
 			this.memory.job = null;
-			this.memory.currentTask = null;
 		}
 	}
 }

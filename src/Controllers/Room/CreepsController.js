@@ -43,25 +43,52 @@ let RoomCreepsController =
 		}
 
 		//let totalNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources - stationaryCreepsCount - haulerCreepsCount;
-		let maximumNmberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources;
+		let maximumNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources + 1; // I am adding one or two to fidget with efficiency,
+		// since the creeps will be doing other things at times in addition to harvesting
 
-		if (totalNumberOfWorkerCreeps < maximumNmberOfWorkerCreeps)
+		console.log(room.energyAvailable);
+
+		if (totalNumberOfWorkerCreeps < maximumNumberOfWorkerCreeps)
 		{
 			let derp = spawn.createSmallestWorkerCreep();
 		}
 		else
 		{
-			if (room.energyAvailable == room.energyCapacityAvailable)
+			/*
+			this code will continually upgrade creep size... the logic is that...
+			it first checks for a creep that is near death, and forces it to suicide.
+			then spawns the biggest creep it can.
+
+			if... no creeps are near death, code should just wait until the room hits 1450 available energy,
+			then spawn the 'biggest' creep worker type, IF not all workers are of the 'biggest' type.
+
+			ideally, this should allow an efficient continual spawning of the worker creep population,
+			while allowing resources to be used on other things
+			 */
+			let creepToDie = this.getSmallestWorkerCreepClosestToDeath(room);
+
+			console.log(creepToDie.ticksToLive + "   " + creepToDie.memory.size);
+
+			if (creepToDie.ticksToLive < 100)
 			{
-				//check for creeps near death first
-				let creepToDie = this.getSmallestWorkerCreepClosestToDeath(room);
-				if (creepToDie.ticksToLive < 100)
+				//revising the logic here...
+				//spawn if size BIGGER than creep to be suicided...
+				let energyCostOfCreepToDie = this.getEnergyCostOfWorkerCreepOfCertainSize(creepToDie.memory.size);
+				if(room.energyAvailable >= energyCostOfCreepToDie)
 				{
+					console.log("i killed a man and am spawning a new mother fucker");
 					creepToDie.suicide();
 					this.spawnNewWorkerCreep(room);
 				}
 			}
-			//then do sheer upgrades... ... hmm have to think about how to do this...
+
+			if(room.energyAvailable >= 1450)
+			{
+				if(numberOfBiggestWorkerCreeps < maximumNumberOfWorkerCreeps)
+				{
+					this.spawnNewWorkerCreep(room);
+				}
+			}
 		}
 
 
@@ -133,7 +160,7 @@ let RoomCreepsController =
 
 	spawnNewWorkerCreep: function (room)
 	{
-		let spawn = room.memory.structures.spawnsArray[0];
+		let spawn = room.memory.structures.spawnsArray[0]; //change this later to accomodate all spawns
 
 		let totalEnergy = room.energyAvailable;
 
@@ -157,6 +184,35 @@ let RoomCreepsController =
 		{
 			let newName = spawn.createSmallerWorkerCreep();
 		}
+	},
+
+	getEnergyCostOfWorkerCreepOfCertainSize: function(size)
+	{
+		let energyCost = 0;
+		switch (size)
+		{
+			case 'smallest':
+				energyCost = 200;
+				break;
+			case 'smaller':
+				energyCost = 400;
+				break;
+			case 'small':
+				energyCost = 650;
+				break;
+			case 'big':
+				energyCost = 900;
+				break;
+			case 'bigger':
+				energyCost = 1150;
+				break;
+			case 'biggest':
+				energyCost = 1450;
+				break;
+			default:
+				energyCost = 0;
+		}
+		return energyCost;
 	},
 
 	run: function (room)

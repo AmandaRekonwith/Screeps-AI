@@ -20,7 +20,6 @@ module.exports = function ()
 				this.room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id].active = false;
 
 				this.memory.job = null;
-				this.memory.currentTask = null;
 			}
 
 			if (this.carry[RESOURCE_ENERGY] == 0)
@@ -34,7 +33,6 @@ module.exports = function ()
 		else
 		{
 			this.memory.job = null;
-			this.memory.currentTask = null;
 		}
 	}
 }

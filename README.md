@@ -1,3 +1,10 @@
+<b>PLEASE NOTE</b> THERE IS A HORRIBLE BUG IN MY CODE AT THE MOMENT THAT I AM TRYING TO ROOT OUT</b>
+All updates will cease until I find the cause.
+Basically, some 'routine' jobs aren't being sent back to the pool when completed.
+More specifically, they think they are being carried out by a creep who is assigned to a different task.
+It is causing roughly half of my extensions to be unusused.
+Will update when I know more.
+
 # Screeps-AI
 <img src="http://cdn.akamai.steamstatic.com/steam/apps/464350/header.jpg?t=1494837632">
 My evolving AI for Screeps

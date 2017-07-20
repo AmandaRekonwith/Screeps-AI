@@ -31,6 +31,7 @@ let RoomCreepsController =
 		let numberOfBiggestWorkerCreeps = room.memory.creeps.workerCreeps.biggestWorkerCreepsArray.length;
 		let totalNumberOfWorkerCreeps = numberOfSmallestWorkerCreeps + numberOfSmallerWorkerCreeps + numberOfSmallWorkerCreeps + numberOfBigWorkerCreeps + numberOfBiggerWorkerCreeps + numberOfBiggestWorkerCreeps;
 
+
 		let totalNumberOfStationaryCreeps = 0;
 
 		let totalNumberOfHaulerCreeps = 0;
@@ -43,11 +44,11 @@ let RoomCreepsController =
 		}
 
 		//let totalNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources - stationaryCreepsCount - haulerCreepsCount;
-		let maximumNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources + 1; // I am adding one or two to fidget with efficiency,
+		let maximumNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources - 2; // I am adding one or two to fidget with efficiency,
 		// since the creeps will be doing other things at times in addition to harvesting
 
-		console.log(room.energyAvailable);
 
+		console.log(totalNumberOfWorkerCreeps + " " + maximumNumberOfWorkerCreeps);
 		if (totalNumberOfWorkerCreeps < maximumNumberOfWorkerCreeps)
 		{
 			let derp = spawn.createSmallestWorkerCreep();
@@ -67,16 +68,13 @@ let RoomCreepsController =
 			 */
 			let creepToDie = this.getSmallestWorkerCreepClosestToDeath(room);
 
-			console.log(creepToDie.ticksToLive + "   " + creepToDie.memory.size);
-
-			if (creepToDie.ticksToLive < 100)
+			if (creepToDie && creepToDie.ticksToLive < 100)
 			{
 				//revising the logic here...
 				//spawn if size BIGGER than creep to be suicided...
 				let energyCostOfCreepToDie = this.getEnergyCostOfWorkerCreepOfCertainSize(creepToDie.memory.size);
 				if(room.energyAvailable >= energyCostOfCreepToDie)
 				{
-					console.log("i killed a man and am spawning a new mother fucker");
 					creepToDie.suicide();
 					this.spawnNewWorkerCreep(room);
 				}
@@ -84,7 +82,7 @@ let RoomCreepsController =
 
 			if(room.energyAvailable >= 1450)
 			{
-				if(numberOfBiggestWorkerCreeps < maximumNumberOfWorkerCreeps)
+				if(numberOfBiggestWorkerCreeps + 2 < maximumNumberOfWorkerCreeps)
 				{
 					this.spawnNewWorkerCreep(room);
 				}

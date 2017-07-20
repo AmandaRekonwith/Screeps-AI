@@ -112,7 +112,7 @@ let RoomController =
 
 	scanTerrain: function (room)
 	{
-		if(!room.memory.environment.terrainMapArray)
+		if(!room.memory.environment.terrainMapArray || room.memory.environment.terrainMapArray.length == 0)
 		{
 			//ugly multi-dimensional array instantiation
 			let terrainArray = new Array();

@@ -55,8 +55,6 @@ var RoomJobsController =
 			// if the job doesn't exist, or it exists, but the job had been completed before (hence resetting the creep to null and active to false
 			if (!room.memory.jobs.workerJobBoard.routineJobs.supplyExtension)
 			{
-				delete room.memory.jobs.workerJobBoard.routineJobs.rechargeExtension;
-				delete room.memory.jobs.workerJobBoard.routineJobs.rechargeSpawn;
 				room.memory.jobs.workerJobBoard.routineJobs.supplySpawn = {};
 				room.memory.jobs.workerJobBoard.routineJobs.supplyExtension = {};
 			}
@@ -71,7 +69,11 @@ var RoomJobsController =
 			}
 			else
 			{
-				room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id].active = true;
+				if(room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id].active == false)
+				{
+					room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id].active = true;
+					room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id].creep = null;
+				}
 			}
 		}
 	},
@@ -109,9 +111,14 @@ var RoomJobsController =
 					room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].id = spawn.id;
 					room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].index = x;
 				}
+
 				if (spawn.energy < spawn.energyCapacity)
 				{
-					room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].active = true;
+					if(room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].active == false)
+					{
+						room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].active = true;
+						room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].creep = null;
+					}
 				}
 			}
 		}

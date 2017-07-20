@@ -11,7 +11,7 @@ module.exports = function ()
 			return job;
 		}
 
-		return this.getRoutineJob(); //if no first prioirty jobs....
+		return this.getRoutineJob(); //if no first prioirity jobs....
 	}
 	Creep.prototype.getRoutineJob = function ()
 	{
@@ -62,7 +62,7 @@ module.exports = function ()
 
 		let room = this.room;
 
-		let percentageChanceOfWorkingFirstPriorityJob = 80;
+		let percentageChanceOfWorkingFirstPriorityJob = 95;
 
 		let typeOfJobRandomizer = Math.floor((Math.random() * 100));
 

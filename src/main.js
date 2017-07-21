@@ -1,7 +1,16 @@
 var controllerBrain = require('Controllers_BrainController');
+//require('Libraries_XMLHttpRequest');
+//let require('http://www.google.com/');
+
 
 module.exports.loop = function ()
 {
+
+
+    //test
+
+    //var http = require('http');
+
     controllerBrain.processStimuli();
     controllerBrain.takeAction();
 

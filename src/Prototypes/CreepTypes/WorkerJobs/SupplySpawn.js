@@ -2,8 +2,7 @@ module.exports = function ()
 {
 	Creep.prototype.supplySpawn = function ()
 	{
-		let index = this.memory.job.index;
-		let spawn = Game.getObjectById(index);
+		let spawn = Game.getObjectById(this.memory.job.targetID);
 
 		if (spawn)
 		{

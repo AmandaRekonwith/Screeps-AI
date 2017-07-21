@@ -2,8 +2,7 @@ module.exports = function ()
 {
 	Creep.prototype.supplyExtension = function ()
 	{
-		let index = this.memory.job.index;
-		let extension = Game.getObjectById(index);
+		let extension = Game.getObjectById(this.memory.job.targetID);
 
 		if (extension)
 		{

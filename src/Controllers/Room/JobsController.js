@@ -12,11 +12,7 @@ var RoomJobsController =
 
 		if (!room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure[constructionSite.id])
 		{
-			let job =
-			{
-				id: constructionSite.id
-			};
-			room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure[constructionSite.id] = job;
+			room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure[constructionSite.id] = {};
 		}
 	},
 
@@ -37,42 +33,28 @@ var RoomJobsController =
 	{
 		let supplyExtensionJobs = room.memory.jobs.workerJobBoard.routineJobs.supplyExtension;
 
-		//find all empty extensions
 		let extensionsArray = room.find(FIND_MY_STRUCTURES, {
 			filter: (structure) =>
 			{
-				return (structure.structureType == STRUCTURE_EXTENSION
-				&& structure.energy < structure.energyCapacity);
+				return (structure.structureType == STRUCTURE_EXTENSION);
 			}
 		});
+
 		//generate a WORKER job for each one provided one doesn't already exist
 		let extensionsCount = extensionsArray.length;
-
 		for (let x = 0; x < extensionsCount; x++)
 		{
 			let extension = extensionsArray[x];
 
-			// if the job doesn't exist, or it exists, but the job had been completed before (hence resetting the creep to null and active to false
-			if (!room.memory.jobs.workerJobBoard.routineJobs.supplyExtension)
-			{
-				room.memory.jobs.workerJobBoard.routineJobs.supplySpawn = {};
-				room.memory.jobs.workerJobBoard.routineJobs.supplyExtension = {};
-			}
-
-			if (!room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id])
+			if (extension.energy < extension.energyCapacity && !room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id])
 			{
 				room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id] = {};
-				room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id].active = true;
-				room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id].creep = null;
-				room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id].id = extension.id;
-				room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id].index = x;
 			}
-			else
+			if (extension.energy == extension.energyCapacity)
 			{
-				if(room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id].active == false)
+				if (room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id])
 				{
-					room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id].active = true;
-					room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id].creep = null;
+					delete room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id];
 				}
 			}
 		}
@@ -80,45 +62,29 @@ var RoomJobsController =
 
 	scanWorkerSupplySpawnJobs: function (room)
 	{
-		//find all empty spawns
 		let spawnsArray = room.find(FIND_MY_STRUCTURES, {
 			filter: (structure) =>
 			{
 				return (structure.structureType == STRUCTURE_SPAWN);
 			}
 		});
+
 		//generate a WORKER job for each one provided one doesn't already exist
 		let spawnsCount = spawnsArray.length;
 
 		for (let x = 0; x < spawnsCount; x++)
 		{
 			let spawn = spawnsArray[x];
-			// if the job doesn't exist, or it exists, but the job had been completed before (hence resetting the creep to null and active to false
-			if (!room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id])
+
+			if (spawn.energy <= spawn.energyCapacity && !room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id])
 			{
 				room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id] = {};
-				room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].active = true;
-				room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].creep = null;
-				room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].id = spawn.id;
-				room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].index = x;
 			}
-			else
+			if (spawn.energy == spawn.energyCapacity)
 			{
-				if (spawn.energy == spawn.energyCapacity)
+				if (room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id])
 				{
-					room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].active = false;
-					room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].creep = null;
-					room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].id = spawn.id;
-					room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].index = x;
-				}
-
-				if (spawn.energy < spawn.energyCapacity)
-				{
-					if(room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].active == false)
-					{
-						room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].active = true;
-						room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id].creep = null;
-					}
+					delete room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id];
 				}
 			}
 		}

@@ -44,12 +44,12 @@ let RoomCreepsController =
 		}
 
 		//let totalNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources - stationaryCreepsCount - haulerCreepsCount;
-		let maximumNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources - 2; // I am adding one or two to fidget with efficiency,
+		let maximumNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources - 1; // I am adding one or two to fidget with efficiency,
 		// since the creeps will be doing other things at times in addition to harvesting
 
 
-		console.log(totalNumberOfWorkerCreeps + " " + maximumNumberOfWorkerCreeps);
-		if (totalNumberOfWorkerCreeps < maximumNumberOfWorkerCreeps)
+		//console.log(totalNumberOfWorkerCreeps + " " + maximumNumberOfWorkerCreeps);
+		if (totalNumberOfWorkerCreeps < maximumNumberOfWorkerCreeps && room.energyAvailable < 1450)
 		{
 			let derp = spawn.createSmallestWorkerCreep();
 		}
@@ -82,7 +82,7 @@ let RoomCreepsController =
 
 			if(room.energyAvailable >= 1450)
 			{
-				if(numberOfBiggestWorkerCreeps + 2 < maximumNumberOfWorkerCreeps)
+				if(numberOfBiggestWorkerCreeps < maximumNumberOfWorkerCreeps)
 				{
 					this.spawnNewWorkerCreep(room);
 				}

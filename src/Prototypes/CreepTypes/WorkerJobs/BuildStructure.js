@@ -2,7 +2,7 @@ module.exports = function ()
 {
     Creep.prototype.buildStructure = function ()
     {
-        let structure = Game.getObjectById(this.memory.job.index);
+        let structure = Game.getObjectById(this.memory.job.targetID);
         //it's possible that the structure could disappear if construction completes,
         // so check, and then set the current task and job to null if it's gone.
         if (structure)

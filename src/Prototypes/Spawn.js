@@ -1,3 +1,5 @@
+let controllerCreepsNameGenerator = require('Controllers_Creeps_NameGeneratorController');
+
 module.exports = function ()
 {
 
@@ -9,7 +11,8 @@ module.exports = function ()
 				WORK,
 				CARRY,
 				MOVE, MOVE];
-			this.createCreep(body, undefined, {
+			var creepName = controllerCreepsNameGenerator.getName();
+			this.createCreep(body, creepName, {
 				size: "smallest",
 				type: "worker",
 				currentTask: null,
@@ -25,7 +28,8 @@ module.exports = function ()
 			var body = [WORK, WORK,
 				CARRY,
 				MOVE, MOVE, MOVE];
-			this.createCreep(body, undefined, {
+			var creepName = controllerCreepsNameGenerator.getName();
+			this.createCreep(body, creepName, {
 				size: "smaller",
 				type: "worker",
 				currentTask: null,
@@ -41,7 +45,8 @@ module.exports = function ()
 			var body = [WORK, WORK, WORK,
 				CARRY, CARRY,
 				MOVE, MOVE, MOVE, MOVE, MOVE];
-			this.createCreep(body, undefined, {
+			var creepName = controllerCreepsNameGenerator.getName();
+			this.createCreep(body, creepName, {
 				size: "small",
 				type: "worker",
 				currentTask: null,
@@ -57,7 +62,8 @@ module.exports = function ()
 			var body = [WORK, WORK, WORK, WORK,
 				CARRY, CARRY, CARRY,
 				MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
-			this.createCreep(body, undefined, {
+			var creepName = controllerCreepsNameGenerator.getName();
+			this.createCreep(body, creepName, {
 				size: "big",
 				type: "worker",
 				currentTask: null,
@@ -73,7 +79,8 @@ module.exports = function ()
 			var body = [WORK, WORK, WORK, WORK, WORK,
 				CARRY, CARRY, CARRY, CARRY,
 				MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
-			this.createCreep(body, undefined, {
+			var creepName = controllerCreepsNameGenerator.getName();
+			this.createCreep(body, creepName, {
 				size: "bigger",
 				type: "worker",
 				currentTask: null,
@@ -89,7 +96,8 @@ module.exports = function ()
 			var body = [WORK, WORK, WORK, WORK, WORK,
 				CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
 				MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
-			this.createCreep(body, undefined, {
+			var creepName = controllerCreepsNameGenerator.getName();
+			this.createCreep(body, creepName, {
 				size: "biggest",
 				type: "worker",
 				currentTask: null,
@@ -103,7 +111,8 @@ module.exports = function ()
 		{
 			var body = [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
 				MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
-			this.createCreep(body, undefined, {
+			var creepName = controllerCreepsNameGenerator.getName();
+			this.createCreep(body, creepName, {
 				type: "worker",
 				currentTask: null,
 				energySource: null,
@@ -117,7 +126,8 @@ module.exports = function ()
 			var body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
 				CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
 				MOVE, MOVE];
-			this.createCreep(body, undefined, {
+			var creepName = controllerCreepsNameGenerator.getName();
+			this.createCreep(body, creepName, {
 				type: "worker",
 				currentTask: null,
 				energySource: null,

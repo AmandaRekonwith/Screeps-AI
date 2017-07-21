@@ -5,7 +5,7 @@ module.exports = function ()
 		for (let constructionSiteID in this.room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure)
 		{
 			let job = {
-				index: constructionSiteID,
+				targetID: constructionSiteID,
 				type: "buildStructure"
 			};
 			return job;
@@ -15,45 +15,35 @@ module.exports = function ()
 	}
 	Creep.prototype.getRoutineJob = function ()
 	{
+		let routineJobsArray = new Array();
 		for (let extensionID in this.room.memory.jobs.workerJobBoard.routineJobs.supplyExtension)
 		{
-			let supplyExtensionJob = this.room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extensionID];
-			if (supplyExtensionJob.active == true && supplyExtensionJob.creep == null)
-			{
-				if (Game.getObjectById(extensionID).isActive)
-				{
-					this.room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extensionID].creep = this;
-					let job = {
-						index: extensionID,
-						type: "supplyExtension"
-					};
-					return job;
-				}
-			}
+			let job = {
+				targetID: extensionID,
+				type: "supplyExtension"
+			};
+			routineJobsArray.push(job);
 		}
-
 		for (let spawnID in this.room.memory.jobs.workerJobBoard.routineJobs.supplySpawn)
 		{
-			let supplySpawnJob = this.room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawnID];
-			if (supplySpawnJob.active == true && supplySpawnJob.creep == null)
-			{
-				this.room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawnID].creep = this;
-
-				let job = {
-					index: spawnID,
-					type: "supplySpawn"
-				};
-				return job;
-			}
+			let job = {
+				targetID: spawnID,
+				type: "supplySpawn"
+			};
+			routineJobsArray.push(job);
 		}
-
-		//default... upgrade the controller
 		let job = {
 			index: this.room.controller.id,
 			type: "upgradeController"
 		}
+		routineJobsArray.push(job);
 
-		return job;
+		let jobsCount = routineJobsArray.length;
+
+
+		let jobRandomizer = Math.floor((Math.random() * jobsCount));
+		console.log(routineJobsArray[jobRandomizer].type);
+		return routineJobsArray[jobRandomizer];
 	}
 
 	Creep.prototype.getWorkerJob = function ()
@@ -85,13 +75,34 @@ module.exports = function ()
 			switch (this.memory.job.type)
 			{
 				case "buildStructure":
-					this.buildStructure();
+					if(this.room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure[this.memory.job.targetID])
+					{
+						this.buildStructure();
+					}
+					else
+					{
+						this.memory.job = null;
+					}
 					break;
 				case "supplyExtension":
-					this.supplyExtension();
+					if(this.room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[this.memory.job.targetID])
+					{
+						this.supplyExtension();
+					}
+					else
+					{
+						this.memory.job = null;
+					}
 					break;
 				case "supplySpawn":
-					this.supplySpawn();
+					if(this.room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[this.memory.job.targetID])
+					{
+						this.supplySpawn();
+					}
+					else
+					{
+						this.memory.job = null;
+					}
 					break;
 				case "upgradeController":
 					this.upgradeTheController();
@@ -103,7 +114,6 @@ module.exports = function ()
 		{
 			this.memory.job = this.getWorkerJob();
 		}
-
 	}
 }
 

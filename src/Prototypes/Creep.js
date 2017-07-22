@@ -18,17 +18,13 @@ module.exports = function ()
 		}
 
 		let containerArrayWithEnergy = this.room.find(FIND_STRUCTURES, {
-			filter: (structure) =>
-			{
-				(structure.structureType == STRUCTURE_CONTAINER
-				&& structure.store[RESOURCE_ENERGY] > 0);
-			}
-		});
+			filter: (i) => i.structureType == STRUCTURE_CONTAINER &&
+			i.store[RESOURCE_ENERGY] > 0});
 		let containerArrayWithEnergyCount = containerArrayWithEnergy.length;
 		if (containerArrayWithEnergyCount > 0)
 		{
-			this.memory.energySource = {type: "container", targetID: containerArrayWithEnergy[0].id};
-
+			let containerRandomizer = Math.floor((Math.random() * containerArrayWithEnergyCount));
+			this.memory.energySource = {type: "container", targetID: containerArrayWithEnergy[containerRandomizer].id};
 			this.memory.currentTask = "Getting Energy";
 			return "container";
 		}
@@ -95,7 +91,7 @@ module.exports = function ()
 	{
 		let energySource = Game.getObjectById(this.memory.energySource.targetID);
 
-		let action = this.harvest(energySource, RESOURCE_ENERGY);
+		let action = this.withdraw(energySource, RESOURCE_ENERGY);
 
 		if (action == ERR_NOT_IN_RANGE)
 		{
@@ -144,7 +140,7 @@ module.exports = function ()
 					//this.runHauler();
 					break;
 				case "stationary":
-					//this.runStationary();
+					this.runStationary();
 					break;
 				default:
 					"";

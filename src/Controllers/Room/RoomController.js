@@ -1,4 +1,4 @@
-let controllerRoomCreeps = require('Controllers_Room_CreepsController');
+let creepsController = require('Controllers_Room_CreepsController');
 let roomExtensionsConstructionController = require('Controllers_Room_Construction_ExtensionsController');
 
 require('Prototypes_Source')();
@@ -14,8 +14,8 @@ let RoomController =
 		}
 
 		roomExtensionsConstructionController.run(room);
-		controllerRoomCreeps.spawnCreeps(room);
-		controllerRoomCreeps.run(room);
+		creepsController.spawnCreeps(room);
+		creepsController.run(room);
 	},
 
 	scanRoomEnvironment: function (room)

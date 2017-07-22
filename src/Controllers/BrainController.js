@@ -79,7 +79,8 @@ let BrainController =
 						},
 						routineJobs: {
 							supplyExtension: {},
-							supplySpawn: {}
+							supplySpawn: {},
+							supplyTower: {}
 						}
 					},
 					haulerJobBoard: {
@@ -88,8 +89,8 @@ let BrainController =
 					stationaryJobBoard: {
 						mapArray: [],
 
-						harvesterJobs: {},
-						controllerJobs: {}
+						harvester: {},
+						upgradeController: {}
 					}
 				};
 				let stationaryJobSitesMapArray = new Array();
@@ -115,7 +116,7 @@ let BrainController =
 					biggestWorkerCreepsArray: []
 				},
 				haulerCreeps: {},
-				stationaryCreepsArray: {}
+				stationaryCreeps: []
 			};
 
 			room.memory.structures = {

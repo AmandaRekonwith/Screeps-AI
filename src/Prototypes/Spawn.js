@@ -120,7 +120,8 @@ module.exports = function ()
 			});
 		};
 
-	StructureSpawn.prototype.createStationaryHarvesterCreep =
+	//1400 energy required
+	StructureSpawn.prototype.createStationaryCreep =
 		function ()
 		{
 			var body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
@@ -128,7 +129,7 @@ module.exports = function ()
 				MOVE, MOVE];
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
-				type: "worker",
+				type: "stationary",
 				currentTask: null,
 				energySource: null,
 				job: null

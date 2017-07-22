@@ -2,16 +2,16 @@ module.exports = function ()
 {
     Creep.prototype.buildStructure = function ()
     {
-        let structure = Game.getObjectById(this.memory.job.targetID);
+        let constructionSite = Game.getObjectById(this.memory.job.targetID);
         //it's possible that the structure could disappear if construction completes,
         // so check, and then set the current task and job to null if it's gone.
-        if (structure)
+        if (constructionSite)
         {
-            let action = this.build(structure);
+            let action = this.build(constructionSite);
 
             if (action == ERR_NOT_IN_RANGE)
             {
-                this.moveTo(structure, {visualizePathStyle: {stroke: '#ffffff'}});
+                this.moveTo(constructionSite, {visualizePathStyle: {stroke: '#ffffff'}});
             }
 
             if (this.carry[RESOURCE_ENERGY] == 0)
@@ -22,11 +22,6 @@ module.exports = function ()
         }
         else
         {
-            if (this.room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure[this.memory.job.index])
-            {
-                delete this.room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure[this.memory.job.index];
-            }
-
             this.memory.job = null;
         }
     }

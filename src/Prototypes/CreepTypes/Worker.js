@@ -15,6 +15,9 @@ module.exports = function ()
 	}
 	Creep.prototype.getRoutineJob = function ()
 	{
+		let creepXPosition = this.pos.x;
+		let creepYPosition = this.pos.y;
+
 		let routineJobsArray = new Array();
 		for (let extensionID in this.room.memory.jobs.workerJobBoard.routineJobs.supplyExtension)
 		{
@@ -32,6 +35,14 @@ module.exports = function ()
 			};
 			routineJobsArray.push(job);
 		}
+		for (let towerID in this.room.memory.jobs.workerJobBoard.routineJobs.supplyTower)
+		{
+			let job = {
+				targetID: towerID,
+				type: "supplyTower"
+			};
+			routineJobsArray.push(job);
+		}
 		let job = {
 			index: this.room.controller.id,
 			type: "upgradeController"
@@ -40,9 +51,9 @@ module.exports = function ()
 
 		let jobsCount = routineJobsArray.length;
 
+		//if(jobsCount > )
 
 		let jobRandomizer = Math.floor((Math.random() * jobsCount));
-		console.log(routineJobsArray[jobRandomizer].type);
 		return routineJobsArray[jobRandomizer];
 	}
 
@@ -98,6 +109,16 @@ module.exports = function ()
 					if(this.room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[this.memory.job.targetID])
 					{
 						this.supplySpawn();
+					}
+					else
+					{
+						this.memory.job = null;
+					}
+					break;
+				case "supplyTower":
+					if(this.room.memory.jobs.workerJobBoard.routineJobs.supplyTower[this.memory.job.targetID])
+					{
+						this.supplyTower();
 					}
 					else
 					{

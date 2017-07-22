@@ -37,7 +37,7 @@ let GameController =
 
 	scanStructures: function()
 	{
-		//find containers, and construction sites
+		//find containers
 		for (let roomName in Game.rooms)
 		{
 			let room = Game.rooms[roomName];
@@ -59,14 +59,6 @@ let GameController =
 				let structureContainer = structureContainersArray[x];
 				room.memory.structures.mapArray[structureContainer.pos.x][structureContainer.pos.y] = 16;
 				room.memory.structures.containersArray.push(structureContainer);
-			}
-
-			let constructionSitesArray = room.find(FIND_MY_CONSTRUCTION_SITES);
-			let constructionSitesCount = constructionSitesArray.length;
-			for (let x = 0; x < constructionSitesCount; x++)
-			{
-				let constructionSite = constructionSitesArray[x];
-				roomJobsController.checkIfConstructionJobExists(constructionSite);
 			}
 		}
 
@@ -152,6 +144,7 @@ let GameController =
 		let lowestAmountOfTimeLeftToLiveOfWorkerCreeps = 1500;
 
 		let lowestAmountOfTimeLeftToLiveOfHaulerCreeps = 1500;
+
 		let lowestAmountOfTimeLeftToLiveOfStationaryCreeps = 1500;
 		let creepToDie;
 
@@ -163,6 +156,8 @@ let GameController =
 			//this puts the creep with the lowest amount of time left to live at the start of the array..
 			//useful for a function I have already written, later it can just reference this, instead of a full check through all creeps
 			//see creeps.getCreepSoonestToDie();
+
+
 
 			let creepType = (creep.memory.type);
 			switch (creepType)
@@ -241,31 +236,25 @@ let GameController =
 					}
 					break;
 				case 'hauler':
-					if (creep.memory.creepType == "hauler")
+					if (creep.ticksToLive < lowestAmountOfTimeLeftToLiveOfHaulerCreeps)
 					{
-						if (creep.ticksToLive < lowestAmountOfTimeLeftToLiveOfHaulerCreeps)
-						{
-							room.memory.creeps.haulerCreepsArray.unshift(creep);
-							lowestAmountOfTimeLeftToLiveOfHaulerCreeps = creep.ticksToLive;
-						}
-						else
-						{
-							room.memory.creeps.haulerCreepsArray.push(creep);
-						}
+						room.memory.creeps.haulerCreepsArray.unshift(creep);
+						lowestAmountOfTimeLeftToLiveOfHaulerCreeps = creep.ticksToLive;
+					}
+					else
+					{
+						room.memory.creeps.haulerCreepsArray.push(creep);
 					}
 					break;
 				case 'stationary':
-					if (creep.memory.creepType == "stationary")
+					if (creep.ticksToLive < lowestAmountOfTimeLeftToLiveOfStationaryCreeps)
 					{
-						if (creep.ticksToLive < lowestAmountOfTimeLeftToLiveOfStationaryCreeps)
-						{
-							room.memory.creeps.stationaryCreepsArray.unshift(creep);
-							lowestAmountOfTimeLeftToLiveOfStationaryCreeps = creep.ticksToLive;
-						}
-						else
-						{
-							room.memory.creeps.stationaryCreepsArray.push(creep);
-						}
+						room.memory.creeps.stationaryCreeps.unshift(creep);
+						lowestAmountOfTimeLeftToLiveOfStationaryCreeps = creep.ticksToLive;
+					}
+					else
+					{
+						room.memory.creeps.stationaryCreeps.push(creep);
 					}
 					break;
 				default:

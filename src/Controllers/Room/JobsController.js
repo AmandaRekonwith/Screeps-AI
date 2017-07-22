@@ -6,16 +6,6 @@
 
 var RoomJobsController =
 {
-	checkIfConstructionJobExists(constructionSite)
-	{
-		let room = constructionSite.room;
-
-		if (!room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure[constructionSite.id])
-		{
-			room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure[constructionSite.id] = {};
-		}
-	},
-
 	scanJobs: function (room)
 	{
 		this.scanWorkerJobs(room);
@@ -25,8 +15,35 @@ var RoomJobsController =
 
 	scanWorkerJobs: function (room)
 	{
+		this.scanWorkerConstructionJobs(room);
 		this.scanWorkerSupplyExtensionJobs(room);
 		this.scanWorkerSupplySpawnJobs(room);
+		this.scanWorkerSupplyTowerJobs(room);
+	},
+
+	scanWorkerConstructionJobs: function(room)
+	{
+		//if job complete delete job
+		for(let constructionIndex in room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure)
+		{
+			if(!Game.getObjectById(constructionIndex))
+			{
+				delete room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure[constructionIndex];
+			}
+		}
+
+		//now scan jobs
+		let constructionSitesArray = room.find(FIND_MY_CONSTRUCTION_SITES);
+
+		let constructionSitesCount = constructionSitesArray.length;
+		for (let x = 0; x < constructionSitesCount; x++)
+		{
+			let constructionSite = constructionSitesArray[x];
+			if (!room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure[constructionSite.id])
+			{
+				room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure[constructionSite.id] = {};
+			}
+		}
 	},
 
 	scanWorkerSupplyExtensionJobs: function (room)
@@ -90,6 +107,36 @@ var RoomJobsController =
 		}
 	},
 
+	scanWorkerSupplyTowerJobs: function (room)
+	{
+		let towersArray = room.find(FIND_MY_STRUCTURES, {
+			filter: (structure) =>
+			{
+				return (structure.structureType == STRUCTURE_TOWER);
+			}
+		});
+
+		//generate a WORKER job for each one provided one doesn't already exist
+		let towersCount = towersArray.length;
+
+		for (let x = 0; x < towersCount; x++)
+		{
+			let tower = towersArray[x];
+
+			if (tower.energy <= tower.energyCapacity && !room.memory.jobs.workerJobBoard.routineJobs.supplyTower[tower.id])
+			{
+				room.memory.jobs.workerJobBoard.routineJobs.supplyTower[tower.id] = {};
+			}
+			if (tower.energy == tower.energyCapacity)
+			{
+				if (room.memory.jobs.workerJobBoard.routineJobs.supplyTower[tower.id])
+				{
+					delete room.memory.jobs.workerJobBoard.routineJobs.supplyTower[tower.id];
+				}
+			}
+		}
+	},
+
 
 	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<HAULER JOBS>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -125,32 +172,52 @@ var RoomJobsController =
 		*/
 	},
 
+	getNumberOfAvailableStationaryJobs: function (room)
+	{
+		let stationaryHarvesterJobs = room.memory.jobs.stationaryJobBoard.harvester;
+
+		let numberOfAvailableStationaryHarvesterJobs = 0;
+		for (let energySourceID in stationaryHarvesterJobs)
+		{
+			let stationaryHarvesterJob = stationaryHarvesterJobs[energySourceID];
+
+			if (stationaryHarvesterJob.creepID == null && stationaryHarvesterJob.active == false)
+			{
+				numberOfAvailableStationaryHarvesterJobs += 1;
+			}
+		}
+
+		return numberOfAvailableStationaryHarvesterJobs;
+	},
+
 	scanStationaryJobs: function (room)
 	{
-		//stationary harvester
-
-		/*
-		let stationaryHarvesterJobsArray = room.memory.jobs.stationaryJobBoard.harvesterJobs;
-		let stationaryHarvesterJobsCount = stationaryHarvesterJobsArray.length;
+		let stationaryHarvesterJobs = room.memory.jobs.stationaryJobBoard.harvester;
 
 		let numberOfStationaryHarvesterJobsActive = 0;
-		for (let x = 0; x < stationaryHarvesterJobsCount; x++)
+		for (let energySourceID in stationaryHarvesterJobs)
 		{
-			let stationaryHarvesterJob = stationaryHarvesterJobsArray[x];
-			if (stationaryHarvesterJob.creep != null)
+			let stationaryHarvesterJob = stationaryHarvesterJobs[energySourceID];
+
+			let creepID = stationaryHarvesterJob.creepID;
+
+			if(creepID != null)
 			{
-				let creep = Game.creeps[stationaryHarvesterJob.creep.name];
+				let creep = Game.getObjectById(creepID);
 				if (stationaryHarvesterJob.active == true && !creep)
 				{
-					room.memory.jobs.stationaryJobBoard.harvesterJobs.active = false;
-					room.memory.jobs.stationaryJobBoard.harvesterJobs.creep = null;
+					room.memory.jobs.stationaryJobBoard.harvester[energySourceID].active = false;
+					room.memory.jobs.stationaryJobBoard.harvester[energySourceID].creepID = null;
 				} //if creep died, reset job active to false
-				if (stationaryHarvesterJob.active == true)
+				else
 				{
-					numberOfStationaryHarvesterJobsActive += 1;
+					if (stationaryHarvesterJob.active == true && creep)
+					{
+						numberOfStationaryHarvesterJobsActive += 1;
+					}
 				}
 			}
-		}*/
+		}
 
 		/*
 
@@ -160,7 +227,7 @@ var RoomJobsController =
 		//let stationaryJobsActive = {numberOfStationaryHarvesterJobsActive: numberOfStationaryHarvesterJobsActive};
 		//room.memory.stationaryJobsActive = stationaryJobsActive;
 
-		/*
+
 		let structuresMapArray = room.memory.jobs.stationaryJobBoard.mapArray;
 
 		//scan for stationary harvester jobs in room
@@ -220,7 +287,6 @@ var RoomJobsController =
 				}
 			}
 		}
-		*/
 	},
 
 	addNewStationaryHarvesterJob: function (room, energySourceIndex, newStationaryHarvesterJobPositionX, newStationaryHarvesterJobPositionY, container1PositionX, container1PositionY, container2PositionX, container2PositionY)
@@ -238,26 +304,31 @@ var RoomJobsController =
 		newStationaryHarvesterJob.pos = newStationaryHarvesterJobPosition;
 		newStationaryHarvesterJob.containerPositionsArray = containerPositionsArray;
 		newStationaryHarvesterJob.active = false;
-		newStationaryHarvesterJob.energySourceIndex = energySourceIndex;
-		newStationaryHarvesterJob.creep = null;
+		newStationaryHarvesterJob.creepID = null;
 
-		room.memory.jobs.stationaryJobBoard.harvesterJobs.push(newStationaryHarvesterJob);
+		room.memory.jobs.stationaryJobBoard.harvester[room.memory.environment.energySourcesArray[energySourceIndex].id] = newStationaryHarvesterJob;
 	},
 
 	checkIfStationaryHarvesterJobSiteAlreadyExists: function (room, stationaryHarvesterJobSitePossiblePositionX, stationaryHarvesterJobSitePossiblePositionY)
 	{
-		var stationaryHarvesterJobsArray = room.memory.jobs.stationaryJobBoard.harvesterJobs;
-		var stationaryHarvesterJobsCount = stationaryJobsArray.length;
+		let energySources = room.memory.environment.energySourcesArray;
+		let energySourcesCount = energySources.length;
 
 		let jobAlreadyExists = false;
 
-		for (let j = 0; j < stationaryHarvesterJobsCount; j++)
+		for (let j = 0; j < energySourcesCount; j++)
 		{
-			let existingStationaryHarvesterJobPosition = stationaryHarvesterJobsArray[j].pos;
+			let energySource = energySources[j];
 
-			if (stationaryHarvesterJobSitePossiblePositionX == existingStationaryHarvesterJobPosition.x && stationaryHarvesterJobSitePossiblePositionY == existingStationaryHarvesterJobPosition.y)
+			if(room.memory.jobs.stationaryJobBoard.harvester[energySource.id])
 			{
-				jobAlreadyExists = true;
+				let stationaryJob = room.memory.jobs.stationaryJobBoard.harvester[energySource.id];
+				let existingStationaryHarvesterJobPosition = stationaryJob.pos;
+
+				if (stationaryHarvesterJobSitePossiblePositionX == existingStationaryHarvesterJobPosition.x && stationaryHarvesterJobSitePossiblePositionY == existingStationaryHarvesterJobPosition.y)
+				{
+					jobAlreadyExists = true;
+				}
 			}
 		}
 

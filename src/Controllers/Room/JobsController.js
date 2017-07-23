@@ -142,15 +142,35 @@ var RoomJobsController =
 
 	scanHaulerJobs: function (room)
 	{
-		//create hauler jobs, based on how many storage and containers exist... will fidget with this eventually
-		/*
 		let storageArray = room.memory.structures.storageArray;
 		let storageCount = storageArray.length;
 
+		//delete hauler jobs first if objects disappeared...
+		for(let containerID in room.memory.jobs.haulerJobBoard.containerToStorage)
+		{
+			if(!Game.getObjectById(containerID))
+			{
+				delete room.memory.jobs.haulerJobBoard.containerToStorage[containerID];
+			}
+			if(storageCount == 0)
+			{
+				delete room.memory.jobs.haulerJobBoard.containerToStorage[containerID];
+			}
+
+			let creepID = room.memory.jobs.haulerJobBoard.containerToStorage[containerID].creepID;
+			if(creepID != null)
+			{
+				if(!Game.getObjectById(creepID))
+				{
+					room.memory.jobs.haulerJobBoard.containerToStorage[containerID].creepID = null;
+					room.memory.jobs.haulerJobBoard.containerToStorage[containerID].active = false;
+				}
+			}
+		}
+
+		//create hauler jobs, based on how many storage and containers exist... will fidget with this eventually
 		if (storageCount > 0)
 		{
-			let haulerJobs = room.memory.jobs.haulerJobBoard.jobs;
-
 			let structureContainersArray = room.find(FIND_STRUCTURES, {
 				filter: (i) => i.structureType == STRUCTURE_CONTAINER
 				&& i.store[RESOURCE_ENERGY] > 0
@@ -159,17 +179,14 @@ var RoomJobsController =
 
 			for (let x = 0; x < structureContainersCount; x++)
 			{
-				if (!haulerJobs[structureContainersArray[x].id] || haulerJobs[structureContainersArray[x].id].creep == null)
+				if (!room.memory.jobs.haulerJobBoard.containerToStorage[structureContainersArray[x].id])
 				{
-					haulerJobs[structureContainersArray[x].id].containerID = structureContainersArray[x].id;
-					haulerJobs[structureContainersArray[x].id].active = false;
-					haulerJobs[structureContainersArray[x].id].creep = null;
+					room.memory.jobs.haulerJobBoard.containerToStorage[structureContainersArray[x].id] = {};
+					room.memory.jobs.haulerJobBoard.containerToStorage[structureContainersArray[x].id].active = false;
+					room.memory.jobs.haulerJobBoard.containerToStorage[structureContainersArray[x].id].creepID = null;
 				}
 			}
-
-			room.memory.jobs.haulerJobBoard.jobs = haulerJobs;
 		}
-		*/
 	},
 
 	getNumberOfAvailableStationaryJobs: function (room)
@@ -188,6 +205,24 @@ var RoomJobsController =
 		}
 
 		return numberOfAvailableStationaryHarvesterJobs;
+	},
+
+	getNumberOfAvailableHaulerJobs: function (room)
+	{
+		let haulerContainerToStorageJobs = room.memory.jobs.haulerJobBoard.containerToStorage;
+
+		let numberOfAvailableHaulerContainerToStorageJobs = 0;
+		for (let containerID in haulerContainerToStorageJobs)
+		{
+			let haulerContainerToStorageJob = haulerContainerToStorageJobs[containerID];
+
+			if (haulerContainerToStorageJob.creepID == null && haulerContainerToStorageJob.active == false)
+			{
+				numberOfAvailableHaulerContainerToStorageJobs += 1;
+			}
+		}
+
+		return numberOfAvailableHaulerContainerToStorageJobs;
 	},
 
 	scanStationaryJobs: function (room)

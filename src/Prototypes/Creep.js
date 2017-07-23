@@ -2,29 +2,25 @@ module.exports = function ()
 {
 	Creep.prototype.checkWhereToGetEnergy = function ()
 	{
-		let storageArrayWithEnergy = this.room.find(FIND_MY_STRUCTURES, {
-			filter: (structure) =>
-			{
-				(structure.structureType == STRUCTURE_STORAGE
-				&& structure.store[RESOURCE_ENERGY] > 0);
-			}
-		});
-		let storageArrayCount = storageArrayWithEnergy.length;
-		if (storageArrayCount > 0)
+		let storageWithEnergyArray = this.room.find(FIND_MY_STRUCTURES, {
+			filter: (i) => i.structureType == STRUCTURE_STORAGE &&
+			i.store[RESOURCE_ENERGY] > 0});
+		let storageWithEnergyCount = storageWithEnergyArray.length;
+		if (storageWithEnergyCount > 0)
 		{
-			this.memory.energySource = {type: "storage", targetID: storageArrayWithEnergy[0].id};
+			this.memory.energySource = {type: "storage", targetID: storageWithEnergyArray[0].id};
 			this.memory.currentTask = "Getting Energy";
 			return "storage";
 		}
 
-		let containerArrayWithEnergy = this.room.find(FIND_STRUCTURES, {
+		let containerWithEnergyArray = this.room.find(FIND_STRUCTURES, {
 			filter: (i) => i.structureType == STRUCTURE_CONTAINER &&
 			i.store[RESOURCE_ENERGY] > 0});
-		let containerArrayWithEnergyCount = containerArrayWithEnergy.length;
-		if (containerArrayWithEnergyCount > 0)
+		let containerWithEnergyCount = containerWithEnergyArray.length;
+		if (containerWithEnergyCount > 0)
 		{
-			let containerRandomizer = Math.floor((Math.random() * containerArrayWithEnergyCount));
-			this.memory.energySource = {type: "container", targetID: containerArrayWithEnergy[containerRandomizer].id};
+			let containerRandomizer = Math.floor((Math.random() * containerWithEnergyCount));
+			this.memory.energySource = {type: "container", targetID: containerWithEnergyArray[containerRandomizer].id};
 			this.memory.currentTask = "Getting Energy";
 			return "container";
 		}
@@ -79,11 +75,19 @@ module.exports = function ()
 	{
 		let energySource = Game.getObjectById(this.memory.energySource.targetID);
 
-		let action = this.withdraw(energySource, RESOURCE_ENERGY);
 
-		if (action == ERR_NOT_IN_RANGE)
+		if(energySource.store[RESOURCE_ENERGY] == 0)
 		{
-			this.moveTo(energySource.target, {visualizePathStyle: {stroke: '#ffaa00'}});
+			let where = this.checkWhereToGetEnergy();
+		}
+		else
+		{
+			let action = this.withdraw(energySource, RESOURCE_ENERGY);
+
+			if (action == ERR_NOT_IN_RANGE)
+			{
+				this.moveTo(energySource, {visualizePathStyle: {stroke: '#ffaa00'}});
+			}
 		}
 	}
 
@@ -91,11 +95,18 @@ module.exports = function ()
 	{
 		let energySource = Game.getObjectById(this.memory.energySource.targetID);
 
-		let action = this.withdraw(energySource, RESOURCE_ENERGY);
-
-		if (action == ERR_NOT_IN_RANGE)
+		if(energySource.store[RESOURCE_ENERGY] == 0)
 		{
-			this.moveTo(energySource, {visualizePathStyle: {stroke: '#ffaa00'}});
+			let where = this.checkWhereToGetEnergy();
+		}
+		else
+		{
+			let action = this.withdraw(energySource, RESOURCE_ENERGY);
+
+			if (action == ERR_NOT_IN_RANGE)
+			{
+				this.moveTo(energySource, {visualizePathStyle: {stroke: '#ffaa00'}});
+			}
 		}
 	}
 
@@ -137,7 +148,7 @@ module.exports = function ()
 					this.runWorker();
 					break;
 				case "hauler":
-					//this.runHauler();
+					this.runHauler();
 					break;
 				case "stationary":
 					this.runStationary();

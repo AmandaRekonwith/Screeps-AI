@@ -84,7 +84,7 @@ let BrainController =
 						}
 					},
 					haulerJobBoard: {
-						jobs: {}
+						containerToStorage: {}
 					},
 					stationaryJobBoard: {
 						mapArray: [],
@@ -115,7 +115,7 @@ let BrainController =
 					biggerWorkerCreepsArray: [],
 					biggestWorkerCreepsArray: []
 				},
-				haulerCreeps: {},
+				haulerCreeps: [],
 				stationaryCreeps: []
 			};
 

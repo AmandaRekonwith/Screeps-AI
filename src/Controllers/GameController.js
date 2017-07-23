@@ -238,12 +238,12 @@ let GameController =
 				case 'hauler':
 					if (creep.ticksToLive < lowestAmountOfTimeLeftToLiveOfHaulerCreeps)
 					{
-						room.memory.creeps.haulerCreepsArray.unshift(creep);
+						room.memory.creeps.haulerCreeps.unshift(creep);
 						lowestAmountOfTimeLeftToLiveOfHaulerCreeps = creep.ticksToLive;
 					}
 					else
 					{
-						room.memory.creeps.haulerCreepsArray.push(creep);
+						room.memory.creeps.haulerCreeps.push(creep);
 					}
 					break;
 				case 'stationary':

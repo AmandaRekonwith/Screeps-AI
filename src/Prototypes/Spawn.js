@@ -106,6 +106,7 @@ module.exports = function ()
 			});
 		};
 
+	//1000
 	StructureSpawn.prototype.createHaulerCreep =
 		function ()
 		{
@@ -113,7 +114,7 @@ module.exports = function ()
 				MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
-				type: "worker",
+				type: "hauler",
 				currentTask: null,
 				energySource: null,
 				job: null

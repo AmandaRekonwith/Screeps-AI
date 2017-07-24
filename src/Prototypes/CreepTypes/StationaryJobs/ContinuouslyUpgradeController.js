@@ -41,7 +41,7 @@ module.exports = function ()
 				this.memory.currentTask = "Working";
 
 				let action = this.upgradeController(room.controller);
-				
+
 				if (this.carry.energy == 0)
 				{
 					this.memory.currentTask = "Harvesting";

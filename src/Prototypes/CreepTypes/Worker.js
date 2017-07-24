@@ -11,7 +11,7 @@ module.exports = function ()
 			return job;
 		}
 
-		return this.getRoutineJob(); //if no first prioirity jobs....
+		return this.getRoutineJob(); //if no first priority jobs....
 	}
 	Creep.prototype.getRoutineJob = function ()
 	{
@@ -27,6 +27,7 @@ module.exports = function ()
 			};
 			routineJobsArray.push(job);
 		}
+
 		for (let spawnID in this.room.memory.jobs.workerJobBoard.routineJobs.supplySpawn)
 		{
 			let job = {
@@ -35,6 +36,7 @@ module.exports = function ()
 			};
 			routineJobsArray.push(job);
 		}
+
 		for (let towerID in this.room.memory.jobs.workerJobBoard.routineJobs.supplyTower)
 		{
 			let job = {
@@ -43,6 +45,27 @@ module.exports = function ()
 			};
 			routineJobsArray.push(job);
 		}
+
+		for (let structureID in this.room.memory.jobs.workerJobBoard.routineJobs.repairStructure)
+		{
+			let job = {
+				targetID: structureID,
+				type: "repairStructure"
+			};
+			routineJobsArray.push(job);
+		}
+
+		let wall = this.room.memory.structures.wallsArray[0];
+		let wallJob = this.room.memory.jobs.workerJobBoard.routineJobs.repairWall[wall.id];
+		if(wallJob)
+		{
+			let job = {
+				targetID: wall.id,
+				type: "repairWall"
+			};
+			routineJobsArray.push(job);
+		}
+
 		let job = {
 			index: this.room.controller.id,
 			type: "upgradeController"
@@ -50,9 +73,6 @@ module.exports = function ()
 		routineJobsArray.push(job);
 
 		let jobsCount = routineJobsArray.length;
-
-		//if(jobsCount > )
-
 		let jobRandomizer = Math.floor((Math.random() * jobsCount));
 		return routineJobsArray[jobRandomizer];
 	}
@@ -63,7 +83,7 @@ module.exports = function ()
 
 		let room = this.room;
 
-		let percentageChanceOfWorkingFirstPriorityJob = 95;
+		let percentageChanceOfWorkingFirstPriorityJob = 90;
 
 		let typeOfJobRandomizer = Math.floor((Math.random() * 100));
 
@@ -89,6 +109,26 @@ module.exports = function ()
 					if(this.room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure[this.memory.job.targetID])
 					{
 						this.buildStructure();
+					}
+					else
+					{
+						this.memory.job = null;
+					}
+					break;
+				case "repairStructure":
+					if(this.room.memory.jobs.workerJobBoard.routineJobs.repairStructure[this.memory.job.targetID])
+					{
+						this.repairStructure();
+					}
+					else
+					{
+						this.memory.job = null;
+					}
+					break;
+				case "repairWall":
+					if(this.room.memory.jobs.workerJobBoard.routineJobs.repairWall[this.memory.job.targetID])
+					{
+						this.repairWall();
 					}
 					else
 					{

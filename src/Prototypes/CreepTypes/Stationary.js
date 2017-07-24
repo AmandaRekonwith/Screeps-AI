@@ -6,15 +6,15 @@ module.exports = function ()
 
 		let room = this.room;
 
-		for(let energySourceID in room.memory.jobs.stationaryJobBoard.harvester)
+		for(let energySourceID in room.memory.jobs.stationaryJobBoard.harvestEnergy)
 		{
 
-			let harvesterJob = room.memory.jobs.stationaryJobBoard.harvester[energySourceID];
-			if (harvesterJob.active == false)
+			let harvestEnergyJob = room.memory.jobs.stationaryJobBoard.harvestEnergy[energySourceID];
+			if (harvestEnergyJob.active == false)
 			{
 				job = {
 					targetID: energySourceID,
-					type: "harvester"
+					type: "harvestEnergy"
 				};
 			}
 		}
@@ -28,8 +28,8 @@ module.exports = function ()
 		{
 			switch (this.memory.job.type)
 			{
-				case "harvester":
-					if(this.room.memory.jobs.stationaryJobBoard.harvester[this.memory.job.targetID]) //if job still exists
+				case "harvestEnergy":
+					if(this.room.memory.jobs.stationaryJobBoard.harvestEnergy[this.memory.job.targetID]) //if job still exists
 					{
 						this.runStationaryHarvester();
 					}

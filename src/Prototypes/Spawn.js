@@ -3,7 +3,7 @@ let controllerCreepsNameGenerator = require('Controllers_Creeps_NameGeneratorCon
 module.exports = function ()
 {
 
-	//200
+	//200, 1 work part, 1 carry part, 2 move parts, 12 ticks
 	StructureSpawn.prototype.createSmallestWorkerCreep =
 		function ()
 		{
@@ -21,7 +21,7 @@ module.exports = function ()
 			});
 		};
 
-	//400
+	//400, 2 work parts, 1 carry part, 3 move parts, 18 ticks
 	StructureSpawn.prototype.createSmallerWorkerCreep =
 		function ()
 		{
@@ -38,7 +38,7 @@ module.exports = function ()
 			});
 		};
 
-	//650
+	//650, 3 work parts, 2 carry parts, 5 move parts, 30 ticks
 	StructureSpawn.prototype.createSmallWorkerCreep =
 		function ()
 		{
@@ -55,7 +55,7 @@ module.exports = function ()
 			});
 		};
 
-	//900
+	//900, 4 work parts, 3 carry parts, 7 move parts, 42 ticks
 	StructureSpawn.prototype.createBigWorkerCreep =
 		function ()
 		{
@@ -72,7 +72,7 @@ module.exports = function ()
 			});
 		};
 
-	//1150
+	//1150, 5 work parts, 4 carry parts, 9 move parts, 54 ticks
 	StructureSpawn.prototype.createBiggerWorkerCreep =
 		function ()
 		{
@@ -89,7 +89,7 @@ module.exports = function ()
 			});
 		};
 
-	//1450
+	//1450, 5 work parts, 7 carry parts, 12 move parts, 72 ticks
 	StructureSpawn.prototype.createBiggestWorkerCreep =
 		function ()
 		{
@@ -106,7 +106,7 @@ module.exports = function ()
 			});
 		};
 
-	//1000
+	//1000 energy, 10 carry parts, 10 move parts, 60 ticks.
 	StructureSpawn.prototype.createHaulerCreep =
 		function ()
 		{
@@ -116,18 +116,19 @@ module.exports = function ()
 			this.createCreep(body, creepName, {
 				type: "hauler",
 				currentTask: null,
-				energySource: null,
 				job: null
 			});
 		};
 
-	//1400 energy required
+	//1400 energy required, 10 work parts, 6 carry parts, 2 move parts, 54 ticks.
+	//1100
+	//1150 39 ticks
 	StructureSpawn.prototype.createStationaryCreep =
 		function ()
 		{
 			var body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
-				CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
-				MOVE, MOVE];
+				CARRY, CARRY,
+				MOVE];
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				type: "stationary",

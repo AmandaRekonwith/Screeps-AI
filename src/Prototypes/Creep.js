@@ -83,7 +83,6 @@ module.exports = function ()
 		else
 		{
 			let action = this.withdraw(energySource, RESOURCE_ENERGY);
-
 			if (action == ERR_NOT_IN_RANGE)
 			{
 				this.moveTo(energySource, {visualizePathStyle: {stroke: '#ffaa00'}});

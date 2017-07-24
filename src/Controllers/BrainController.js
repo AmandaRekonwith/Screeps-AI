@@ -78,19 +78,20 @@ let BrainController =
 							buildStructure: {}
 						},
 						routineJobs: {
+							repairWall: {},
+							repairStructure: {},
 							supplyExtension: {},
 							supplySpawn: {},
 							supplyTower: {}
 						}
 					},
 					haulerJobBoard: {
-						containerToStorage: {}
+						moveEnergyFromContainerToStorage: {}
 					},
 					stationaryJobBoard: {
 						mapArray: [],
 
-						harvester: {},
-						upgradeController: {}
+						harvestEnergy: {}
 					}
 				};
 				let stationaryJobSitesMapArray = new Array();
@@ -126,7 +127,8 @@ let BrainController =
 				extensionsArray: [],
 				containersArray: [],
 				storageArray: [],
-				linksArray: []
+				linksArray: [],
+				wallsArray: []
 			};
 
 

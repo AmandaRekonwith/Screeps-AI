@@ -60,6 +60,22 @@ let GameController =
 				room.memory.structures.mapArray[structureContainer.pos.x][structureContainer.pos.y] = 16;
 				room.memory.structures.containersArray.push(structureContainer);
 			}
+
+			//scan walls
+			//organize by lowest amount of strength
+
+			let structureWallsArray = room.find(FIND_STRUCTURES, {
+				filter: (i) => i.structureType == STRUCTURE_WALL
+			});
+
+			structureWallsArray = _.sortBy(structureWallsArray, [Object.hits]);
+			let structureWallsCount = structureWallsArray.length;
+			for (let x = 0; x < structureWallsCount; x++)
+			{
+				let structureWall = structureWallsArray[x];
+				room.memory.structures.mapArray[structureWall.pos.x][structureWall.pos.y] = 18;
+				room.memory.structures.wallsArray.push(structureWall);
+			}
 		}
 
 		for (let name in Game.structures)
@@ -120,12 +136,15 @@ let GameController =
 				case 'terminal':
 					structure.room.memory.structures.mapArray[structure.pos.x][structure.pos.y] = 15;
 					break;
-				/* containers are not in game hash, add these after this script
+				/* containers are not in game hash because they are not 'owned' by the player... code above puts it in this array
 				case 'container':
 				 structure.room.memory.structures.mapArray[structure.pos.x][structure.pos.y] = 16;*/
 					break;
 				case 'nuker':
 					structure.room.memory.structures.mapArray[structure.pos.x][structure.pos.y] = 17;
+					break;
+				case 'wall':
+					//added above... 18.. for reference here
 					break;
 				default:
 					structure.room.memory.structures.mapArray[structure.pos.x][structure.pos.y] = 0;

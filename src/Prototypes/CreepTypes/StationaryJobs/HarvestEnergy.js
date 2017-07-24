@@ -4,12 +4,12 @@ module.exports = function ()
 	{
 		let room = this.room;
 		let energySourceID = this.memory.job.targetID;
-		let job = room.memory.jobs.stationaryJobBoard.harvester[energySourceID];
+		let job = room.memory.jobs.stationaryJobBoard.harvestEnergy[energySourceID];
 		let jobSitePosition = job.pos;
 		let currentTask = this.memory.currentTask;
 
-		room.memory.jobs.stationaryJobBoard.harvester[energySourceID].creepID = this.id;
-		room.memory.jobs.stationaryJobBoard.harvester[energySourceID].active = true;
+		room.memory.jobs.stationaryJobBoard.harvestEnergy[energySourceID].creepID = this.id;
+		room.memory.jobs.stationaryJobBoard.harvestEnergy[energySourceID].active = true;
 
 		if ((this.pos.x != jobSitePosition.x) || (this.pos.y != jobSitePosition.y))
 		{
@@ -44,6 +44,8 @@ module.exports = function ()
 				let containerPositionsArray = job.containerPositionsArray;
 				let positionsCount = containerPositionsArray.length;
 
+				let actionToPerformFound = false;
+
 				for(let f=0; f<positionsCount; f++)
 				{
 					let structureContainersArray = room.find(FIND_STRUCTURES, {
@@ -52,9 +54,10 @@ module.exports = function ()
 						&& i.pos.x == containerPositionsArray[f].x  && i.pos.y == containerPositionsArray[f].y
 					});
 
-					if (structureContainersArray != '')
+					if (structureContainersArray != '' && actionToPerformFound != true)
 					{
 						let action = this.repair(structureContainersArray[0]);
+						if(action == 0){actionToPerformFound = true;}
 					}
 				}
 
@@ -66,9 +69,10 @@ module.exports = function ()
 						&& i.pos.x == containerPositionsArray[z].x && i.pos.y == containerPositionsArray[z].y
 					});
 
-					if(structureContainersArray != '')
+					if(structureContainersArray != '' && actionToPerformFound != true)
 					{
 						let action = this.transfer(structureContainersArray[0], RESOURCE_ENERGY);
+						if(action == 0){actionToPerformFound = true;}
 					}
 				}
 

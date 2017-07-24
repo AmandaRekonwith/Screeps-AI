@@ -3,19 +3,22 @@ module.exports = function ()
 	Creep.prototype.getHaulerJob = function ()
 	{
 		let job = null;
-
 		let room = this.room;
 
-		for(let containerID in room.memory.jobs.haulerJobBoard.containerToStorage)
+		let containerIDsArray = new Array();
+		for (let containerID in room.memory.jobs.haulerJobBoard.moveEnergyFromContainerToStorage)
 		{
-			let harvesterJob = room.memory.jobs.haulerJobBoard.containerToStorage[containerID];
-			if (harvesterJob.active == false)
-			{
-				job = {
-					targetID: containerID,
-					type: "containerToStorage"
-				};
-			}
+			containerIDsArray.push(containerID);
+		}
+
+		if (containerIDsArray.length > 0)
+		{
+			containerIDsArray = this.FisherYatesShuffle(containerIDsArray);
+
+			job = {
+				targetID: containerIDsArray[0],
+				type: "moveEnergyFromContainerToStorage"
+			};
 		}
 
 		return job;
@@ -23,13 +26,12 @@ module.exports = function ()
 
 	Creep.prototype.runHauler = function ()
 	{
-
 		if (this.memory.job != null)
 		{
 			switch (this.memory.job.type)
 			{
-				case "containerToStorage":
-					if(this.room.memory.jobs.haulerJobBoard.containerToStorage[this.memory.job.targetID]) //if job still exists
+				case "moveEnergyFromContainerToStorage":
+					if(this.room.memory.jobs.haulerJobBoard.moveEnergyFromContainerToStorage[this.memory.job.targetID]) //if job still exists
 					{
 						this.runHaulerContainerToStorage();
 					}

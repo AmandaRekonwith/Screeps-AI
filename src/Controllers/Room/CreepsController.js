@@ -80,7 +80,7 @@ let RoomCreepsController =
 			}
 			if(numberOfStationaryCreeps == maximumNumberOfHarvesterStationaryCreeps)
 			{
-				if(( numberOfHaulerCreeps < maximumNumberOfContainerToStorageHaulerCreeps || room.memory.creeps.haulerCreeps[0].ticksToLive < 75) && room.energyAvailable >= 1000)
+				if(( numberOfHaulerCreeps < maximumNumberOfContainerToStorageHaulerCreeps || room.memory.creeps.haulerCreeps[0].ticksToLive < 31) && room.energyAvailable >= 500)
 				{
 					let numberOfSpawns = room.memory.structures.spawnsArray.length;
 					let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));

@@ -67,8 +67,7 @@ let GameController =
 			let structureWallsArray = room.find(FIND_STRUCTURES, {
 				filter: (i) => i.structureType == STRUCTURE_WALL
 			});
-
-			structureWallsArray = _.sortBy(structureWallsArray, [Object.hits]);
+			structureWallsArray.sort(function(a,b) {return (a.hits > b.hits) ? 1 : ((b.hits > a.hits) ? -1 : 0);} );
 			let structureWallsCount = structureWallsArray.length;
 			for (let x = 0; x < structureWallsCount; x++)
 			{

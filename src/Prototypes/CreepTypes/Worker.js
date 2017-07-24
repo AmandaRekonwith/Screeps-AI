@@ -66,15 +66,25 @@ module.exports = function ()
 			routineJobsArray.push(job);
 		}
 
-		let job = {
-			index: this.room.controller.id,
-			type: "upgradeController"
+		if(!this.room.memory.structures.storageArray[0])
+		{
+			let job = {
+				index: this.room.controller.id,
+				type: "upgradeController"
+			}
+			routineJobsArray.push(job);
 		}
-		routineJobsArray.push(job);
 
 		let jobsCount = routineJobsArray.length;
-		let jobRandomizer = Math.floor((Math.random() * jobsCount));
-		return routineJobsArray[jobRandomizer];
+		if(jobsCount > 0)
+		{
+			let jobRandomizer = Math.floor((Math.random() * jobsCount));
+			return routineJobsArray[jobRandomizer];
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	Creep.prototype.getWorkerJob = function ()

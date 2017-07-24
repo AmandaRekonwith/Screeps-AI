@@ -18,6 +18,7 @@ require('Prototypes_CreepTypes_WorkerJobs_SupplyTower')();
 require('Prototypes_CreepTypes_WorkerJobs_UpgradeController')();
 
 require('Prototypes_CreepTypes_Stationary')();
+require('Prototypes_CreepTypes_StationaryJobs_ContinuouslyUpgradeController')();
 require('Prototypes_CreepTypes_StationaryJobs_HarvestEnergy')();
 
 require('Prototypes_CreepTypes_Hauler')();
@@ -32,6 +33,7 @@ let RoomCreepsController =
 
 		let energySourcesArray = room.memory.environment.energySourcesArray;
 		let energySourcesCount = energySourcesArray.length;
+		let storageCount = room.memory.structures.storageArray.length;
 
 		let numberOfSmallestWorkerCreeps = room.memory.creeps.workerCreeps.smallestWorkerCreepsArray.length;
 		let numberOfSmallerWorkerCreeps = room.memory.creeps.workerCreeps.smallerWorkerCreepsArray.length;
@@ -43,6 +45,8 @@ let RoomCreepsController =
 
 		let numberOfStationaryCreeps = room.memory.creeps.stationaryCreeps.length;
 		let maximumNumberOfHarvesterStationaryCreeps = energySourcesCount;
+		let maximumNumberOfContinuouslyUpgradeControllerCreeps = storageCount;
+		let maximumNumberOfStationaryCreeps = maximumNumberOfHarvesterStationaryCreeps + maximumNumberOfContinuouslyUpgradeControllerCreeps;
 
 		let numberOfHaulerCreeps = room.memory.creeps.haulerCreeps.length;
 		let maximumNumberOfContainerToStorageHaulerCreeps = room.memory.structures.containersArray.length - energySourcesCount;

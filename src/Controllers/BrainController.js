@@ -91,6 +91,7 @@ let BrainController =
 					stationaryJobBoard: {
 						mapArray: [],
 
+						continuouslyUpgradeController: {},
 						harvestEnergy: {}
 					}
 				};

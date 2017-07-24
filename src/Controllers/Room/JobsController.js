@@ -255,6 +255,7 @@ var RoomJobsController =
 	getNumberOfAvailableStationaryJobs: function (room)
 	{
 		let stationaryHarvesterJobs = room.memory.jobs.stationaryJobBoard.harvestEnergy;
+		let continuouslyUpgradeControllerJobs = room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController;
 
 		let numberOfAvailableStationaryHarvesterJobs = 0;
 		for (let energySourceID in stationaryHarvesterJobs)
@@ -267,33 +268,114 @@ var RoomJobsController =
 			}
 		}
 
+		for (let energySourceID in continuouslyUpgradeControllerJobs)
+		{
+			let continuouslyUpgradeControllerJob = continuouslyUpgradeControllerJobs[energySourceID];
+
+			if (continuouslyUpgradeControllerJob.creepID == null && continuouslyUpgradeControllerJob.active == false)
+			{
+				numberOfAvailableStationaryHarvesterJobs += 1;
+			}
+		}
+
 		return numberOfAvailableStationaryHarvesterJobs;
 	},
 
 	scanStationaryJobs: function (room)
 	{
-		let stationaryHarvesterJobs = room.memory.jobs.stationaryJobBoard.harvestEnergy;
+		this.scanHarvestEnergyJobs(room);
+		this.scanStationaryContinuouslyUpgradeControllerJobs(room);
+	},
 
-		let numberOfStationaryHarvesterJobsActive = 0;
-		for (let energySourceID in stationaryHarvesterJobs)
+	scanStationaryContinuouslyUpgradeControllerJobs: function (room)
+	{
+		let stationaryContinuouslyUpgradeControllerJobs = room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController;
+
+		let numberOfStationaryContinuouslyUpgradeControllerJobsActive = 0;
+		for (let energySourceID in stationaryContinuouslyUpgradeControllerJobs)
 		{
-			let stationaryHarvesterJob = stationaryHarvesterJobs[energySourceID];
+			let energySource = Game.getObjectById(energySourceID);
+			if(energySource) //if the storage container exists... then continue... if not.. make sure the job is deleted.
+			{
+				let stationaryContinuouslyUpgradeControllerJob = room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController[energySourceID];
+				let creepID = stationaryContinuouslyUpgradeControllerJob.creepID;
 
-			let creepID = stationaryHarvesterJob.creepID;
+				if (creepID != null)
+				{
+					let creep = Game.getObjectById(creepID);
+					if (stationaryContinuouslyUpgradeControllerJob.active == true && !creep)
+					{
+						room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController[energySourceID].active = false;
+						room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController[energySourceID].creepID = null;
+					} //if creep died, reset job active to false
+					else
+					{
+						if (stationaryContinuouslyUpgradeControllerJob.active == true && creep)
+						{
+							numberOfStationaryContinuouslyUpgradeControllerJobsActive += 1;
+						}
+					}
+				}
+			}
+			else
+			{
+				delete room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController[energySourceID];
+			}
+		}
+
+		//now scan
+		if(room.memory.structures.storageArray.length > 0)
+		{
+			let energySourceID = room.memory.structures.storageArray[0].id;
+			if(!room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController[energySourceID])
+			{
+				let energySourceID = room.memory.structures.storageArray[0].id;
+				let energySource = Game.getObjectById(energySourceID);
+
+				let storagePositionX = energySource.pos.x;
+				let storagePositionY = energySource.pos.y;
+
+				//FOR NOW, I am making sure the storage container is within distance of the upgrade controller
+				// (this is not automated, but placed on the game map by hand)
+				//AND am MANUALLY making sure the space above the storage unit is empty, and in range of the upgrade controller.
+				//that will be the site of this job. ... so that said, y - 1.
+
+				let jobPosition = {x: storagePositionX, y: storagePositionY - 1};
+
+				let continuouslyUpgradeControllerJob = {};
+				continuouslyUpgradeControllerJob.pos = jobPosition;
+				continuouslyUpgradeControllerJob.active = false;
+				continuouslyUpgradeControllerJob.creepID = null;
+
+				room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController[energySourceID] = continuouslyUpgradeControllerJob;
+			}
+		}
+	},
+
+	scanHarvestEnergyJobs: function(room)
+	{
+		let stationaryHarvestEnergyJobs = room.memory.jobs.stationaryJobBoard.harvestEnergy;
+
+		let numberOfStationaryHarvestEnergyJobsActive = 0;
+		for (let energySourceID in stationaryHarvestEnergyJobs)
+		{
+			let stationaryHarvestEnergyJob = stationaryHarvestEnergyJobs[energySourceID];
+
+			let creepID = stationaryHarvestEnergyJob.creepID;
 
 			if(creepID != null)
 			{
 				let creep = Game.getObjectById(creepID);
-				if (stationaryHarvesterJob.active == true && !creep)
+				if (stationaryHarvestEnergyJob.active == true && !creep)
 				{
 					room.memory.jobs.stationaryJobBoard.harvestEnergy[energySourceID].active = false;
 					room.memory.jobs.stationaryJobBoard.harvestEnergy[energySourceID].creepID = null;
 				} //if creep died, reset job active to false
 				else
 				{
-					if (stationaryHarvesterJob.active == true && creep)
+					if (stationaryHarvestEnergyJob.active == true && creep)
 					{
-						numberOfStationaryHarvesterJobsActive += 1;
+						numberOfStationaryHarvestEnergyJobsActive += 1;
 					}
 				}
 			}
@@ -304,7 +386,7 @@ var RoomJobsController =
 		 add code here to check if containers still exist, if not delete job...
 		 */
 
-		//let stationaryJobsActive = {numberOfStationaryHarvesterJobsActive: numberOfStationaryHarvesterJobsActive};
+		//let stationaryJobsActive = {numberOfStationaryHarvestEnergyJobsActive: numberOfStationaryHarvestEnergyJobsActive};
 		//room.memory.stationaryJobsActive = stationaryJobsActive;
 
 
@@ -328,9 +410,9 @@ var RoomJobsController =
 			//   [x][ ][e]      [ x-2, y ][       ][        ]
 			if (this.checkContainersPositions(room, energySourcePositionX, energySourcePositionY - 2, energySourcePositionX - 2, energySourcePositionY) == true)
 			{
-				if (this.checkIfStationaryHarvesterJobSiteAlreadyExists(room, energySourcePositionX - 1, energySourcePositionY - 1) == false)
+				if (this.checkIfStationaryHarvestEnergyJobSiteAlreadyExists(room, energySourcePositionX - 1, energySourcePositionY - 1) == false)
 				{
-					this.addNewStationaryHarvesterJob(room, e, energySourcePositionX - 1, energySourcePositionY - 1, energySourcePositionX, energySourcePositionY - 2, energySourcePositionX - 2, energySourcePositionY);
+					this.addNewStationaryHarvestEnergyJob(room, e, energySourcePositionX - 1, energySourcePositionY - 1, energySourcePositionX, energySourcePositionY - 2, energySourcePositionX - 2, energySourcePositionY);
 				}
 			}
 			//check two locations, map indicates what i'm looking for x is container, e energy source, j, desired job site
@@ -339,9 +421,9 @@ var RoomJobsController =
 			//   [e][ ][x]      [        ][       ][ x+2, y ]
 			else if (this.checkContainersPositions(room, energySourcePositionX, energySourcePositionY - 2, energySourcePositionX + 2, energySourcePositionY) == true)
 			{
-				if (this.checkIfStationaryHarvesterJobSiteAlreadyExists(room, energySourcePositionX + 1, energySourcePositionY - 1) == false)
+				if (this.checkIfStationaryHarvestEnergyJobSiteAlreadyExists(room, energySourcePositionX + 1, energySourcePositionY - 1) == false)
 				{
-					this.addNewStationaryHarvesterJob(room, e, energySourcePositionX + 1, energySourcePositionY - 1, energySourcePositionX, energySourcePositionY - 2, energySourcePositionX + 2, energySourcePositionY);
+					this.addNewStationaryHarvestEnergyJob(room, e, energySourcePositionX + 1, energySourcePositionY - 1, energySourcePositionX, energySourcePositionY - 2, energySourcePositionX + 2, energySourcePositionY);
 				}
 			}
 			//check two locations, map indicates what i'm looking for x is container, e energy source, j, desired job site
@@ -350,9 +432,9 @@ var RoomJobsController =
 			//   [x][ ][ ]      [ x, y+2 ][       ][        ]
 			else if (this.checkContainersPositions(room, energySourcePositionX, energySourcePositionY + 2, energySourcePositionX + 2, energySourcePositionY) == true)
 			{
-				if (this.checkIfStationaryHarvesterJobSiteAlreadyExists(room, energySourcePositionX + 1, energySourcePositionY + 1) == false)
+				if (this.checkIfStationaryHarvestEnergyJobSiteAlreadyExists(room, energySourcePositionX + 1, energySourcePositionY + 1) == false)
 				{
-					this.addNewStationaryHarvesterJob(room, e, energySourcePositionX + 1, energySourcePositionY + 1, energySourcePositionX, energySourcePositionY + 2, energySourcePositionX + 2, energySourcePositionY);
+					this.addNewStationaryHarvestEnergyJob(room, e, energySourcePositionX + 1, energySourcePositionY + 1, energySourcePositionX, energySourcePositionY + 2, energySourcePositionX + 2, energySourcePositionY);
 				}
 			}
 			//check two locations, map indicates what i'm looking for x is container, e energy source, j, desired job site
@@ -361,17 +443,17 @@ var RoomJobsController =
 			//   [ ][ ][x]      [        ][       ][ x,y+2 ]
 			else if (this.checkContainersPositions(room, energySourcePositionX - 2, energySourcePositionY, energySourcePositionX, energySourcePositionY + 2) == true)
 			{
-				if (this.checkIfStationaryHarvesterJobSiteAlreadyExists(room, energySourcePositionX - 1, energySourcePositionY + 1) == false)
+				if (this.checkIfStationaryHarvestEnergyJobSiteAlreadyExists(room, energySourcePositionX - 1, energySourcePositionY + 1) == false)
 				{
-					this.addNewStationaryHarvesterJob(room, e, energySourcePositionX - 1, energySourcePositionY + 1, energySourcePositionX - 2, energySourcePositionY, energySourcePositionX, energySourcePositionY + 2);
+					this.addNewStationaryHarvestEnergyJob(room, e, energySourcePositionX - 1, energySourcePositionY + 1, energySourcePositionX - 2, energySourcePositionY, energySourcePositionX, energySourcePositionY + 2);
 				}
 			}
 		}
 	},
 
-	addNewStationaryHarvesterJob: function (room, energySourceIndex, newStationaryHarvesterJobPositionX, newStationaryHarvesterJobPositionY, container1PositionX, container1PositionY, container2PositionX, container2PositionY)
+	addNewStationaryHarvestEnergyJob: function (room, energySourceIndex, newStationaryHarvestEnergyJobPositionX, newStationaryHarvestEnergyJobPositionY, container1PositionX, container1PositionY, container2PositionX, container2PositionY)
 	{
-		let newStationaryHarvesterJobPosition = room.getPositionAt(newStationaryHarvesterJobPositionX, newStationaryHarvesterJobPositionY);
+		let newStationaryHarvestEnergyJobPosition = room.getPositionAt(newStationaryHarvestEnergyJobPositionX, newStationaryHarvestEnergyJobPositionY);
 
 		let containerPositionsArray = [];
 
@@ -380,16 +462,16 @@ var RoomJobsController =
 		containerPositionsArray.push(container1Position);
 		containerPositionsArray.push(container2Position);
 
-		let newStationaryHarvesterJob = {};
-		newStationaryHarvesterJob.pos = newStationaryHarvesterJobPosition;
-		newStationaryHarvesterJob.containerPositionsArray = containerPositionsArray;
-		newStationaryHarvesterJob.active = false;
-		newStationaryHarvesterJob.creepID = null;
+		let newStationaryHarvestEnergyJob = {};
+		newStationaryHarvestEnergyJob.pos = newStationaryHarvestEnergyJobPosition;
+		newStationaryHarvestEnergyJob.containerPositionsArray = containerPositionsArray;
+		newStationaryHarvestEnergyJob.active = false;
+		newStationaryHarvestEnergyJob.creepID = null;
 
-		room.memory.jobs.stationaryJobBoard.harvestEnergy[room.memory.environment.energySourcesArray[energySourceIndex].id] = newStationaryHarvesterJob;
+		room.memory.jobs.stationaryJobBoard.harvestEnergy[room.memory.environment.energySourcesArray[energySourceIndex].id] = newStationaryHarvestEnergyJob;
 	},
 
-	checkIfStationaryHarvesterJobSiteAlreadyExists: function (room, stationaryHarvesterJobSitePossiblePositionX, stationaryHarvesterJobSitePossiblePositionY)
+	checkIfStationaryHarvestEnergyJobSiteAlreadyExists: function (room, stationaryHarvestEnergyJobSitePossiblePositionX, stationaryHarvestEnergyJobSitePossiblePositionY)
 	{
 		let energySources = room.memory.environment.energySourcesArray;
 		let energySourcesCount = energySources.length;
@@ -403,9 +485,9 @@ var RoomJobsController =
 			if(room.memory.jobs.stationaryJobBoard.harvestEnergy[energySource.id])
 			{
 				let stationaryJob = room.memory.jobs.stationaryJobBoard.harvestEnergy[energySource.id];
-				let existingStationaryHarvesterJobPosition = stationaryJob.pos;
+				let existingStationaryHarvestEnergyJobPosition = stationaryJob.pos;
 
-				if (stationaryHarvesterJobSitePossiblePositionX == existingStationaryHarvesterJobPosition.x && stationaryHarvesterJobSitePossiblePositionY == existingStationaryHarvesterJobPosition.y)
+				if (stationaryHarvestEnergyJobSitePossiblePositionX == existingStationaryHarvestEnergyJobPosition.x && stationaryHarvestEnergyJobSitePossiblePositionY == existingStationaryHarvestEnergyJobPosition.y)
 				{
 					jobAlreadyExists = true;
 				}

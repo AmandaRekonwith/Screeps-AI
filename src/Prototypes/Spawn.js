@@ -108,12 +108,13 @@ module.exports = function ()
 
 	//1000 energy, 10 carry parts, 10 move parts, 60 ticks.
 	//800 energy, 8 carry parts, 8 move parts, 48 ticks.
+	//600 energy, 6 carry parts, 6 move parts, 36 ticks
 	//500 energy, 5 carry parts, 5 move parts, 30 ticks.
 	StructureSpawn.prototype.createHaulerCreep =
 		function ()
 		{
-			var body = [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
-				MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY];
+			var body = [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
+				MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				type: "hauler",

@@ -15,8 +15,8 @@ module.exports = function ()
 
 			if (tower.energy == tower.energyCapacity) // job complete
 			{
-				this.room.memory.jobs.workerJobBoard.routineJobs.supplyTower[tower.id].creep = null;
-				this.room.memory.jobs.workerJobBoard.routineJobs.supplyTower[tower.id].active = false;
+				this.room.memory.jobs.generalJobBoard.supplyTower[tower.id].creep = null;
+				this.room.memory.jobs.generalJobBoard.supplyTower[tower.id].active = false;
 
 				this.memory.job = null;
 				this.memory.currentTask = null;
@@ -24,7 +24,7 @@ module.exports = function ()
 
 			if (this.carry[RESOURCE_ENERGY] == 0)
 			{
-				this.room.memory.jobs.workerJobBoard.routineJobs.supplyTower[tower.id].creep = null;
+				this.room.memory.jobs.generalJobBoard.supplyTower[tower.id].creep = null;
 
 				this.memory.job = null;
 				this.memory.currentTask = null;

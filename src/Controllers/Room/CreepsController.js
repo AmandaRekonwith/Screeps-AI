@@ -8,13 +8,15 @@
 let jobsController = require('Controllers_Room_JobsController');
 require('Prototypes_Spawn')();
 require('Prototypes_Creep')();
+
+require('Prototypes_CreepTypes_GeneralJobs_SupplyExtension')();
+require('Prototypes_CreepTypes_GeneralJobs_SupplySpawn')();
+require('Prototypes_CreepTypes_GeneralJobs_SupplyTower')();
+
 require('Prototypes_CreepTypes_Worker')();
 require('Prototypes_CreepTypes_WorkerJobs_BuildStructure')();
 require('Prototypes_CreepTypes_WorkerJobs_RepairStructure')();
 require('Prototypes_CreepTypes_WorkerJobs_RepairWall')();
-require('Prototypes_CreepTypes_WorkerJobs_SupplyExtension')();
-require('Prototypes_CreepTypes_WorkerJobs_SupplySpawn')();
-require('Prototypes_CreepTypes_WorkerJobs_SupplyTower')();
 require('Prototypes_CreepTypes_WorkerJobs_UpgradeController')();
 
 require('Prototypes_CreepTypes_Stationary')();
@@ -22,12 +24,14 @@ require('Prototypes_CreepTypes_StationaryJobs_ContinuouslyUpgradeController')();
 require('Prototypes_CreepTypes_StationaryJobs_HarvestEnergy')();
 
 require('Prototypes_CreepTypes_Hauler')();
-require('Prototypes_CreepTypes_HaulerJobs_MoveEnergyFromContainerToStorage')();
+require('Prototypes_CreepTypes_HaulerJobs_MoveEnergyFromContainer')();
 
 let RoomCreepsController =
 {
 	spawnCreeps: function (room)
 	{
+		let DEFCON = room.memory.DEFCON;
+
 		let spawn = room.memory.structures.spawnsArray[0];
 		let energyAvailable = room.energyAvailable;
 
@@ -49,7 +53,7 @@ let RoomCreepsController =
 		let maximumNumberOfStationaryCreeps = maximumNumberOfHarvesterStationaryCreeps + maximumNumberOfContinuouslyUpgradeControllerCreeps;
 
 		let numberOfHaulerCreeps = room.memory.creeps.haulerCreeps.length;
-		let maximumNumberOfContainerToStorageHaulerCreeps = room.memory.structures.containersArray.length - energySourcesCount;
+		let maximumNumberOfContainerHaulerCreeps = room.memory.structures.containersArray.length - energySourcesCount;
 
 		//MY CURRENT FORMULA FOR SPAWNING SHIT
 		let totalNumberOfOpenTilesNextToEnergySources = 0;
@@ -58,33 +62,49 @@ let RoomCreepsController =
 			totalNumberOfOpenTilesNextToEnergySources += energySourcesArray[x].numberOfAdjacentOpenTerrainTiles;
 		}
 
-		//let totalNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources - stationaryCreepsCount - haulerCreepsCount;
-		let maximumNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources - numberOfStationaryCreeps - numberOfHaulerCreeps;
-		// I am adding one or two to fidget with efficiency,
-		// since the creeps will be doing other things at times in addition to harvesting
+		let maximumNumberOfWorkerCreeps = 0;
+		if(DEFCON == 5)
+		{
+			maximumNumberOfWorkerCreeps = 1 - (2 * numberOfHaulerCreeps);
+		}
+		if(DEFCON < 5)
+		{
+			maximumNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources - numberOfStationaryCreeps - numberOfHaulerCreeps - 1;
+		}
 
 
-
-		console.log(totalNumberOfWorkerCreeps + " " + maximumNumberOfWorkerCreeps);
+		console.log("totalNumberOfWorkerCreeps: " + totalNumberOfWorkerCreeps + " maximumNumberOfWorkerCreeps:     " + maximumNumberOfWorkerCreeps);
 		if (totalNumberOfWorkerCreeps < maximumNumberOfWorkerCreeps)
 		{
-			this.spawnNewWorkerCreep(room);
+			if(room.memory.DEFCON == 5)
+			{
+				let numberOfSpawns = room.memory.structures.spawnsArray.length;
+				let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
+				let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
+				spawn.createSmallestWorkerCreep(room);
+			}
+			else
+			{
+				this.spawnNewWorkerCreep(room);
+			}
 		}
 		else
 		{
 			//console.log('fuck');
 			//console.log(jobsController.getNumberOfAvailableStationaryJobs(room));
 			//console.log("ticksToLive" + room.memory.creeps.stationaryCreeps[0].ticksToLive);
-			if((jobsController.getNumberOfAvailableStationaryJobs(room) > 0 || room.memory.creeps.stationaryCreeps[0].ticksToLive < 40) && room.energyAvailable >= 1150)
+			if((numberOfStationaryCreeps < maximumNumberOfStationaryCreeps || room.memory.creeps.stationaryCreeps[0].ticksToLive < 54) && room.energyAvailable >= 1150)
 			{
 				let numberOfSpawns = room.memory.structures.spawnsArray.length;
 				let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
 				let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
 				spawn.createStationaryCreep(room);
 			}
-			if(numberOfStationaryCreeps == maximumNumberOfHarvesterStationaryCreeps)
+			console.log("numberOfStationaryCreeps:  " + numberOfStationaryCreeps + " maximumNumberOfStationaryCreeps: " + maximumNumberOfStationaryCreeps);
+			if(numberOfStationaryCreeps == maximumNumberOfStationaryCreeps)
 			{
-				if(( numberOfHaulerCreeps < maximumNumberOfContainerToStorageHaulerCreeps || room.memory.creeps.haulerCreeps[0].ticksToLive < 49) && room.energyAvailable >= 800)
+				console.log('haulerCreeps:              ' + numberOfHaulerCreeps + " maxHaulerCreeps:                 " + maximumNumberOfContainerHaulerCreeps);
+				if(( numberOfHaulerCreeps < maximumNumberOfContainerHaulerCreeps || room.memory.creeps.haulerCreeps[0].ticksToLive < 60) && room.energyAvailable >= 600)
 				{
 					let numberOfSpawns = room.memory.structures.spawnsArray.length;
 					let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
@@ -105,6 +125,7 @@ let RoomCreepsController =
 			while allowing resources to be used on other things
 			 */
 
+			/*
 			if(totalNumberOfWorkerCreeps == maximumNumberOfWorkerCreeps)
 			{
 				let creepToDie = this.getSmallestWorkerCreepClosestToDeath(room);
@@ -120,7 +141,7 @@ let RoomCreepsController =
 						this.spawnNewWorkerCreep(room);
 					}
 				}
-			}
+			}*/
 		}
 
 /*

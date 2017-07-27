@@ -5,12 +5,13 @@ require('Prototypes_Source')();
 
 let RoomController =
 {
-	run: function (room, DEFCON)
+	run: function (room)
 	{
+		room.memory.DEFCON = 5;
+
 		let roomLevel = room.level;
 		if (roomLevel >= 5)
 		{
-
 		}
 
 		roomExtensionsConstructionController.run(room);

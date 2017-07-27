@@ -15,11 +15,9 @@ var RoomJobsController =
 
 	scanWorkerJobs: function (room)
 	{
+		this.scanGeneralJobs(room);
 		this.scanWorkerConstructionJobs(room);
 		this.scanWorkerRepairJobs(room);
-		this.scanWorkerSupplyExtensionJobs(room);
-		this.scanWorkerSupplySpawnJobs(room);
-		this.scanWorkerSupplyTowerJobs(room);
 	},
 
 	scanWorkerConstructionJobs: function(room)
@@ -114,9 +112,17 @@ var RoomJobsController =
 		}
 	},
 
-	scanWorkerSupplyExtensionJobs: function (room)
+	scanGeneralJobs: function (room)
 	{
-		let supplyExtensionJobs = room.memory.jobs.workerJobBoard.routineJobs.supplyExtension;
+		this.scanGeneralSupplyExtensionJobs(room);
+		this.scanGeneralSupplySpawnJobs(room);
+		this.scanGeneralSupplyTowerJobs(room);
+		this.scanGeneralSupplyStorageJobs(room);
+	},
+
+	scanGeneralSupplyExtensionJobs: function (room)
+	{
+		let supplyExtensionJobs = room.memory.jobs.generalJobBoard.supplyExtension;
 
 		let extensionsArray = room.find(FIND_MY_STRUCTURES, {
 			filter: (structure) =>
@@ -125,27 +131,27 @@ var RoomJobsController =
 			}
 		});
 
-		//generate a WORKER job for each one provided one doesn't already exist
+		//generate a GENERAL job for each one provided one doesn't already exist
 		let extensionsCount = extensionsArray.length;
 		for (let x = 0; x < extensionsCount; x++)
 		{
 			let extension = extensionsArray[x];
 
-			if (extension.energy < extension.energyCapacity && !room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id])
+			if (extension.energy < extension.energyCapacity && !room.memory.jobs.generalJobBoard.supplyExtension[extension.id])
 			{
-				room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id] = {};
+				room.memory.jobs.generalJobBoard.supplyExtension[extension.id] = {};
 			}
 			if (extension.energy == extension.energyCapacity)
 			{
-				if (room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id])
+				if (room.memory.jobs.generalJobBoard.supplyExtension[extension.id])
 				{
-					delete room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[extension.id];
+					delete room.memory.jobs.generalJobBoard.supplyExtension[extension.id];
 				}
 			}
 		}
 	},
 
-	scanWorkerSupplySpawnJobs: function (room)
+	scanGeneralSupplySpawnJobs: function (room)
 	{
 		let spawnsArray = room.find(FIND_MY_STRUCTURES, {
 			filter: (structure) =>
@@ -161,21 +167,41 @@ var RoomJobsController =
 		{
 			let spawn = spawnsArray[x];
 
-			if (spawn.energy <= spawn.energyCapacity && !room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id])
+			if (spawn.energy <= spawn.energyCapacity && !room.memory.jobs.generalJobBoard.supplySpawn[spawn.id])
 			{
-				room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id] = {};
+				room.memory.jobs.generalJobBoard.supplySpawn[spawn.id] = {};
 			}
 			if (spawn.energy == spawn.energyCapacity)
 			{
-				if (room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id])
+				if (room.memory.jobs.generalJobBoard.supplySpawn[spawn.id])
 				{
-					delete room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[spawn.id];
+					delete room.memory.jobs.generalJobBoard.supplySpawn[spawn.id];
 				}
 			}
 		}
 	},
 
-	scanWorkerSupplyTowerJobs: function (room)
+	scanGeneralSupplyStorageJobs: function (room)
+	{
+		if(room.storage)
+		{
+			let storage = room.storage;
+
+			if( _.sum(storage.store) < storage.storeCapacity) // job complete && !room.memory.jobs.generalJobBoard.supplyStorage[storage.id])
+			{
+				room.memory.jobs.generalJobBoard.supplyStorage[storage.id] = {};
+			}
+			if (_.sum(storage.store) == storage.storeCapacity)
+			{
+				if (room.memory.jobs.generalJobBoard.supplyStorage[storage.id])
+				{
+					delete room.memory.jobs.generalJobBoard.supplyStorage[storage.id];
+				}
+			}
+		}
+	},
+
+	scanGeneralSupplyTowerJobs: function (room)
 	{
 		let towersArray = room.find(FIND_MY_STRUCTURES, {
 			filter: (structure) =>
@@ -191,15 +217,15 @@ var RoomJobsController =
 		{
 			let tower = towersArray[x];
 
-			if (tower.energy <= tower.energyCapacity && !room.memory.jobs.workerJobBoard.routineJobs.supplyTower[tower.id])
+			if (tower.energy <= tower.energyCapacity && !room.memory.jobs.generalJobBoard.supplyTower[tower.id])
 			{
-				room.memory.jobs.workerJobBoard.routineJobs.supplyTower[tower.id] = {};
+				room.memory.jobs.generalJobBoard.supplyTower[tower.id] = {};
 			}
 			if (tower.energy == tower.energyCapacity)
 			{
-				if (room.memory.jobs.workerJobBoard.routineJobs.supplyTower[tower.id])
+				if (room.memory.jobs.generalJobBoard.supplyTower[tower.id])
 				{
-					delete room.memory.jobs.workerJobBoard.routineJobs.supplyTower[tower.id];
+					delete room.memory.jobs.generalJobBoard.supplyTower[tower.id];
 				}
 			}
 		}
@@ -213,23 +239,23 @@ var RoomJobsController =
 		let storageCount = room.memory.structures.storageArray.length;
 
 		//delete hauler jobs first if objects disappeared...or there is no energy in containers.
-		for(let containerID in room.memory.jobs.haulerJobBoard.moveEnergyFromContainerToStorage)
+		for(let containerID in room.memory.jobs.haulerJobBoard.moveEnergyFromContainer)
 		{
 			if (!Game.getObjectById(containerID))
 			{
-				delete room.memory.jobs.haulerJobBoard.moveEnergyFromContainerToStorage[containerID];
+				delete room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[containerID];
 			}
 			else
 			{
 				if (Game.getObjectById(containerID).store[RESOURCE_ENERGY] == 0)
 				{
-					delete room.memory.jobs.haulerJobBoard.moveEnergyFromContainerToStorage[containerID];
+					delete room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[containerID];
 				}
 			}
 
 			if (storageCount == 0)
 			{
-				delete room.memory.jobs.haulerJobBoard.moveEnergyFromContainerToStorage[containerID];
+				delete room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[containerID];
 			}
 		}
 
@@ -244,14 +270,15 @@ var RoomJobsController =
 
 			for (let x = 0; x < structureContainersCount; x++)
 			{
-				if (!room.memory.jobs.haulerJobBoard.moveEnergyFromContainerToStorage[structureContainersArray[x].id])
+				if (!room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[structureContainersArray[x].id])
 				{
-					room.memory.jobs.haulerJobBoard.moveEnergyFromContainerToStorage[structureContainersArray[x].id] = {};
+					room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[structureContainersArray[x].id] = {};
 				}
 			}
 		}
 	},
 
+	/*
 	getNumberOfAvailableStationaryJobs: function (room)
 	{
 		let stationaryHarvesterJobs = room.memory.jobs.stationaryJobBoard.harvestEnergy;
@@ -280,6 +307,7 @@ var RoomJobsController =
 
 		return numberOfAvailableStationaryHarvesterJobs;
 	},
+	*/
 
 	scanStationaryJobs: function (room)
 	{

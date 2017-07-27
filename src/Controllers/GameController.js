@@ -1,18 +1,39 @@
 let roomController = require('Controllers_Room_RoomController');
 let roomJobsController = require('Controllers_Room_JobsController');
+let contructionDecorativeWallsController = require('Controllers_Room_Construction_DecorativeWallsController');
 
 let GameController =
 {
-	run: function (DEFCON)
+	run: function ()
 	{
-		if(DEFCON == 5) //PEACE TIME ... Focus on economy
+		let rooms = Game.rooms;
+		for (let roomName in Game.rooms)
 		{
-			let rooms = Game.rooms;
-			for (let roomName in Game.rooms)
+			let room = Game.rooms[roomName];
+			roomController.run(room);
+		}
+	},
+
+	scanFlags: function()
+	{
+		for (let name in Game.flags)
+		{
+			let flag = Game.flags[name];
+			let room = flag.room;
+
+			if(room != undefined)
 			{
-				let room = Game.rooms[roomName];
-				roomController.run(room, DEFCON);
+				if(flag.color == COLOR_PURPLE) //purple is claimer
+				{
+					//room.memory.flags.
+				}
 			}
+
+
+			//console.log(room);
+			//console.log(room.controller.level);
+			//if(room.controller.level)
+
 		}
 	},
 
@@ -25,6 +46,7 @@ let GameController =
 		}
 
 		this.scanStructures();
+		this.scanFlags();
 		this.scanCreeps();
 
 		for (let roomName in Game.rooms)
@@ -62,6 +84,19 @@ let GameController =
 			}
 
 			//scan walls
+
+			//decorative walls first
+			let decorativeWallsArray = contructionDecorativeWallsController.getWallCoordinatesOfRoom(room);
+			if(decorativeWallsArray != null)
+			{
+				let wallsCount = decorativeWallsArray.length;
+				for(let x=0; x<wallsCount; x++)
+				{
+					let decorativeWall = decorativeWallsArray[x];
+					room.memory.structures.mapArray[decorativeWall[0]][decorativeWall[1]] = 19;
+				}
+			}
+
 			//organize by lowest amount of strength
 
 			let structureWallsArray = room.find(FIND_STRUCTURES, {
@@ -72,8 +107,12 @@ let GameController =
 			for (let x = 0; x < structureWallsCount; x++)
 			{
 				let structureWall = structureWallsArray[x];
-				room.memory.structures.mapArray[structureWall.pos.x][structureWall.pos.y] = 18;
-				room.memory.structures.wallsArray.push(structureWall);
+
+				if(room.memory.structures.mapArray[structureWall.pos.x][structureWall.pos.y] == 0) // don't count decorative walls..
+				{
+					room.memory.structures.mapArray[structureWall.pos.x][structureWall.pos.y] = 18;
+					room.memory.structures.wallsArray.push(structureWall);
+				}
 			}
 		}
 
@@ -144,6 +183,9 @@ let GameController =
 					break;
 				case 'wall':
 					//added above... 18.. for reference here
+					break;
+				case 'decorativeWall':
+					//added above.. 19 for reference here
 					break;
 				default:
 					structure.room.memory.structures.mapArray[structure.pos.x][structure.pos.y] = 0;

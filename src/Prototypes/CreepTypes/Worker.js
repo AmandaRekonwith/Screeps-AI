@@ -15,11 +15,13 @@ module.exports = function ()
 	}
 	Creep.prototype.getRoutineJob = function ()
 	{
+		let DEFCON = this.room.memory.DEFCON;
+
 		let creepXPosition = this.pos.x;
 		let creepYPosition = this.pos.y;
 
 		let routineJobsArray = new Array();
-		for (let extensionID in this.room.memory.jobs.workerJobBoard.routineJobs.supplyExtension)
+		for (let extensionID in this.room.memory.jobs.generalJobBoard.supplyExtension)
 		{
 			let job = {
 				targetID: extensionID,
@@ -28,7 +30,7 @@ module.exports = function ()
 			routineJobsArray.push(job);
 		}
 
-		for (let spawnID in this.room.memory.jobs.workerJobBoard.routineJobs.supplySpawn)
+		for (let spawnID in this.room.memory.jobs.generalJobBoard.supplySpawn)
 		{
 			let job = {
 				targetID: spawnID,
@@ -37,7 +39,7 @@ module.exports = function ()
 			routineJobsArray.push(job);
 		}
 
-		for (let towerID in this.room.memory.jobs.workerJobBoard.routineJobs.supplyTower)
+		for (let towerID in this.room.memory.jobs.generalJobBoard.supplyTower)
 		{
 			let job = {
 				targetID: towerID,
@@ -46,24 +48,27 @@ module.exports = function ()
 			routineJobsArray.push(job);
 		}
 
-		for (let structureID in this.room.memory.jobs.workerJobBoard.routineJobs.repairStructure)
+		if(DEFCON != 5)
 		{
-			let job = {
-				targetID: structureID,
-				type: "repairStructure"
-			};
-			routineJobsArray.push(job);
-		}
+			for (let structureID in this.room.memory.jobs.workerJobBoard.routineJobs.repairStructure)
+			{
+				let job = {
+					targetID: structureID,
+					type: "repairStructure"
+				};
+				routineJobsArray.push(job);
+			}
 
-		let wall = this.room.memory.structures.wallsArray[0];
-		let wallJob = this.room.memory.jobs.workerJobBoard.routineJobs.repairWall[wall.id];
-		if(wallJob)
-		{
-			let job = {
-				targetID: wall.id,
-				type: "repairWall"
-			};
-			routineJobsArray.push(job);
+			let wall = this.room.memory.structures.wallsArray[0];
+			let wallJob = this.room.memory.jobs.workerJobBoard.routineJobs.repairWall[wall.id];
+			if (wallJob)
+			{
+				let job = {
+					targetID: wall.id,
+					type: "repairWall"
+				};
+				routineJobsArray.push(job);
+			}
 		}
 
 		if(!this.room.memory.structures.storageArray[0])
@@ -146,7 +151,7 @@ module.exports = function ()
 					}
 					break;
 				case "supplyExtension":
-					if(this.room.memory.jobs.workerJobBoard.routineJobs.supplyExtension[this.memory.job.targetID])
+					if(this.room.memory.jobs.generalJobBoard.supplyExtension[this.memory.job.targetID])
 					{
 						this.supplyExtension();
 					}
@@ -156,7 +161,7 @@ module.exports = function ()
 					}
 					break;
 				case "supplySpawn":
-					if(this.room.memory.jobs.workerJobBoard.routineJobs.supplySpawn[this.memory.job.targetID])
+					if(this.room.memory.jobs.generalJobBoard.supplySpawn[this.memory.job.targetID])
 					{
 						this.supplySpawn();
 					}
@@ -166,7 +171,7 @@ module.exports = function ()
 					}
 					break;
 				case "supplyTower":
-					if(this.room.memory.jobs.workerJobBoard.routineJobs.supplyTower[this.memory.job.targetID])
+					if(this.room.memory.jobs.generalJobBoard.supplyTower[this.memory.job.targetID])
 					{
 						this.supplyTower();
 					}

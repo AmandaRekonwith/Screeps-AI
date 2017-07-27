@@ -1,11 +1,11 @@
 module.exports = function ()
 {
-	Creep.prototype.runHaulerContainerToStorage = function ()
+	Creep.prototype.runHaulerMoveEnergyFromContainer = function ()
 	{
 		let room = this.room;
 		let containerID = this.memory.job.targetID;
 
-		if (room.memory.jobs.haulerJobBoard.moveEnergyFromContainerToStorage[containerID])
+		if (room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[containerID])
 		{
 			let currentTask = this.memory.currentTask;
 
@@ -24,27 +24,9 @@ module.exports = function ()
 				if (this.carry.energy == this.carryCapacity && this.memory.currentTask == "Getting Energy")
 				{
 					this.memory.currentTask = "Working";
-				}
-			}
-			else
-			{
-				if (this.memory.currentTask == "Working")
-				{
-					if (this.carry.energy > 0)
-					{
-						let storage = room.memory.structures.storageArray[0];
-						let action = this.transfer(storage, RESOURCE_ENERGY);
+					room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[containerID].creepID = null;
 
-						if (action == ERR_NOT_IN_RANGE)
-						{
-							this.moveTo(storage, {visualizePathStyle: {stroke: '#ffaa00'}});
-						}
-					}
-					else
-					{
-						this.memory.job = null;
-						this.memory.currentTask = "Getting Energy";
-					}
+					this.memory.job = null;
 				}
 			}
 		}

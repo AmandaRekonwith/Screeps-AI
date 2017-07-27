@@ -73,20 +73,27 @@ let BrainController =
 			if(!room.memory.jobs)
 			{
 				room.memory.jobs = {
+					claimerJobBoard: {
+						claimController: {},
+						reserveController: {}
+					},
+					generalJobBoard: {
+						supplyExtension: {},
+						supplySpawn: {},
+						supplyStorage: {},
+						supplyTower: {}
+					},
 					workerJobBoard: {
 						firstPriorityJobs: {
 							buildStructure: {}
 						},
 						routineJobs: {
 							repairWall: {},
-							repairStructure: {},
-							supplyExtension: {},
-							supplySpawn: {},
-							supplyTower: {}
+							repairStructure: {}
 						}
 					},
 					haulerJobBoard: {
-						moveEnergyFromContainerToStorage: {}
+						moveEnergyFromContainer: {}
 					},
 					stationaryJobBoard: {
 						mapArray: [],
@@ -109,6 +116,7 @@ let BrainController =
 
 			//These need to be scanned each tick... so clear them out every tick
 			room.memory.creeps = {
+				claimerCreeps: [],
 				workerCreeps: {
 					smallestWorkerCreepsArray: [],
 					smallerWorkerCreepsArray: [],
@@ -132,6 +140,11 @@ let BrainController =
 				wallsArray: []
 			};
 
+			room.memory.flags = {
+				breadCrumbFlagsArray: [],
+				claimControllerFlagsArray: [],
+				priorityFlagsArray: []
+			};
 
 			let structuresMapArray = new Array();
 			for (let x = 0; x < 50; x++)

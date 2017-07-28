@@ -65,6 +65,7 @@ module.exports = function ()
 			}
 			else
 			{
+
 				if(room.storage)
 				{
 					if(room.memory.jobs.generalJobBoard.supplyStorage[room.storage.id])
@@ -73,17 +74,18 @@ module.exports = function ()
 							targetID: room.storage.id,
 							type: "supplyStorage"
 						}
+
+						return job;
 					}
 				}
 			}
+
+			return null;
 		}
 	}
 
 	Creep.prototype.runHauler = function ()
 	{
-
-		console.log(this.memory.job);
-
 		if (this.memory.currentTask == "Getting Energy" || this.memory.currentTask == null)
 		{
 			if(this.memory.job == null || !this.memory.job)

@@ -116,7 +116,11 @@ let BrainController =
 
 			//These need to be scanned each tick... so clear them out every tick
 			room.memory.creeps = {
-				claimerCreeps: [],
+				remoteCreeps: {
+					claimerCreepsArray: [],
+					remoteBuildStructureCreepsArray: [],
+					remoteUpgradeControllerCreepsArray: []
+				},
 				workerCreeps: {
 					smallestWorkerCreepsArray: [],
 					smallerWorkerCreepsArray: [],
@@ -141,9 +145,9 @@ let BrainController =
 			};
 
 			room.memory.flags = {
-				breadCrumbFlagsArray: [],
-				claimControllerFlagsArray: [],
-				priorityFlagsArray: []
+				claimController: {},
+				remoteBuildStructure: {},
+				remoteUpgradeController: {}
 			};
 
 			let structuresMapArray = new Array();

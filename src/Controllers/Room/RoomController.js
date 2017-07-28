@@ -7,16 +7,34 @@ let RoomController =
 {
 	run: function (room)
 	{
-		room.memory.DEFCON = 5;
-
-		let roomLevel = room.level;
-		if (roomLevel >= 5)
+		if(room != undefined)
 		{
-		}
+			let controller = room.controller;
+			room.memory.DEFCON = 5;
 
-		roomExtensionsConstructionController.run(room);
-		creepsController.spawnCreeps(room);
-		creepsController.run(room);
+			if(controller != undefined)
+			{
+				let roomControllerLevel = controller.level;
+				if (roomControllerLevel < 5)
+				{
+					room.memory.DEFCON = 4;
+				}
+
+				if (roomControllerLevel > 0)
+				{
+					if(room.memory.structures.spawnsArray.length > 0)
+					{
+						roomExtensionsConstructionController.run(room);
+						if (room.memory.structures.spawnsArray.length > 0)
+						{
+							creepsController.spawnCreeps(room);
+						}
+					}
+				}
+			}
+
+			creepsController.run(room);
+		}
 	},
 
 	scanRoomEnvironment: function (room)

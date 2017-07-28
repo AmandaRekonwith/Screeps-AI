@@ -131,12 +131,54 @@ module.exports = function ()
 		{
 			var body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
 				CARRY, CARRY,
-				MOVE];
+				MOVE, MOVE];
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				type: "stationary",
 				currentTask: null,
 				energySource: null,
+				job: null
+			});
+		};
+
+	//650 energy required, 1 claimer part, 1 move part.
+	StructureSpawn.prototype.createClaimerCreep =
+		function ()
+		{
+			var body = [CLAIM, MOVE];
+			var creepName = controllerCreepsNameGenerator.getName();
+			this.createCreep(body, creepName, {
+				type: "claimer",
+				currentTask: null,
+				job: null
+			});
+		};
+
+	//250 energy required, 1 carry part, 2 move parts, 1 work part.
+	StructureSpawn.prototype.createRemoteUpgradeControllerCreep =
+		function ()
+		{
+			var body = [CARRY, MOVE, MOVE, WORK];
+			var creepName = controllerCreepsNameGenerator.getName();
+			this.createCreep(body, creepName, {
+				type: "remoteUpgradeController",
+				currentTask: null,
+				job: null
+			});
+		};
+
+	//1450 energy required, 3 work parts, 13 move parts, 10 carry parts.
+	StructureSpawn.prototype.createRemoteBuildStructureCreep =
+		function ()
+		{
+			var body = [WORK, WORK, WORK,
+				CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
+				MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
+			];
+			var creepName = controllerCreepsNameGenerator.getName();
+			this.createCreep(body, creepName, {
+				type: "remoteBuildStructure",
+				currentTask: null,
 				job: null
 			});
 		};

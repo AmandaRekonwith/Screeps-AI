@@ -10,12 +10,41 @@ let GameController =
 		for (let roomName in Game.rooms)
 		{
 			let room = Game.rooms[roomName];
+
 			roomController.run(room);
 		}
 	},
 
 	scanFlags: function()
 	{
+		for (let roomName in Game.rooms)
+		{
+			let room = Game.rooms[roomName];
+			for (let flagName in room.memory.flags.claimController)
+			{
+				if(!Game.flags[flagName])
+				{
+					delete  room.memory.flags.claimController[flagName];
+				}
+			}
+
+			for (let flagName in room.memory.flags.remoteBuildStructure)
+			{
+				if(!Game.flags[flagName])
+				{
+					delete  room.memory.flags.remoteBuildStructure[flagName];
+				}
+			}
+
+			for (let flagName in room.memory.flags.remoteUpgradeController)
+			{
+				if(!Game.flags[flagName])
+				{
+					delete  room.memory.flags.remoteUpgradeController[flagName];
+				}
+			}
+		}
+
 		for (let name in Game.flags)
 		{
 			let flag = Game.flags[name];
@@ -23,17 +52,30 @@ let GameController =
 
 			if(room != undefined)
 			{
-				if(flag.color == COLOR_PURPLE) //purple is claimer
+				if(flag.color == COLOR_PURPLE)
 				{
-					//room.memory.flags.
+					if(!room.memory.flags.claimController[flag.name])
+					{
+						room.memory.flags.claimController[flag.name] = {};
+					}
+				}
+
+				if(flag.color == COLOR_YELLOW)
+				{
+					if(!room.memory.flags.remoteBuildStructure[flag.name])
+					{
+						room.memory.flags.remoteBuildStructure[flag.name] = {};
+					}
+				}
+
+				if(flag.color == COLOR_RED)
+				{
+					if(!room.memory.flags.remoteUpgradeController[flag.name])
+					{
+						room.memory.flags.remoteUpgradeController[flag.name] = {};
+					}
 				}
 			}
-
-
-			//console.log(room);
-			//console.log(room.controller.level);
-			//if(room.controller.level)
-
 		}
 	},
 
@@ -205,6 +247,10 @@ let GameController =
 
 		let lowestAmountOfTimeLeftToLiveOfHaulerCreeps = 1500;
 
+		let lowestAmountOfTimeLeftToLiveOfClaimerCreeps = 1500;
+		let lowestAmountOfTimeLeftToLiveOfRemoteBuildStructureCreeps = 1500;
+		let lowestAmountOfTimeLeftToLiveOfRemoteUpgradeControllerCreeps = 1500;
+
 		let lowestAmountOfTimeLeftToLiveOfStationaryCreeps = 1500;
 		let creepToDie;
 
@@ -315,6 +361,39 @@ let GameController =
 					else
 					{
 						room.memory.creeps.stationaryCreeps.push(creep);
+					}
+					break;
+				case 'claimer':
+					if (creep.ticksToLive < lowestAmountOfTimeLeftToLiveOfClaimerCreeps)
+					{
+						room.memory.creeps.remoteCreeps.claimerCreepsArray.unshift(creep);
+						lowestAmountOfTimeLeftToLiveOfClaimerCreeps = creep.ticksToLive;
+					}
+					else
+					{
+						room.memory.creeps.remoteCreeps.claimerCreepsArray.push(creep);
+					}
+					break;
+				case 'remoteBuildStructure':
+					if (creep.ticksToLive < lowestAmountOfTimeLeftToLiveOfRemoteBuildStructureCreeps)
+					{
+						room.memory.creeps.remoteCreeps.remoteBuildStructureCreepsArray.unshift(creep);
+						lowestAmountOfTimeLeftToLiveOfRemoteBuildStructureCreeps = creep.ticksToLive;
+					}
+					else
+					{
+						room.memory.creeps.remoteCreeps.remoteBuildStructureCreepsArray.push(creep);
+					}
+					break;
+				case 'remoteUpgradeController':
+					if (creep.ticksToLive < lowestAmountOfTimeLeftToLiveOfRemoteUpgradeControllerCreeps)
+					{
+						room.memory.creeps.remoteCreeps.remoteUpgradeControllerCreepsArray.unshift(creep);
+						lowestAmountOfTimeLeftToLiveOfRemoteUpgradeControllerCreeps = creep.ticksToLive;
+					}
+					else
+					{
+						room.memory.creeps.remoteCreeps.remoteUpgradeControllerCreepsArray.push(creep);
 					}
 					break;
 				default:

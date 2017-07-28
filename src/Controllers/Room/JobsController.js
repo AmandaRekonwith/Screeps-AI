@@ -11,6 +11,7 @@ var RoomJobsController =
 		this.scanWorkerJobs(room);
 		this.scanHaulerJobs(room);
 		this.scanStationaryJobs(room);
+		//this.scanClaimerJobs(room);
 	},
 
 	scanWorkerJobs: function (room)

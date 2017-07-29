@@ -37,7 +37,7 @@ let RoomCreepsController =
 	spawnCreeps: function (room)
 	{
 		let DEFCON = room.memory.DEFCON;
-		DEFCON = 4;
+		console.log("DEFCON: " + DEFCON);
 
 		let spawn = room.memory.structures.spawnsArray[0];
 		let energyAvailable = room.energyAvailable;
@@ -118,10 +118,31 @@ let RoomCreepsController =
 		}
 		else
 		{
+			if(room.memory.DEFCON < 4)
+			{
+				if (totalNumberOfWorkerCreeps == maximumNumberOfWorkerCreeps)
+				{
+					let creepToDie = this.getSmallestWorkerCreepClosestToDeath(room);
+
+					if (creepToDie && creepToDie.ticksToLive < 75)
+					{
+						//revising the logic here...
+						//spawn if size BIGGER than creep to be suicided...
+						let energyCostOfCreepToDie = this.getEnergyCostOfWorkerCreepOfCertainSize(creepToDie.memory.size);
+						if (room.energyAvailable >= energyCostOfCreepToDie)
+						{
+							creepToDie.suicide();
+							this.spawnNewWorkerCreep(room);
+						}
+					}
+				}
+			}
+
+
 			//console.log('fuck');
 			//console.log(jobsController.getNumberOfAvailableStationaryJobs(room));
 			//console.log("ticksToLive" + room.memory.creeps.stationaryCreeps[0].ticksToLive);
-			if((numberOfStationaryCreeps < maximumNumberOfStationaryCreeps || room.memory.creeps.stationaryCreeps[0].ticksToLive < 42) && room.energyAvailable >= 1200)
+			if ((numberOfStationaryCreeps < maximumNumberOfStationaryCreeps || room.memory.creeps.stationaryCreeps[0].ticksToLive < 42) && room.energyAvailable >= 1200)
 			{
 				let numberOfSpawns = room.memory.structures.spawnsArray.length;
 				let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
@@ -129,10 +150,10 @@ let RoomCreepsController =
 				spawn.createStationaryCreep(room);
 			}
 			console.log("numberOfStationaryCreeps:  " + numberOfStationaryCreeps + " maximumNumberOfStationaryCreeps: " + maximumNumberOfStationaryCreeps);
-			if(numberOfStationaryCreeps == maximumNumberOfStationaryCreeps)
+			if (numberOfStationaryCreeps == maximumNumberOfStationaryCreeps)
 			{
 				console.log('haulerCreeps:              ' + numberOfHaulerCreeps + " maxHaulerCreeps:                 " + maximumNumberOfContainerHaulerCreeps);
-				if(( numberOfHaulerCreeps < maximumNumberOfContainerHaulerCreeps || room.memory.creeps.haulerCreeps[0].ticksToLive < 60) && room.energyAvailable >= 1000)
+				if (( numberOfHaulerCreeps < maximumNumberOfContainerHaulerCreeps || room.memory.creeps.haulerCreeps[0].ticksToLive < 60) && room.energyAvailable >= 1000)
 				{
 					let numberOfSpawns = room.memory.structures.spawnsArray.length;
 					let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
@@ -141,10 +162,10 @@ let RoomCreepsController =
 				}
 
 				//now spawn a claimer if necessary
-				if(numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps)
+				if (numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps)
 				{
 					console.log('numberOfClaimerCreeps: ' + numberOfClaimerCreeps + " maximumNumberOfClaimerCreeps: " + maximumNumberOfClaimerCreeps);
-					if(numberOfClaimerCreeps < maximumNumberOfClaimerCreeps)
+					if (numberOfClaimerCreeps < maximumNumberOfClaimerCreeps)
 					{
 						numberOfSpawns = room.memory.structures.spawnsArray.length;
 						let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
@@ -153,7 +174,7 @@ let RoomCreepsController =
 					}
 
 					console.log('numberOfRemoteBuildStructureCreeps: ' + numberOfRemoteBuildStructureCreeps + " maximumNumberOfRemoteBuildStructureCreeps: " + maximumNumberOfRemoteBuildStructureCreeps);
-					if(numberOfRemoteBuildStructureCreeps < maximumNumberOfRemoteBuildStructureCreeps)
+					if (numberOfRemoteBuildStructureCreeps < maximumNumberOfRemoteBuildStructureCreeps)
 					{
 						numberOfSpawns = room.memory.structures.spawnsArray.length;
 						let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
@@ -162,64 +183,16 @@ let RoomCreepsController =
 					}
 
 					console.log('numberOfRemoteUpgradeControllerCreeps: ' + numberOfRemoteUpgradeControllerCreeps + " maximumNumberOfRemoteUpgradeControllerCreeps: " + maximumNumberOfRemoteUpgradeControllerCreeps);
-					if(numberOfRemoteUpgradeControllerCreeps < maximumNumberOfRemoteUpgradeControllerCreeps)
+					if (numberOfRemoteUpgradeControllerCreeps < maximumNumberOfRemoteUpgradeControllerCreeps)
 					{
 						numberOfSpawns = room.memory.structures.spawnsArray.length;
 						let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
 						let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
-						spawn.createRemoteUpgradeControllerCreep(room);
+						//spawn.createRemoteUpgradeControllerCreep(room);
 					}
 				}
 			}
-
-			/*
-			this code will continually upgrade creep size... the logic is that...
-			it first checks for a creep that is near death, and forces it to suicide.
-			then spawns the biggest creep it can.
-
-			if... no creeps are near death, code should just wait until the room hits 1450 available energy,
-			then spawn the 'biggest' creep worker type, IF not all workers are of the 'biggest' type.
-
-			ideally, this should allow an efficient continual spawning of the worker creep population,
-			while allowing resources to be used on other things
-			 */
-
-			/*
-			if(totalNumberOfWorkerCreeps == maximumNumberOfWorkerCreeps)
-			{
-				let creepToDie = this.getSmallestWorkerCreepClosestToDeath(room);
-
-				if (creepToDie && creepToDie.ticksToLive < 100)
-				{
-					//revising the logic here...
-					//spawn if size BIGGER than creep to be suicided...
-					let energyCostOfCreepToDie = this.getEnergyCostOfWorkerCreepOfCertainSize(creepToDie.memory.size);
-					if (room.energyAvailable >= energyCostOfCreepToDie)
-					{
-						creepToDie.suicide();
-						this.spawnNewWorkerCreep(room);
-					}
-				}
-			}*/
 		}
-
-/*
-		let stationaryHarvesterJobs = room.memory.jobs.stationaryJobBoard.harvester;
-		let stationaryHarvesterJobsCount = stationaryHarvesterJobs.length;
-
-		if (totalNumberOfStationaryCreeps < stationaryHarvesterJobsCount && energyAvailable >= 1400)
-		{
-			let derp = spawn.createStationaryHarvesterCreep();
-		}
-
-		let haulerJobs = room.memory.jobs.haulerJobBoard.jobs;
-		let haulerJobsCount = haulerJobs.length;
-
-		if (totalNumberOfHaulerCreeps < haulerJobsCount && energyAvailable >= 1000)
-		{
-			let derp = spawn.createHaulerCreep();
-		}
-		*/
 	},
 
 	getSmallestWorkerCreepClosestToDeath: function (room)

@@ -101,11 +101,12 @@ let GameController =
 
 	scanStructures: function()
 	{
-		//find containers
+
 		for (let roomName in Game.rooms)
 		{
 			let room = Game.rooms[roomName];
 
+			//find containers
 			/*
 			const containersWithEnergy = room.find(FIND_STRUCTURES, {
 				filter: (i) => i.structureType == STRUCTURE_CONTAINER &&
@@ -201,6 +202,7 @@ let GameController =
 					break;
 				case 'tower':
 					structure.room.memory.structures.mapArray[structure.pos.x][structure.pos.y] = 10;
+					structure.room.memory.structures.towersArray.push(structure);
 					break;
 				case 'observer':
 					structure.room.memory.structures.mapArray[structure.pos.x][structure.pos.y] = 11;

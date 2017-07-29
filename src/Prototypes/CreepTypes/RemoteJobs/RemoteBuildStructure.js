@@ -13,11 +13,21 @@ module.exports = function ()
 				let action = this.moveTo(flag.pos, {visualizePathStyle: {stroke: '#ffffff'}});
 
 				let constructionSite = this.room.lookForAt(LOOK_CONSTRUCTION_SITES, flag.pos);
-
 				if (constructionSite)
 				{
-					let target = this.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
-					let action = this.build(target);
+					let action = this.build(constructionSite[0]);
+				}
+
+				let structure = this.room.lookForAt(LOOK_STRUCTURES, flag.pos);
+				if (structure)
+				{
+					let action2 = this.repair(structure[0]);
+				}
+
+				let controller = this.room.controller;
+				if (controller)
+				{
+					let action3 = this.upgradeController(controller);
 				}
 
 				if(this.carry[RESOURCE_ENERGY] == 0)

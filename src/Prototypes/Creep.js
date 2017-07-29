@@ -35,7 +35,7 @@ module.exports = function ()
 			{
 				let energySource = energySourcesArray[z];
 
-				if (energySource.energy > 0 && energySource.numberOfCreepsCurrentlyHarvesting < energySource.numberOfAdjacentOpenTerrainTiles)
+				if (energySource.energy > 0 && (energySource.numberOfCreepsCurrentlyHarvesting < energySource.numberOfAdjacentOpenTerrainTiles))
 				{
 					this.memory.energySource = {type: "source", targetID: energySource.id};
 					this.memory.currentTask = "Getting Energy";

@@ -12,7 +12,8 @@ module.exports = function ()
 		}
 
 		return this.getRoutineJob(); //if no first priority jobs....
-	}
+	},
+
 	Creep.prototype.getRoutineJob = function ()
 	{
 		let DEFCON = this.room.memory.DEFCON;
@@ -48,7 +49,7 @@ module.exports = function ()
 			routineJobsArray.push(job);
 		}
 
-		if(DEFCON != 5)
+		if(DEFCON < 3)
 		{
 			for (let structureID in this.room.memory.jobs.workerJobBoard.routineJobs.repairStructure)
 			{
@@ -59,15 +60,18 @@ module.exports = function ()
 				routineJobsArray.push(job);
 			}
 
-			let wall = this.room.memory.structures.wallsArray[0];
-			let wallJob = this.room.memory.jobs.workerJobBoard.routineJobs.repairWall[wall.id];
-			if (wallJob)
+			if(this.room.memory.structures.wallsArray.length > 0)
 			{
-				let job = {
-					targetID: wall.id,
-					type: "repairWall"
-				};
-				routineJobsArray.push(job);
+				let wall = this.room.memory.structures.wallsArray[0];
+				let wallJob = this.room.memory.jobs.workerJobBoard.routineJobs.repairWall[wall.id];
+				if (wallJob)
+				{
+					let job = {
+						targetID: wall.id,
+						type: "repairWall"
+					};
+					routineJobsArray.push(job);
+				}
 			}
 		}
 
@@ -98,7 +102,7 @@ module.exports = function ()
 
 		let room = this.room;
 
-		let percentageChanceOfWorkingFirstPriorityJob = 90;
+		let percentageChanceOfWorkingFirstPriorityJob = 80;
 
 		let typeOfJobRandomizer = Math.floor((Math.random() * 100));
 

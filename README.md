@@ -40,6 +40,7 @@ Basically, there is an additional group of creeps titled "Remote". If they detec
 Purple: Claimer
 Red: Upgrade Controller
 Yellow: Build, Repair, or Upgrade whatever structure is flagged.
+
 These creeps require their colored flags to be placed on the exits of every room, and on the their final destination in order to function.
 Essentially they are following a 'bread crumb' trail to their desired destination.
 7. Towers attack the closest hostile creep. This needs further development.
@@ -75,14 +76,6 @@ A rough, general map of my AI at this point is as follows:
 -----------------------------------------------
 CURRENT HANGUPS / PROBLEMS... 
 
-Since I've reworked my code this last time, I completely reworked how a number of tasks function.
-This has resulted in multiple more items being stored in memory and thus the code relying on memory objects.
-
-I'm currently struggling to shift my currently running code on the main screeps server with all of the changes I have made.
-The new code works in the simulation, but does not work if thrown into a running environment as of yet.
-I need to debug some memory storage issues to make it simply 'work' once activated in a Screeps branch folder.
-
-
 Some hangups I have had in the process of getting to this point, that are not explicitly described in the resources listed above:
 
 1.
@@ -114,6 +107,35 @@ On mac, I had done it before using a program called spark (https://www.shadowlab
 
 NOTE: This method does NOT WORK with a private server.
 The referenced Grunt guide includes instructions on how to work with a private server using RSync, but I have not gotten this working yet. I highly recommend www.screepting.tk as an alternative to the main game server for those not wishing to buy a subscription or looking for a slightly better testing ground than the simulation sandbox. 
+
+3. 
+Using screepsplus I ran into a bit of an amateurish problem of not understanding how to get it to work.
+The instructions on their site are as follows, with additional instructions provided by me in parentheses and following the steps outlined:
+
+"Once you register your agent on screeps plus, the instructions are as follows:
+Download and extract agent from GitHub (i used a fresh folder at my computer's base hard drive, c:\ScreepsAgent)
+run `npm install`
+Your token:p
+Copy to Clipboard
+edit config.js with your credentials
+(when you run app.js from the console the first time, it tells you where your config.js file that you need to modify your credentials in, is located)
+run `node app.js` (this runs in the background, constantly polling the screeps server)
+add stats population in screeps. Example: https://github.com/LispEngineer/screeps (see below)
+go Goto Grafana 
+Enjoy your new graphs :)"
+
+For right now, I stole the code from LispEngineer, and combined the javascript files he used into one single class file named "StatsController.js".
+Then, at the end of my main.js, I added this tiny block of code:
+"for (let roomName in Game.rooms)
+{
+      let stats = statsController.collectStats(roomName);
+}
+
+I also lifted LispEngineer's graphana.json file,
+then imported this into the graphana dashboard.
+
+I ended up with something that looks like this:
+
 
 -------------------------------------------------
 

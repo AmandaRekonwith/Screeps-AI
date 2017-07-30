@@ -1,10 +1,3 @@
-<b>PLEASE NOTE</b> THERE IS A HORRIBLE BUG IN MY CODE AT THE MOMENT THAT I AM TRYING TO ROOT OUT</b>
-All updates will cease until I find the cause.
-Basically, some 'routine' jobs aren't being sent back to the pool when completed.
-More specifically, they think they are being carried out by a creep who is assigned to a different task.
-It is causing roughly half of my extensions to be unusused.
-Will update when I know more.
-
 # Screeps-AI
 <img src="http://cdn.akamai.steamstatic.com/steam/apps/464350/header.jpg?t=1494837632">
 My evolving AI for Screeps
@@ -37,9 +30,22 @@ Briefly, what my code currently does:
 2. It upgrades the room controller.
 3. It spawns progressively larger creeps depending on the room level.
 4. It builds extensions automatically (and deletes them if the room level drops)
-5. Worker creeps automatically respond and construct placed job sites, but do not yet automate the construction of roads, containers, storage, turrets, (basically anything except extensions at this point).
+5. Worker creeps automatically respond and construct placed job sites, but do not yet automate the construction of roads, containers, storage, turrets, (basically anything except extensions at this point). They must be manually placed.
+6. Once a room is above level 5 and two containers are placed in the correct positions near an energy source,
+'stationary' creeps will begin to spawn, replacing the duties of worker creeps' harvesting.
+These will harvest and deposit resources in a container.
+Then, if a storage structure exists, hauler creeps will spawn and transport the energy to .. either directly to the storage if DEFCON is lower than 5, for other worker creeps to take and use as needed, or they will travel about supplying the spawn and extensions before the storage, thus maximizing the total energy collected and stored, and minimizing the need for multiple (if any) worker creeps.
+7. A mechanism for expanding to multiple rooms has been implemented but needs much refinement.
+Basically, there is an additional group of creeps titled "Remote". If they detect an appropriately colored flag placed in the room, they spawn.
+Purple: Claimer
+Red: Upgrade Controller
+Yellow: Build, Repair, or Upgrade whatever structure is flagged.
 
-That's about it for right now . .  . NOTE: CODING FOR DEFENSIVE MEASURES HAS BEEN SCRAPPED AT THE MOMENT while I rework it.
+These creeps require their colored flags to be placed on the exits of every room, and on the their final destination in order to function.
+Essentially they are following a 'bread crumb' trail to their desired destination.
+7. Towers attack the closest hostile creep. This needs further development.
+8. Rudimentary stats are now being recorded and displayed in Graphana, with the help of 
+https://screepspl.us/ and the work done by https://github.com/LispEngineer/screeps.
 
 -----------------------------------------------
 I hope that my code is easily understandable and extensible for anyone else's implementation. 

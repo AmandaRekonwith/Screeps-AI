@@ -1,6 +1,6 @@
 module.exports = function ()
 {
-	Creep.prototype.getEnergy = function ()
+	Creep.prototype.getRemoteEnergy = function ()
 	{
 		let energySource = null;
 		let action = null;
@@ -12,8 +12,17 @@ module.exports = function ()
 		}
 		else
 		{
-			energySource = this.pos.findClosestByRange(FIND_SOURCES);
-			action = this.harvest(energySource);
+			if (this.memory.energySource == null)
+			{
+				let energySources = this.room.find(FIND_SOURCES);
+				let randomSource = Math.floor(Math.random() * energySources.length);
+				this.memory.energySource = energySources[randomSource].id;
+			}
+			else
+			{
+				energySource = Game.getObjectById(this.memory.energySource);
+				action = this.harvest(energySource);
+			}
 		}
 
 		if (action == ERR_NOT_IN_RANGE)
@@ -76,23 +85,27 @@ module.exports = function ()
 	{
 		if(this.memory.currentTask == null || this.memory.currentTask == "Getting Energy")
 		{
-			this.getEnergy();
+			this.getRemoteEnergy();
 		}
 
 		if(this.memory.currentTask == "Working")
 		{
 			this.memory.job = this.getRemoteJob();
-			switch (this.memory.job.type)
+
+			if(this.memory.job != null)
 			{
-				case 'claimController':
-					this.runClaimController();
-					break;
-				case 'remoteBuildStructure':
-					this.runRemoteBuildStructure();
-					break;
-				case 'remoteUpgradeController':
-					this.runRemoteUpgradeController();
-					break;
+				switch (this.memory.job.type)
+				{
+					case 'claimController':
+						this.runClaimController();
+						break;
+					case 'remoteBuildStructure':
+						this.runRemoteBuildStructure();
+						break;
+					case 'remoteUpgradeController':
+						this.runRemoteUpgradeController();
+						break;
+				}
 			}
 		}
 	}

@@ -283,7 +283,7 @@ var RoomJobsController =
 	getNumberOfAvailableStationaryJobs: function (room)
 	{
 		let stationaryHarvesterJobs = room.memory.jobs.stationaryJobBoard.harvestEnergy;
-		let continuouslyUpgradeControllerJobs = room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController;
+		let manageStorageAndTerminalJobs = room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal;
 
 		let numberOfAvailableStationaryHarvesterJobs = 0;
 		for (let energySourceID in stationaryHarvesterJobs)
@@ -296,11 +296,11 @@ var RoomJobsController =
 			}
 		}
 
-		for (let energySourceID in continuouslyUpgradeControllerJobs)
+		for (let energySourceID in manageStorageAndTerminalJobs)
 		{
-			let continuouslyUpgradeControllerJob = continuouslyUpgradeControllerJobs[energySourceID];
+			let manageStorageAndTerminalJob = manageStorageAndTerminalJobs[energySourceID];
 
-			if (continuouslyUpgradeControllerJob.creepID == null && continuouslyUpgradeControllerJob.active == false)
+			if (manageStorageAndTerminalJob.creepID == null && manageStorageAndTerminalJob.active == false)
 			{
 				numberOfAvailableStationaryHarvesterJobs += 1;
 			}
@@ -313,42 +313,42 @@ var RoomJobsController =
 	scanStationaryJobs: function (room)
 	{
 		this.scanHarvestEnergyJobs(room);
-		this.scanStationaryContinuouslyUpgradeControllerJobs(room);
+		this.scanStationaryManageStorageAndTerminalJobs(room);
 	},
 
-	scanStationaryContinuouslyUpgradeControllerJobs: function (room)
+	scanStationaryManageStorageAndTerminalJobs: function (room)
 	{
-		let stationaryContinuouslyUpgradeControllerJobs = room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController;
+		let manageStorageAndTerminalJobs = room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal;
 
-		let numberOfStationaryContinuouslyUpgradeControllerJobsActive = 0;
-		for (let energySourceID in stationaryContinuouslyUpgradeControllerJobs)
+		let numberOfStationaryManageStorageAndTerminalJobsActive = 0;
+		for (let energySourceID in manageStorageAndTerminalJobs)
 		{
 			let energySource = Game.getObjectById(energySourceID);
 			if(energySource) //if the storage container exists... then continue... if not.. make sure the job is deleted.
 			{
-				let stationaryContinuouslyUpgradeControllerJob = room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController[energySourceID];
-				let creepID = stationaryContinuouslyUpgradeControllerJob.creepID;
+				let stationaryManageStorageAndTerminalJob = room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[energySourceID];
+				let creepID = stationaryManageStorageAndTerminalJob.creepID;
 
 				if (creepID != null)
 				{
 					let creep = Game.getObjectById(creepID);
-					if (stationaryContinuouslyUpgradeControllerJob.active == true && !creep)
+					if (stationaryManageStorageAndTerminalJob.active == true && !creep)
 					{
-						room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController[energySourceID].active = false;
-						room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController[energySourceID].creepID = null;
+						room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[energySourceID].active = false;
+						room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[energySourceID].creepID = null;
 					} //if creep died, reset job active to false
 					else
 					{
-						if (stationaryContinuouslyUpgradeControllerJob.active == true && creep)
+						if (stationaryManageStorageAndTerminalJob.active == true && creep)
 						{
-							numberOfStationaryContinuouslyUpgradeControllerJobsActive += 1;
+							numberOfStationaryManageStorageAndTerminalJobsActive += 1;
 						}
 					}
 				}
 			}
 			else
 			{
-				delete room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController[energySourceID];
+				delete room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[energySourceID];
 			}
 		}
 
@@ -356,7 +356,7 @@ var RoomJobsController =
 		if(room.memory.structures.storageArray.length > 0)
 		{
 			let energySourceID = room.memory.structures.storageArray[0].id;
-			if(!room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController[energySourceID])
+			if(!room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[energySourceID])
 			{
 				let energySourceID = room.memory.structures.storageArray[0].id;
 				let energySource = Game.getObjectById(energySourceID);
@@ -371,12 +371,12 @@ var RoomJobsController =
 
 				let jobPosition = {x: storagePositionX, y: storagePositionY - 1};
 
-				let continuouslyUpgradeControllerJob = {};
-				continuouslyUpgradeControllerJob.pos = jobPosition;
-				continuouslyUpgradeControllerJob.active = false;
-				continuouslyUpgradeControllerJob.creepID = null;
+				let manageStorageAndTerminalJob = {};
+				manageStorageAndTerminalJob.pos = jobPosition;
+				manageStorageAndTerminalJob.active = false;
+				manageStorageAndTerminalJob.creepID = null;
 
-				room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController[energySourceID] = continuouslyUpgradeControllerJob;
+				room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[energySourceID] = manageStorageAndTerminalJob;
 			}
 		}
 	},

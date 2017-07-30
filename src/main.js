@@ -1,4 +1,5 @@
-var controllerBrain = require('Controllers_BrainController');
+var statsController = require('Controllers_StatsController');
+var brainController = require('Controllers_BrainController');
 //require('Libraries_XMLHttpRequest');
 //let require('http://www.google.com/');
 
@@ -11,8 +12,8 @@ module.exports.loop = function ()
 
     //var http = require('http');
 
-    controllerBrain.processStimuli();
-    controllerBrain.takeAction();
+    brainController.processStimuli();
+    brainController.takeAction();
 
     for (let roomName in Game.rooms)
     {
@@ -34,4 +35,8 @@ module.exports.loop = function ()
         }
     }
 
+    for (let roomName in Game.rooms)
+    {
+        let stats = statsController.collectStats(roomName);
+    }
 }

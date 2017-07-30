@@ -49,31 +49,29 @@ module.exports = function ()
 			routineJobsArray.push(job);
 		}
 
-		if(DEFCON < 3)
+		for (let structureID in this.room.memory.jobs.workerJobBoard.routineJobs.repairStructure)
 		{
-			for (let structureID in this.room.memory.jobs.workerJobBoard.routineJobs.repairStructure)
+			let job = {
+				targetID: structureID,
+				type: "repairStructure"
+			};
+			routineJobsArray.push(job);
+		}
+
+		/*
+		if(this.room.memory.structures.wallsArray.length > 0)
+		{
+			let wall = this.room.memory.structures.wallsArray[0];
+			let wallJob = this.room.memory.jobs.workerJobBoard.routineJobs.repairWall[wall.id];
+			if (wallJob)
 			{
 				let job = {
-					targetID: structureID,
-					type: "repairStructure"
+					targetID: wall.id,
+					type: "repairWall"
 				};
 				routineJobsArray.push(job);
 			}
-
-			if(this.room.memory.structures.wallsArray.length > 0)
-			{
-				let wall = this.room.memory.structures.wallsArray[0];
-				let wallJob = this.room.memory.jobs.workerJobBoard.routineJobs.repairWall[wall.id];
-				if (wallJob)
-				{
-					let job = {
-						targetID: wall.id,
-						type: "repairWall"
-					};
-					routineJobsArray.push(job);
-				}
-			}
-		}
+		}*/
 
 		if(!this.room.memory.structures.storageArray[0])
 		{

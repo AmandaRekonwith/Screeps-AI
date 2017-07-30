@@ -21,7 +21,7 @@ require('Prototypes_CreepTypes_WorkerJobs_RepairWall')();
 require('Prototypes_CreepTypes_WorkerJobs_UpgradeController')();
 
 require('Prototypes_CreepTypes_Stationary')();
-require('Prototypes_CreepTypes_StationaryJobs_ContinuouslyUpgradeController')();
+require('Prototypes_CreepTypes_StationaryJobs_ManageStorageAndTerminal')();
 require('Prototypes_CreepTypes_StationaryJobs_HarvestEnergy')();
 
 require('Prototypes_CreepTypes_Hauler')();
@@ -37,6 +37,7 @@ let RoomCreepsController =
 	spawnCreeps: function (room)
 	{
 		let DEFCON = room.memory.DEFCON;
+		let controllerLevel = room.controller.level;
 		console.log("DEFCON: " + DEFCON);
 
 		let spawn = room.memory.structures.spawnsArray[0];
@@ -55,12 +56,20 @@ let RoomCreepsController =
 		let totalNumberOfWorkerCreeps = numberOfSmallestWorkerCreeps + numberOfSmallerWorkerCreeps + numberOfSmallWorkerCreeps + numberOfBigWorkerCreeps + numberOfBiggerWorkerCreeps + numberOfBiggestWorkerCreeps;
 
 		let numberOfStationaryCreeps = room.memory.creeps.stationaryCreeps.length;
-		let maximumNumberOfHarvesterStationaryCreeps = energySourcesCount;
-		let maximumNumberOfContinuouslyUpgradeControllerCreeps = storageCount;
-		let maximumNumberOfStationaryCreeps = maximumNumberOfHarvesterStationaryCreeps + maximumNumberOfContinuouslyUpgradeControllerCreeps;
-
 		let numberOfHaulerCreeps = room.memory.creeps.haulerCreeps.length;
-		let maximumNumberOfContainerHaulerCreeps = room.memory.structures.containersArray.length - energySourcesCount;
+
+		let maximumNumberOfHarvesterStationaryCreeps = 0;
+		if(controllerLevel >= 4){  maximumNumberOfHarvesterStationaryCreeps = energySourcesCount; }
+
+		let maximumNumberOfContinuouslyUpgradeControllerCreeps = 0;
+		if(controllerLevel >= 4){ maximumNumberOfContinuouslyUpgradeControllerCreeps = storageCount; }
+
+		let maximumNumberOfStationaryCreeps = 0;
+		if(controllerLevel >= 4){	maximumNumberOfStationaryCreeps = maximumNumberOfHarvesterStationaryCreeps + maximumNumberOfContinuouslyUpgradeControllerCreeps; }
+
+		let maximumNumberOfContainerHaulerCreeps = 0;
+		if(controllerLevel >= 4){	maximumNumberOfContainerHaulerCreeps = room.memory.structures.containersArray.length - energySourcesCount; }
+
 
 		let numberOfClaimerCreeps = room.memory.creeps.remoteCreeps.claimerCreepsArray.length;
 		let maximumNumberOfClaimerCreeps = 0;
@@ -97,7 +106,10 @@ let RoomCreepsController =
 		}
 		if(DEFCON < 5)
 		{
-			maximumNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources - numberOfStationaryCreeps - numberOfHaulerCreeps - 1;
+			//also add some depending on room level
+			let additionalWorkers = 14 - (room.controller.level * 2);
+
+			maximumNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources - maximumNumberOfStationaryCreeps - maximumNumberOfContainerHaulerCreeps + additionalWorkers;
 		}
 
 
@@ -118,7 +130,7 @@ let RoomCreepsController =
 		}
 		else
 		{
-			if(room.memory.DEFCON < 4)
+			if (room.memory.DEFCON < 4)
 			{
 				if (totalNumberOfWorkerCreeps == maximumNumberOfWorkerCreeps)
 				{
@@ -139,59 +151,74 @@ let RoomCreepsController =
 			}
 
 
-			//console.log('fuck');
-			//console.log(jobsController.getNumberOfAvailableStationaryJobs(room));
-			//console.log("ticksToLive" + room.memory.creeps.stationaryCreeps[0].ticksToLive);
-			if ((numberOfStationaryCreeps < maximumNumberOfStationaryCreeps || room.memory.creeps.stationaryCreeps[0].ticksToLive < 42) && room.energyAvailable >= 1200)
+			if(controllerLevel >= 4)
 			{
-				let numberOfSpawns = room.memory.structures.spawnsArray.length;
-				let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
-				let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
-				spawn.createStationaryCreep(room);
-			}
-			console.log("numberOfStationaryCreeps:  " + numberOfStationaryCreeps + " maximumNumberOfStationaryCreeps: " + maximumNumberOfStationaryCreeps);
-			if (numberOfStationaryCreeps == maximumNumberOfStationaryCreeps)
-			{
-				console.log('haulerCreeps:              ' + numberOfHaulerCreeps + " maxHaulerCreeps:                 " + maximumNumberOfContainerHaulerCreeps);
-				if (( numberOfHaulerCreeps < maximumNumberOfContainerHaulerCreeps || room.memory.creeps.haulerCreeps[0].ticksToLive < 60) && room.energyAvailable >= 1000)
+
+				let ticksTillOldestStationaryCreepDies = 43;
+				if (room.memory.creeps.stationaryCreeps.length > 0)
+				{
+					let ticksTillOldestStationaryCreepDies = room.memory.creeps.stationaryCreeps[0].ticksToLive;
+				}
+
+				if ((numberOfStationaryCreeps < maximumNumberOfStationaryCreeps || ticksTillOldestStationaryCreepDies < 42) && room.energyAvailable >= 1200)
 				{
 					let numberOfSpawns = room.memory.structures.spawnsArray.length;
 					let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
 					let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
-					spawn.createHaulerCreep(room);
+					spawn.createStationaryCreep(room);
 				}
-
-				//now spawn a claimer if necessary
-				if (numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps)
+				console.log("numberOfStationaryCreeps:  " + numberOfStationaryCreeps + " maximumNumberOfStationaryCreeps: " + maximumNumberOfStationaryCreeps);
+				if (numberOfStationaryCreeps == maximumNumberOfStationaryCreeps)
 				{
-					console.log('numberOfClaimerCreeps: ' + numberOfClaimerCreeps + " maximumNumberOfClaimerCreeps: " + maximumNumberOfClaimerCreeps);
-					if (numberOfClaimerCreeps < maximumNumberOfClaimerCreeps)
+					console.log('haulerCreeps:              ' + numberOfHaulerCreeps + " maxHaulerCreeps:                 " + maximumNumberOfContainerHaulerCreeps);
+
+
+					let ticksTillOldestHaulerCreepDies = 61;
+					if (room.memory.creeps.haulerCreeps.length > 0)
 					{
-						numberOfSpawns = room.memory.structures.spawnsArray.length;
-						let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
-						let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
-						//spawn.createClaimerCreep(room);
+						let ticksTillOldestHaulerCreepDies = room.memory.creeps.haulerCreeps[0].ticksToLive;
 					}
 
-					console.log('numberOfRemoteBuildStructureCreeps: ' + numberOfRemoteBuildStructureCreeps + " maximumNumberOfRemoteBuildStructureCreeps: " + maximumNumberOfRemoteBuildStructureCreeps);
-					if (numberOfRemoteBuildStructureCreeps < maximumNumberOfRemoteBuildStructureCreeps)
+					if (( numberOfHaulerCreeps < maximumNumberOfContainerHaulerCreeps || ticksTillOldestHaulerCreepDies < 60) && room.energyAvailable >= 1000)
 					{
-						numberOfSpawns = room.memory.structures.spawnsArray.length;
+						let numberOfSpawns = room.memory.structures.spawnsArray.length;
 						let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
 						let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
-						spawn.createRemoteBuildStructureCreep(room);
+						spawn.createHaulerCreep(room);
 					}
 
-					console.log('numberOfRemoteUpgradeControllerCreeps: ' + numberOfRemoteUpgradeControllerCreeps + " maximumNumberOfRemoteUpgradeControllerCreeps: " + maximumNumberOfRemoteUpgradeControllerCreeps);
-					if (numberOfRemoteUpgradeControllerCreeps < maximumNumberOfRemoteUpgradeControllerCreeps)
+					//now spawn a claimer if necessary
+					if (numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps)
 					{
-						numberOfSpawns = room.memory.structures.spawnsArray.length;
-						let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
-						let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
-						//spawn.createRemoteUpgradeControllerCreep(room);
+						console.log('numberOfClaimerCreeps: ' + numberOfClaimerCreeps + " maximumNumberOfClaimerCreeps: " + maximumNumberOfClaimerCreeps);
+						if (numberOfClaimerCreeps < maximumNumberOfClaimerCreeps)
+						{
+							numberOfSpawns = room.memory.structures.spawnsArray.length;
+							let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
+							let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
+							//spawn.createClaimerCreep(room);
+						}
+
+						console.log('numberOfRemoteBuildStructureCreeps: ' + numberOfRemoteBuildStructureCreeps + " maximumNumberOfRemoteBuildStructureCreeps: " + maximumNumberOfRemoteBuildStructureCreeps);
+						if (numberOfRemoteBuildStructureCreeps < maximumNumberOfRemoteBuildStructureCreeps)
+						{
+							numberOfSpawns = room.memory.structures.spawnsArray.length;
+							let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
+							let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
+							spawn.createRemoteBuildStructureCreep(room);
+						}
+
+						console.log('numberOfRemoteUpgradeControllerCreeps: ' + numberOfRemoteUpgradeControllerCreeps + " maximumNumberOfRemoteUpgradeControllerCreeps: " + maximumNumberOfRemoteUpgradeControllerCreeps);
+						if (numberOfRemoteUpgradeControllerCreeps < maximumNumberOfRemoteUpgradeControllerCreeps)
+						{
+							numberOfSpawns = room.memory.structures.spawnsArray.length;
+							let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
+							let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
+							//spawn.createRemoteUpgradeControllerCreep(room);
+						}
 					}
 				}
-			}
+			}//controllerLevel
 		}
 	},
 

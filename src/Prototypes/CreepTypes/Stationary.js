@@ -19,15 +19,15 @@ module.exports = function ()
 			}
 		}
 
-		for(let energySourceID in room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController)
+		for(let energySourceID in room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal)
 		{
-			let continuouslyUpgradeControllerJob = room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController[energySourceID];
-			if (continuouslyUpgradeControllerJob.active == false)
+			let manageStorageAndTerminalJob = room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[energySourceID];
+			if (manageStorageAndTerminalJob.active == false)
 			{
 				console.log(room.controller.id);
 				job = {
 					targetID: room.controller.id,
-					type: "continuouslyUpgradeController"
+					type: "manageStorageAndTerminal"
 				};
 			}
 		}
@@ -51,14 +51,14 @@ module.exports = function ()
 						this.memory.job = null;
 					}
 					break;
-				case "continuouslyUpgradeController":
+				case "manageStorageAndTerminal":
 					if(this.room.memory.structures.storageArray[0])
 					{
 						let storageID = this.room.memory.structures.storageArray[0].id;
 
-						if(this.room.memory.jobs.stationaryJobBoard.continuouslyUpgradeController[storageID]) //if job still exists
+						if(this.room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID]) //if job still exists
 						{
-							this.runContinuouslyUpgradeController();
+							this.runManageStorageAndTerminal();
 						}
 						else
 						{

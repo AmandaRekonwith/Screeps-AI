@@ -4,7 +4,7 @@ module.exports = function ()
 	{
 		let energySourcesArray = new Array();
 
-		let droppedEnergyArray = this.room.find(FIND_DROPPED_RESOURCES[RESOURCE_ENERGY]);
+		let droppedEnergyArray = this.room.find(FIND_DROPPED_RESOURCES,RESOURCE_ENERGY);
 		let droppedEnergyCount = droppedEnergyArray.length;
 		if(droppedEnergyCount > 0)
 		{

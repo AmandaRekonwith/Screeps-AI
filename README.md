@@ -136,8 +136,8 @@ then imported this into the graphana dashboard.
 
 I ended up with something that looks like this:
 <img src="https://github.com/AmandaRekonwith/Screeps-AI/blob/master/graphanaexample.jpg">
-
 .. Not very pretty or useful, but interesting. I will refine this in the future.
+
 -------------------------------------------------
 
 Thanks for reading!

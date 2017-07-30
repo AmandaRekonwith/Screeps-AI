@@ -1,3 +1,11 @@
+# Currently working on:
+Implementing terminal usage.
+A 'scavenger' worker job role.
+Harvesting mineral resources.
+Switching to typescript.
+Improving statistics logging.
+Fleshing out the wiki description of how this all is supposed to function.
+
 # Screeps-AI
 <img src="http://cdn.akamai.steamstatic.com/steam/apps/464350/header.jpg?t=1494837632">
 My evolving AI for Screeps

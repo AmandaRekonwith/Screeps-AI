@@ -40,7 +40,6 @@ Basically, there is an additional group of creeps titled "Remote". If they detec
 Purple: Claimer
 Red: Upgrade Controller
 Yellow: Build, Repair, or Upgrade whatever structure is flagged.
-
 These creeps require their colored flags to be placed on the exits of every room, and on the their final destination in order to function.
 Essentially they are following a 'bread crumb' trail to their desired destination.
 7. Towers attack the closest hostile creep. This needs further development.

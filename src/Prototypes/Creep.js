@@ -2,15 +2,33 @@ module.exports = function ()
 {
 	Creep.prototype.checkWhereToGetEnergy = function ()
 	{
-		let storageWithEnergyArray = this.room.find(FIND_MY_STRUCTURES, {
-			filter: (i) => i.structureType == STRUCTURE_STORAGE &&
-			i.store[RESOURCE_ENERGY] > 0});
-		let storageWithEnergyCount = storageWithEnergyArray.length;
-		if (storageWithEnergyCount > 0)
+		let energySourcesArray = new Array();
+
+		let droppedEnergyArray = this.room.find(FIND_DROPPED_RESOURCES[RESOURCE_ENERGY]);
+		let droppedEnergyCount = droppedEnergyArray.length;
+		if(droppedEnergyCount > 0)
 		{
-			this.memory.energySource = {type: "storage", targetID: storageWithEnergyArray[0].id};
+			for(let x=0; x<droppedEnergyCount; x++)
+			{
+				let energySource = {type: "droppedEnergy", targetID: droppedEnergyArray[0].id};
+				energySourcesArray.push(energySource);
+			}
+		}
+
+		if (this.room.storage)
+		{
+			let energySource = {type: "storage", targetID: storageWithEnergyArray[0].id};
+			energySourcesArray.push(energySource);
+			//energySourcesArray.push(energySource);
+		}
+
+		let energySourcesCount = energySourcesArray.length;
+		if(energySourcesCount > 0)
+		{
+			let energySourceRandomizer = Math.floor((Math.random() * energySourcesCount));
+			this.memory.energySource = energySourcesArray[energySourceRandomizer];
 			this.memory.currentTask = "Getting Energy";
-			return "storage";
+			return energySourcesArray[energySourceRandomizer].type;
 		}
 
 		let containerWithEnergyArray = this.room.find(FIND_STRUCTURES, {
@@ -25,7 +43,7 @@ module.exports = function ()
 			return "container";
 		}
 
-		let energySourcesArray = this.room.memory.environment.energySourcesArray;
+		energySourcesArray = this.room.memory.environment.energySourcesArray;
 		energySourcesArray = this.FisherYatesShuffle(energySourcesArray);
 
 		let energySourcesArrayCount = energySourcesArray.length;
@@ -56,6 +74,9 @@ module.exports = function ()
 
 			switch (energySource.type)
 			{
+				case "droppedEnergy":
+					this.getDroppedEnergy();
+					break;
 				case "storage":
 					this.getEnergyFromStorage();
 					break;
@@ -67,6 +88,24 @@ module.exports = function ()
 					break;
 				default:
 					break;
+			}
+		}
+	}
+
+	Creep.prototype.getDroppedEnergy = function ()
+	{
+		let energySource = Game.getObjectById(this.memory.energySource.targetID);
+
+		if(!energySource)
+		{
+			let where = this.checkWhereToGetEnergy();
+		}
+		else
+		{
+			let action = this.pickup(energySource, RESOURCE_ENERGY);
+			if (action == ERR_NOT_IN_RANGE)
+			{
+				this.moveTo(energySource, {visualizePathStyle: {stroke: '#ffaa00'}});
 			}
 		}
 	}

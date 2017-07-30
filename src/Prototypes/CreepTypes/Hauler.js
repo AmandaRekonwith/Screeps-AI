@@ -7,6 +7,25 @@ module.exports = function ()
 
 		if (this.memory.currentTask == null || this.memory.currentTask == "Getting Energy" && (this.memory.job == null || !this.memory.job))
 		{
+			let droppedEnergyIDsArray = new Array();
+
+			for (let energyID in room.memory.jobs.haulerJobBoard.collectDroppedEnergy)
+			{
+				droppedEnergyIDsArray.push(energyID);
+			}
+
+			if (droppedEnergyIDsArray.length > 0)
+			{
+				droppedEnergyIDsArray = this.FisherYatesShuffle(droppedEnergyIDsArray);
+
+				job = {
+					targetID: droppedEnergyIDsArray[0],
+					type: "collectDroppedEnergy"
+				};
+
+				return job;
+			}
+
 			let containerIDsArray = new Array();
 
 			for (let containerID in room.memory.jobs.haulerJobBoard.moveEnergyFromContainer)
@@ -100,6 +119,16 @@ module.exports = function ()
 						if (this.room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[this.memory.job.targetID]) //if job still exists
 						{
 							this.runHaulerMoveEnergyFromContainer();
+						}
+						else
+						{
+							this.memory.job = null;
+						}
+						break;
+					case "collectDroppedEnergy":
+						if (this.room.memory.jobs.haulerJobBoard.collectDroppedEnergy[this.memory.job.targetID]) //if job still exists
+						{
+							this.runHaulerCollectDroppedEnergy();
 						}
 						else
 						{

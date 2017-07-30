@@ -101,6 +101,7 @@ let BrainController =
 							}
 						},
 						haulerJobBoard: {
+							collectDroppedEnergy: {},
 							moveEnergyFromContainer: {}
 						},
 						stationaryJobBoard: {

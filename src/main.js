@@ -1,4 +1,5 @@
-var statsController = require('Controllers_StatsController');
+var statsController = require('Controllers_Stats_StatsController');
+//var statsController2 = require('Controllers_Stats_StatsController2');
 var brainController = require('Controllers_BrainController');
 //require('Libraries_XMLHttpRequest');
 //let require('http://www.google.com/');

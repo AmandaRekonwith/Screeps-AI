@@ -26,6 +26,7 @@ require('Prototypes_CreepTypes_StationaryJobs_HarvestEnergy')();
 
 require('Prototypes_CreepTypes_Hauler')();
 require('Prototypes_CreepTypes_HaulerJobs_MoveEnergyFromContainer')();
+require('Prototypes_CreepTypes_HaulerJobs_CollectDroppedEnergy')();
 
 require('Prototypes_CreepTypes_Remote')();
 require('Prototypes_CreepTypes_RemoteJobs_ClaimController')();

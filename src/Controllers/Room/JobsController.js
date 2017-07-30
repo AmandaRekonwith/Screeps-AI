@@ -277,6 +277,31 @@ var RoomJobsController =
 				}
 			}
 		}
+
+		//delete hauler jobs first if objects disappeared...or there is no energy in containers.
+		for(let energyID in room.memory.jobs.haulerJobBoard.collectDroppedEnergy)
+		{
+			if (!Game.getObjectById(energyID))
+			{
+				delete room.memory.jobs.haulerJobBoard.collectDroppedEnergy[energyID];
+			}
+		}
+
+		let energySources = room.find(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
+
+		let energySourcesCount = energySources.length;
+		if(energySourcesCount > 0)
+		{
+			for(let x=0; x<energySourcesCount; x++)
+			{
+				let energySource = energySources[x];
+
+				if(!room.memory.jobs.haulerJobBoard.collectDroppedEnergy[energySource.id])
+				{
+					room.memory.jobs.haulerJobBoard.collectDroppedEnergy[energySource.id] = {};
+				}
+			}
+		}
 	},
 
 	/*

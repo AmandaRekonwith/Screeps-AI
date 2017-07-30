@@ -135,8 +135,9 @@ I also lifted LispEngineer's graphana.json file,
 then imported this into the graphana dashboard.
 
 I ended up with something that looks like this:
-<img src="https://raw.githubusercontent.com/AmandaRekonwith/Screeps-AI/master/graphanaexample.jpg>
+<img src="https://github.com/AmandaRekonwith/Screeps-AI/blob/master/graphanaexample.jpg">
 
+.. Not very pretty or useful, but interesting. I will refine this in the future.
 -------------------------------------------------
 
 Thanks for reading!

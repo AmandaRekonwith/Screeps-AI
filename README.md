@@ -126,10 +126,11 @@ The instructions on their site are as follows, with additional instructions prov
 <br/>
 For right now, I stole the code from LispEngineer, and combined the javascript files he used into one single class file named "StatsController.js".
 Then, at the end of my main.js, I added this tiny block of code:
-"for (let roomName in Game.rooms)
-{
-      let stats = statsController.collectStats(roomName);
-}
+
+<br/>"for (let roomName in Game.rooms)
+<br/>{
+<br/>      let stats = statsController.collectStats(roomName);
+<br/>}
 
 I also lifted LispEngineer's graphana.json file,
 then imported this into the graphana dashboard.

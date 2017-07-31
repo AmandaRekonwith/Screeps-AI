@@ -69,7 +69,7 @@ let RoomCreepsController =
 		if(controllerLevel >= 4){	maximumNumberOfStationaryCreeps = maximumNumberOfHarvesterStationaryCreeps + maximumNumberOfContinuouslyUpgradeControllerCreeps; }
 
 		let maximumNumberOfContainerHaulerCreeps = 0;
-		if(controllerLevel >= 4){	maximumNumberOfContainerHaulerCreeps = room.memory.structures.containersArray.length - energySourcesCount; }
+		if(controllerLevel >= 4){	maximumNumberOfContainerHaulerCreeps = room.memory.structures.containersArray.length; }
 
 
 		let numberOfClaimerCreeps = room.memory.creeps.remoteCreeps.claimerCreepsArray.length;
@@ -100,57 +100,66 @@ let RoomCreepsController =
 			totalNumberOfOpenTilesNextToEnergySources += energySourcesArray[x].numberOfAdjacentOpenTerrainTiles;
 		}
 
-		let maximumNumberOfWorkerCreeps = 0;
-		if(DEFCON == 5)
+		let numberOfBuildingJobs = 0;
+		let buildingJobs = room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure;
+		for(let constructionSiteID in buildingJobs)
 		{
-			maximumNumberOfWorkerCreeps = 1 - (2 * numberOfHaulerCreeps);
+			numberOfBuildingJobs += 1;
 		}
-		if(DEFCON < 5)
-		{
-			//also add some depending on room level
-			let additionalWorkers = 14 - (room.controller.level * 2);
 
-			maximumNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources - maximumNumberOfStationaryCreeps - maximumNumberOfContainerHaulerCreeps + additionalWorkers;
+		let maximumNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources + 4;
+
+		if(room.controller.level >= 4)
+		{
+			maximumNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources
+				- (numberOfStationaryCreeps * 3)
+				- (numberOfHaulerCreeps * 3)
+			+ numberOfBuildingJobs;
 		}
+
+		if(maximumNumberOfWorkerCreeps <= 0)
+		{
+			if(numberOfBuildingJobs > 0)
+			{
+				maximumNumberOfWorkerCreeps = 4;
+			}
+		}
+
 
 
 		console.log("totalNumberOfWorkerCreeps: " + totalNumberOfWorkerCreeps + " maximumNumberOfWorkerCreeps:     " + maximumNumberOfWorkerCreeps);
+		if(totalNumberOfWorkerCreeps > maximumNumberOfWorkerCreeps)
+		{
+			let creepToDie = this.getSmallestWorkerCreepClosestToDeath(room);
+			if(creepToDie != null)
+			{
+				creepToDie.suicide();
+			}
+		}
+
 		if (totalNumberOfWorkerCreeps < maximumNumberOfWorkerCreeps)
 		{
-			if(room.memory.DEFCON >= 4)
-			{
-				let numberOfSpawns = room.memory.structures.spawnsArray.length;
-				let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
-				let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
-				spawn.createSmallestWorkerCreep(room);
-			}
-			else
-			{
-				this.spawnNewWorkerCreep(room);
-			}
+			let numberOfSpawns = room.memory.structures.spawnsArray.length;
+			let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
+			let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
+			this.spawnNewWorkerCreep(room);
 		}
 		else
 		{
-			if (room.memory.DEFCON < 4)
-			{
-				if (totalNumberOfWorkerCreeps == maximumNumberOfWorkerCreeps)
-				{
-					let creepToDie = this.getSmallestWorkerCreepClosestToDeath(room);
 
-					if (creepToDie && creepToDie.ticksToLive < 75)
-					{
-						//revising the logic here...
-						//spawn if size BIGGER than creep to be suicided...
-						let energyCostOfCreepToDie = this.getEnergyCostOfWorkerCreepOfCertainSize(creepToDie.memory.size);
-						if (room.energyAvailable >= energyCostOfCreepToDie)
-						{
-							creepToDie.suicide();
-							this.spawnNewWorkerCreep(room);
-						}
-					}
+			let creepToDie = this.getSmallestWorkerCreepClosestToDeath(room);
+
+			if (creepToDie != null && (creepToDie.ticksToLive < 75 || Math.floor((Math.random() * 20) == 1)))
+			{
+				//revising the logic here...
+				//spawn if size BIGGER than creep to be suicided...
+				let energyCostOfCreepToDie = this.getEnergyCostOfWorkerCreepOfCertainSize(creepToDie.memory.size);
+				if (room.energyAvailable >= energyCostOfCreepToDie)
+				{
+					creepToDie.suicide();
+					this.spawnNewWorkerCreep(room);
 				}
 			}
-
 
 			if(controllerLevel >= 4)
 			{
@@ -228,41 +237,41 @@ let RoomCreepsController =
 		let ticksToLive = 1500
 		let creepToDie = null;
 
-		if (room.memory.creeps.workerCreeps.smallestWorkerCreepsArray[0])
+		if (room.memory.creeps.workerCreeps.smallestWorkerCreepsArray.length > 0)
 		{
 			creepToDie = room.memory.creeps.workerCreeps.smallestWorkerCreepsArray[0];
 			ticksToLive = room.memory.creeps.workerCreeps.smallestWorkerCreepsArray[0].ticksToLive;
 		}
 
-		if (room.memory.creeps.workerCreeps.smallerWorkerCreepsArray[0] &&
+		if (room.memory.creeps.workerCreeps.smallerWorkerCreepsArray.length > 0 &&
 			room.memory.creeps.workerCreeps.smallerWorkerCreepsArray[0] < ticksToLive)
 		{
 			creepToDie = room.memory.creeps.workerCreeps.smallerWorkerCreepsArray[0];
 			ticksToLive = room.memory.creeps.workerCreeps.smallerWorkerCreepsArray[0].ticksToLive;
 		}
 
-		if (room.memory.creeps.workerCreeps.smallWorkerCreepsArray[0] &&
+		if (room.memory.creeps.workerCreeps.smallWorkerCreepsArray.length > 0 &&
 			room.memory.creeps.workerCreeps.smallWorkerCreepsArray[0] < ticksToLive)
 		{
 			creepToDie = room.memory.creeps.workerCreeps.smallWorkerCreepsArray[0];
 			ticksToLive = room.memory.creeps.workerCreeps.smallWorkerCreepsArray[0].ticksToLive;
 		}
 
-		if (room.memory.creeps.workerCreeps.bigWorkerCreepsArray[0] &&
+		if (room.memory.creeps.workerCreeps.bigWorkerCreepsArray.length > 0 &&
 			room.memory.creeps.workerCreeps.bigWorkerCreepsArray[0] < ticksToLive)
 		{
 			creepToDie = room.memory.creeps.workerCreeps.bigWorkerCreepsArray[0];
 			ticksToLive = room.memory.creeps.workerCreeps.bigWorkerCreepsArray[0].ticksToLive;
 		}
 
-		if (room.memory.creeps.workerCreeps.biggerWorkerCreepsArray[0] &&
+		if (room.memory.creeps.workerCreeps.biggerWorkerCreepsArray.length > 0 &&
 			room.memory.creeps.workerCreeps.biggerWorkerCreepsArray[0] < ticksToLive)
 		{
 			creepToDie = room.memory.creeps.workerCreeps.biggerWorkerCreepsArray[0];
 			ticksToLive = room.memory.creeps.workerCreeps.biggerWorkerCreepsArray[0].ticksToLive;
 		}
 
-		if (room.memory.creeps.workerCreeps.biggestWorkerCreepsArray[0] &&
+		if (room.memory.creeps.workerCreeps.biggestWorkerCreepsArray.length > 0 &&
 			room.memory.creeps.workerCreeps.biggestWorkerCreepsArray[0] < ticksToLive)
 		{
 			creepToDie = room.memory.creeps.workerCreeps.biggestWorkerCreepsArray[0];

@@ -17,7 +17,7 @@ module.exports = function ()
 
 		if (this.room.storage)
 		{
-			let energySource = {type: "storage", targetID: storageWithEnergyArray[0].id};
+			let energySource = {type: "storage", targetID: this.room.storage.id};
 			energySourcesArray.push(energySource);
 			//energySourcesArray.push(energySource);
 		}

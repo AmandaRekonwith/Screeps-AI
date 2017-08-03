@@ -123,30 +123,50 @@ module.exports = function ()
 			});
 		};
 
-	//1300 energy required, 10 work parts, 3 carry parts, 3 move parts, 48 ticks.
+	//1300 energy required, 4 work parts, 2 carry parts, 1 move parts, 21 ticks.
 	//1100
 	//1150 39 ticks
-	StructureSpawn.prototype.createSmallestStationaryCreep =
-		function ()
+	StructureSpawn.prototype.createStationaryCreep =
+		function (roomLevel)
 		{
-			var body = [WORK, WORK, WORK, WORK,
-				CARRY, CARRY,
-				MOVE,];
+			let size = null;
+			var body = null;
+			if(roomLevel == 2)
+			{
+				body = [WORK, WORK, WORK, WORK,
+					CARRY, CARRY,
+					MOVE];
+				size = "smallest";
+
+			}
+			if(roomLevel == 3)
+			{
+				body = [WORK, WORK, WORK, WORK, WORK,
+					CARRY, CARRY,
+					MOVE];
+				size = "smaller";
+			}
+			if(roomLevel == 4)
+			{
+				body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
+					CARRY, CARRY, CARRY,
+					MOVE, MOVE, MOVE];
+				size = "big";
+			}
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				type: "stationary",
-				size: "smallest",
+				size: size,
 				currentTask: null,
 				energySource: null,
 				job: null
 			});
 		};
 
-
 	//1300 energy required, 10 work parts, 3 carry parts, 3 move parts, 48 ticks.
 	//1100
 	//1150 39 ticks
-	StructureSpawn.prototype.createStationaryCreep =
+	StructureSpawn.prototype.createBigStationaryCreep =
 		function ()
 		{
 			var body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,

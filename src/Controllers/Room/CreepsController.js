@@ -118,7 +118,7 @@ let RoomCreepsController =
 			numberOfBuildingJobs += 1;
 		}
 
-		let maximumNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources + 2;
+		let maximumNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources;
 
 		if(room.controller.level >= 4)
 		{
@@ -165,6 +165,29 @@ let RoomCreepsController =
 		}
 		else
 		{
+			if(controllerLevel < 4)
+			{
+				let containersArray = room.memory.structures.containersArray;
+				let containersCount = containersArray.length;
+
+				if(containersCount > 0)
+				{
+					let ticksTillOldestSmallestStationaryCreepDies = 21;
+					if (room.memory.creeps.stationaryCreeps.smallestStationaryCreepsArray.length > 0)
+					{
+						ticksTillOldestSmallestStationaryCreepDies = room.memory.creeps.stationaryCreeps.smallestStationaryCreepsArray[0].ticksToLive;
+					}
+
+					if (((numberOfStationaryCreeps < maximumNumberOfStationaryCreeps) || (ticksTillOldestSmallestStationaryCreepDies < 21 && numberOfStationaryCreeps == maximumNumberOfStationaryCreeps)) && room.energyAvailable >= 550)
+					{
+						let numberOfSpawns = room.memory.structures.spawnsArray.length;
+						let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
+						let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
+						spawn.createStationaryCreep(room.controller.level);
+					}
+				}
+			}
+
 			if(controllerLevel >= 4)
 			{
 				let numberOfContainers = 0;
@@ -173,18 +196,18 @@ let RoomCreepsController =
 
 				if(containersCount > 0 && room.storage)
 				{
-					let ticksTillOldestStationaryCreepDies = 49;
+					let ticksTillOldestBigStationaryCreepDies = 49;
 					if (room.memory.creeps.stationaryCreeps.bigStationaryCreepsArray.length > 0)
 					{
-						ticksTillOldestStationaryCreepDies = room.memory.creeps.stationaryCreeps.bigStationaryCreepsArray[0].ticksToLive;
+						ticksTillOldestBigStationaryCreepDies = room.memory.creeps.stationaryCreeps.bigStationaryCreepsArray[0].ticksToLive;
 					}
 
-					if (((numberOfStationaryCreeps < maximumNumberOfStationaryCreeps) || (ticksTillOldestStationaryCreepDies < 48 && numberOfStationaryCreeps == maximumNumberOfStationaryCreeps)) && room.energyAvailable >= 1300)
+					if (((numberOfStationaryCreeps < maximumNumberOfStationaryCreeps) || (ticksTillOldestBigStationaryCreepDies < 48 && numberOfStationaryCreeps == maximumNumberOfStationaryCreeps)) && room.energyAvailable >= 1300)
 					{
 						let numberOfSpawns = room.memory.structures.spawnsArray.length;
 						let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
 						let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
-						spawn.createStationaryCreep(room);
+						spawn.createBigStationaryCreep(room);
 					}
 					console.log("numberOfStationaryCreeps:  " + numberOfStationaryCreeps + " maximumNumberOfStationaryCreeps: " + maximumNumberOfStationaryCreeps);
 					if (numberOfStationaryCreeps == maximumNumberOfStationaryCreeps)
@@ -383,12 +406,20 @@ let RoomCreepsController =
 			}
 		}
 
-		 let stationaryCreepsArray = room.memory.creeps.stationaryCreeps.bigStationaryCreepsArray;
-		 let stationaryCreepsCount = stationaryCreepsArray.length;
-		 for(let x=0; x<stationaryCreepsCount; x++)
+		let smallestStationaryCreepsArray = room.memory.creeps.stationaryCreeps.bigStationaryCreepsArray;
+		let smallestStationaryCreepsCount = smallestStationaryCreepsArray.length;
+		for(let x=0; x<smallestStationaryCreepsCount; x++)
+		{
+			let smallestStationaryCreep = smallestStationaryCreepsArray[x];
+			smallestStationaryCreep.runStationary(stationaryCreep);
+		}
+
+		 let bigStationaryCreepsArray = room.memory.creeps.stationaryCreeps.bigStationaryCreepsArray;
+		 let bigStationaryCreepsCount = bigStationaryCreepsArray.length;
+		 for(let x=0; x<bigStationaryCreepsCount; x++)
 		 {
-			 let stationaryCreep = stationaryCreepsArray[x];
-			 stationaryCreep.runStationary(stationaryCreep);
+			 let bigStationaryCreep = bigstationaryCreepsArray[x];
+			 bigStationaryCreep.runStationary(stationaryCreep);
 		 }
 
 		 let haulerCreepsArray = room.memory.creeps.haulerCreeps;

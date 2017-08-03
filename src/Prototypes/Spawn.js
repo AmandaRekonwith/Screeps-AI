@@ -21,13 +21,13 @@ module.exports = function ()
 			});
 		};
 
-	//400, 2 work parts, 1 carry part, 3 move parts, 18 ticks
+	//450, 1 work parts, 3 carry part, 4 move parts, 24 ticks
 	StructureSpawn.prototype.createSmallerWorkerCreep =
 		function ()
 		{
-			var body = [WORK, WORK,
-				CARRY,
-				MOVE, MOVE, MOVE];
+			var body = [WORK,
+				CARRY, CARRY, CARRY,
+				MOVE, MOVE, MOVE, MOVE];
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				size: "smaller",
@@ -38,13 +38,13 @@ module.exports = function ()
 			});
 		};
 
-	//650, 3 work parts, 2 carry parts, 5 move parts, 30 ticks
+	//700, 2 work parts, 4 carry parts, 6 move parts, 36 ticks
 	StructureSpawn.prototype.createSmallWorkerCreep =
 		function ()
 		{
-			var body = [WORK, WORK, WORK,
-				CARRY, CARRY,
-				MOVE, MOVE, MOVE, MOVE, MOVE];
+			var body = [WORK, WORK,
+				CARRY, CARRY, CARRY, CARRY,
+				MOVE, MOVE, MOVE, MOVE, MOVE, CARRY];
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				size: "small",
@@ -55,13 +55,13 @@ module.exports = function ()
 			});
 		};
 
-	//900, 4 work parts, 3 carry parts, 7 move parts, 42 ticks
+	//900, 2 work parts, 6 carry parts, 8 move parts, 48 ticks
 	StructureSpawn.prototype.createBigWorkerCreep =
 		function ()
 		{
-			var body = [WORK, WORK, WORK, WORK,
-				CARRY, CARRY, CARRY,
-				MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
+			var body = [WORK, WORK,
+				CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
+				MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				size: "big",
@@ -72,13 +72,13 @@ module.exports = function ()
 			});
 		};
 
-	//1150, 5 work parts, 4 carry parts, 9 move parts, 54 ticks
+	//1150, 3 work parts, 7 carry parts, 10 move parts, 54 ticks
 	StructureSpawn.prototype.createBiggerWorkerCreep =
 		function ()
 		{
-			var body = [WORK, WORK, WORK, WORK, WORK,
-				CARRY, CARRY, CARRY, CARRY,
-				MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
+			var body = [WORK, WORK, WORK,
+				CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
+				MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				size: "bigger",
@@ -93,8 +93,8 @@ module.exports = function ()
 	StructureSpawn.prototype.createBiggestWorkerCreep =
 		function ()
 		{
-			var body = [WORK, WORK, WORK, WORK, WORK,
-				CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
+			var body = [WORK, WORK, WORK, WORK,
+				CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
 				MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
@@ -123,18 +123,39 @@ module.exports = function ()
 			});
 		};
 
-	//1400 energy required, 10 work parts, 6 carry parts, 2 move parts, 54 ticks.
+	//1300 energy required, 10 work parts, 3 carry parts, 3 move parts, 48 ticks.
+	//1100
+	//1150 39 ticks
+	StructureSpawn.prototype.createSmallestStationaryCreep =
+		function ()
+		{
+			var body = [WORK, WORK, WORK, WORK,
+				CARRY, CARRY,
+				MOVE,];
+			var creepName = controllerCreepsNameGenerator.getName();
+			this.createCreep(body, creepName, {
+				type: "stationary",
+				size: "smallest",
+				currentTask: null,
+				energySource: null,
+				job: null
+			});
+		};
+
+
+	//1300 energy required, 10 work parts, 3 carry parts, 3 move parts, 48 ticks.
 	//1100
 	//1150 39 ticks
 	StructureSpawn.prototype.createStationaryCreep =
 		function ()
 		{
 			var body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
-				CARRY, CARRY,
-				MOVE, MOVE];
+				CARRY, CARRY, CARRY,
+				MOVE, MOVE, MOVE];
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				type: "stationary",
+				size: "big",
 				currentTask: null,
 				energySource: null,
 				job: null

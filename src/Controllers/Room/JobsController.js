@@ -279,6 +279,7 @@ var RoomJobsController =
 		}
 
 		//delete hauler jobs first if objects disappeared...or there is no energy in containers.
+		/*
 		for(let energyID in room.memory.jobs.haulerJobBoard.collectDroppedEnergy)
 		{
 			if (!Game.getObjectById(energyID))
@@ -301,7 +302,7 @@ var RoomJobsController =
 					room.memory.jobs.haulerJobBoard.collectDroppedEnergy[energySource.id] = {};
 				}
 			}
-		}
+		}*/
 	},
 
 	/*
@@ -338,6 +339,7 @@ var RoomJobsController =
 	scanStationaryJobs: function (room)
 	{
 		this.scanHarvestEnergyJobs(room);
+		this.scanHarvestResourceJobs(room);
 		this.scanStationaryManageStorageAndTerminalJobs(room);
 	},
 
@@ -346,12 +348,12 @@ var RoomJobsController =
 		let manageStorageAndTerminalJobs = room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal;
 
 		let numberOfStationaryManageStorageAndTerminalJobsActive = 0;
-		for (let energySourceID in manageStorageAndTerminalJobs)
+		for (let storageID in manageStorageAndTerminalJobs)
 		{
-			let energySource = Game.getObjectById(energySourceID);
-			if(energySource) //if the storage container exists... then continue... if not.. make sure the job is deleted.
+			let storage = Game.getObjectById(storageID);
+			if(storage) //if the storage container exists... then continue... if not.. make sure the job is deleted.
 			{
-				let stationaryManageStorageAndTerminalJob = room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[energySourceID];
+				let stationaryManageStorageAndTerminalJob = room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID];
 				let creepID = stationaryManageStorageAndTerminalJob.creepID;
 
 				if (creepID != null)
@@ -359,8 +361,8 @@ var RoomJobsController =
 					let creep = Game.getObjectById(creepID);
 					if (stationaryManageStorageAndTerminalJob.active == true && !creep)
 					{
-						room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[energySourceID].active = false;
-						room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[energySourceID].creepID = null;
+						room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID].active = false;
+						room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID].creepID = null;
 					} //if creep died, reset job active to false
 					else
 					{
@@ -373,35 +375,57 @@ var RoomJobsController =
 			}
 			else
 			{
-				delete room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[energySourceID];
+				delete room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID];
 			}
 		}
 
 		//now scan
-		if(room.memory.structures.storageArray.length > 0)
+		if(room.storage)
 		{
-			let energySourceID = room.memory.structures.storageArray[0].id;
-			if(!room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[energySourceID])
+			let storageID = room.storage.id;
+			if(!room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID])
 			{
-				let energySourceID = room.memory.structures.storageArray[0].id;
-				let energySource = Game.getObjectById(energySourceID);
+				let storageID = room.memory.structures.storageArray[0].id;
+				let storage = Game.getObjectById(storageID);
 
-				let storagePositionX = energySource.pos.x;
-				let storagePositionY = energySource.pos.y;
+				let storagePositionX = storage.pos.x;
+				let storagePositionY = storage.pos.y;
 
 				//FOR NOW, I am making sure the storage container is within distance of the upgrade controller
 				// (this is not automated, but placed on the game map by hand)
 				//AND am MANUALLY making sure the space above the storage unit is empty, and in range of the upgrade controller.
-				//that will be the site of this job. ... so that said, y - 1.
+				//that will be the site of this job. ... so that said, x-1, y - 1.
 
-				let jobPosition = {x: storagePositionX, y: storagePositionY - 1};
+				let jobPosition = null;
 
-				let manageStorageAndTerminalJob = {};
-				manageStorageAndTerminalJob.pos = jobPosition;
-				manageStorageAndTerminalJob.active = false;
-				manageStorageAndTerminalJob.creepID = null;
+				if(room.terminal)
+				{
+					jobPosition = {x: room.terminal.pos.x, y: room.terminal.pos.y + 1};
+				}
+				else
+				{
+					if(room.memory.environment.terrainMapArray[storagePositionX - 1][ storagePositionY - 1] == 1)
+					{
+						jobPosition = {x: storagePositionX - 1, y: storagePositionY - 1};
+					}
+					else
+					{
+						if (room.memory.environment.terrainMapArray[storagePositionX][storagePositionY - 1] == 1)
+						{
+							jobPosition = {x: storagePositionX, y: storagePositionY - 1};
+						}
+					}
+				}//terminal
 
-				room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[energySourceID] = manageStorageAndTerminalJob;
+				if(jobPosition != null)
+				{
+					let manageStorageAndTerminalJob = {};
+					manageStorageAndTerminalJob.pos = jobPosition;
+					manageStorageAndTerminalJob.active = false;
+					manageStorageAndTerminalJob.creepID = null;
+
+					room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID] = manageStorageAndTerminalJob;
+				}
 			}
 		}
 	},
@@ -455,12 +479,69 @@ var RoomJobsController =
 					{
 						room.memory.jobs.stationaryJobBoard.harvestEnergy[energySource.id] = {
 							active: false,
-							containerID: containerID,
+							containerID: structure.id,
 							creepID: null
 						}
 					}
 				}
 			}
+		}
+	},
+
+	scanHarvestResourceJobs: function(room)
+	{
+		let stationaryHarvestResourceJobs = room.memory.jobs.stationaryJobBoard.harvestResource;
+
+		for (let resourceID in stationaryHarvestResourceJobs)
+		{
+			let stationaryHarvestResourceJob = stationaryHarvestResourceJobs[resourceID];
+
+			let creepID = stationaryHarvestResourceJob.creepID;
+
+			if(creepID != null)
+			{
+				let creep = Game.getObjectById(creepID);
+				if (stationaryHarvestResourceJob.active == true && !creep)
+				{
+					room.memory.jobs.stationaryJobBoard.harvestResource[resourceID].active = false;
+					room.memory.jobs.stationaryJobBoard.harvestResource[resourceID].creepID = null;
+				} //if creep died, reset job active to false
+			}
+		}
+
+		//now scan.
+
+		let resourcesArray = room.memory.environment.resourcesArray;
+		let resourcesCount = resourcesArray.length;
+		for(let x=0; x<resourcesCount; x++)
+		{
+			let resourceID = resourcesArray[x];
+			let resource = Game.getObjectById(resourceID);
+
+			let extractorExists = false;
+			let extractorsArray = room.memory.structures.extractorsArray;
+			let extractorsCount = extractorsArray.length;
+			for(let y=0; y<extractorsCount; y++)
+			{
+				let extractor = extractorsArray[y];
+				if(resource.pos.x == extractor.pos.x && resource.pos.y == extractor.pos.y)
+				{
+					extractorExists = true;
+				}
+			}
+
+			if(extractorExists)
+			{
+				if(!room.memory.jobs.stationaryJobBoard.harvestResource[resourceID])
+				{
+					room.memory.jobs.stationaryJobBoard.harvestResource[resourceID] =
+					{
+						active: false,
+						creepID: null
+					}
+				}
+			}
+
 		}
 	}
 }

@@ -2,16 +2,36 @@ module.exports = function ()
 {
 	Creep.prototype.getFirstPriorityJob = function ()
 	{
-		for (let constructionSiteID in this.room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure)
-		{
-			let job = {
-				targetID: constructionSiteID,
-				type: "buildStructure"
-			};
-			return job;
-		}
+		 let percentageChanceOfWorkingFirstPriorityJob = 95;
 
-		return this.getRoutineJob(); //if no first priority jobs....
+		 let typeOfJobRandomizer = Math.floor((Math.random() * 100));
+
+		 if (typeOfJobRandomizer < percentageChanceOfWorkingFirstPriorityJob)
+		 {
+			 for (let constructionSiteID in this.room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure)
+			 {
+				 let job = {
+					 targetID: constructionSiteID,
+					 type: "buildStructure"
+				 };
+				 return job;
+			 }
+
+			 for (let structureID in this.room.memory.jobs.workerJobBoard.routineJobs.repairStructure)
+			 {
+				 let job = {
+					 targetID: structureID,
+					 type: "repairStructure"
+				 };
+				 return job;
+			 }
+		 }
+		else
+		 {
+			 return this.getUpgradeControllerJob();
+		 }
+
+		//return this.getRoutineJob(); //if no first priority jobs....
 	},
 
 	Creep.prototype.getRoutineJob = function ()
@@ -49,15 +69,6 @@ module.exports = function ()
 			routineJobsArray.push(job);
 		}
 
-		for (let structureID in this.room.memory.jobs.workerJobBoard.routineJobs.repairStructure)
-		{
-			let job = {
-				targetID: structureID,
-				type: "repairStructure"
-			};
-			routineJobsArray.push(job);
-		}
-
 		/*
 		if(this.room.memory.structures.wallsArray.length > 0)
 		{
@@ -73,15 +84,6 @@ module.exports = function ()
 			}
 		}*/
 
-		if(!this.room.memory.structures.storageArray[0])
-		{
-			let job = {
-				index: this.room.controller.id,
-				type: "upgradeController"
-			}
-			routineJobsArray.push(job);
-		}
-
 		let jobsCount = routineJobsArray.length;
 		if(jobsCount > 0)
 		{
@@ -94,23 +96,26 @@ module.exports = function ()
 		}
 	}
 
+	Creep.prototype.getUpgradeControllerJob = function ()
+	{
+		let job = {
+			index: this.room.controller.id,
+			type: "upgradeController"
+		}
+		return job;
+	}
+
 	Creep.prototype.getWorkerJob = function ()
 	{
 		let job = null;
 
 		let room = this.room;
 
-		let percentageChanceOfWorkingFirstPriorityJob = 80;
+		job = this.getRoutineJob();
 
-		let typeOfJobRandomizer = Math.floor((Math.random() * 100));
-
-		if (typeOfJobRandomizer < percentageChanceOfWorkingFirstPriorityJob)
+		if(job == null)
 		{
 			job = this.getFirstPriorityJob();
-		}
-		else
-		{
-			job = this.getRoutineJob();
 		}
 
 		return job;

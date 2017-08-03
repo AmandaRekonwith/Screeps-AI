@@ -27,13 +27,38 @@ module.exports = function ()
 			{
 				this.memory.currentTask = "Harvesting";
 
-				if(storage.store[RESOURCE_ENERGY] == 0 || this.carry.energy == this.carryCapacity)
+				if(this.carry.energy == this.carryCapacity)
 				{
 					this.memory.currentTask = "Working";
 				}
 				else
 				{
-					this.withdraw(storage, RESOURCE_ENERGY);
+					let withdrawingFromLink = false;
+
+					let checkForTerminalLinksArray = this.room.lookForAtArea(LOOK_STRUCTURES,this.pos.y-1,this.pos.x-1,this.pos.y+1,this.pos.x+1, true);
+
+					let checkForTerminalLinksArrayCount = checkForTerminalLinksArray.length;
+					if(checkForTerminalLinksArrayCount > 0)
+					{
+						for(let x=0; x<checkForTerminalLinksArrayCount; x++)
+						{
+							let structureObject = checkForTerminalLinksArray[x];
+							if(structureObject.structure.structureType == "link")
+							{
+								let link = structureObject.structure;
+								if(link.energy > 0)
+								{
+									withdrawingFromLink = true;
+									this.withdraw(link, RESOURCE_ENERGY);
+								}
+							}
+						}
+					}
+
+					if(withdrawingFromLink == false)
+					{
+						this.withdraw(storage, RESOURCE_ENERGY);
+					}
 				}
 			}
 			else
@@ -60,7 +85,6 @@ module.exports = function ()
 				manageStorageAndTerminalJobsArray.push(job);
 
 				let jobRandomizer = Math.floor((Math.random() * manageStorageAndTerminalJobsArray.length));
-
 				let manageStorageAndTerminalJob = manageStorageAndTerminalJobsArray[jobRandomizer];
 
 				switch (manageStorageAndTerminalJob.type)

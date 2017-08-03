@@ -1,4 +1,5 @@
 let creepsController = require('Controllers_Room_CreepsController');
+let linksController = require('Controllers_Room_LinksController');
 let roomExtensionsConstructionController = require('Controllers_Room_Construction_ExtensionsController');
 
 require('Prototypes_Source')();
@@ -37,12 +38,17 @@ let RoomController =
 						roomExtensionsConstructionController.run(room);
 						if (room.memory.structures.spawnsArray.length > 0)
 						{
-							creepsController.spawnCreeps(room);
+							console.log(Game.time);
+							if(Game.time % 35 == 0)
+							{
+								creepsController.spawnCreeps(room);
+							}
 						}
 					}
 				}
 			}
 
+			linksController.run(room);
 			creepsController.run(room);
 		}
 	},
@@ -51,6 +57,7 @@ let RoomController =
 	{
 		this.scanTerrain(room);
 		this.scanEnergy(room);
+		this.scanResources(room);
 	},
 
 	scanEnergy: function (room)
@@ -137,6 +144,22 @@ let RoomController =
 		}
 
 		room.memory.environment.energySourcesArray = energySourcesArray;
+	},
+
+	scanResources: function (room)
+	{
+		if(room.memory.environment.resourcesArray.length == 0)
+		{
+			let roomName = room.name;
+			let resourcesArray = room.find(FIND_MINERALS);
+
+			for (let x in resourcesArray)
+			{
+				let resource = resourcesArray[x];
+
+				room.memory.environment.resourcesArray.push(resource.id);
+			}
+		}
 	},
 
 	scanTerrain: function (room)

@@ -62,7 +62,8 @@ let BrainController =
 				{
 					room.memory.environment = {
 						terrainMapArray: [],
-						energySourcesArray: []
+						energySourcesArray: [],
+						resourcesArray: []
 					};
 				}
 
@@ -108,7 +109,8 @@ let BrainController =
 							mapArray: [],
 
 							manageStorageAndTerminal: {},
-							harvestEnergy: {}
+							harvestEnergy: {},
+							harvestResource: {}
 						}
 					};
 					let stationaryJobSitesMapArray = new Array();
@@ -139,7 +141,10 @@ let BrainController =
 						biggestWorkerCreepsArray: []
 					},
 					haulerCreeps: [],
-					stationaryCreeps: []
+					stationaryCreeps: {
+						smallestStationaryCreepsArray: [],
+						bigStationaryCreepsArray: []
+					}
 				};
 
 				room.memory.structures = {
@@ -147,8 +152,10 @@ let BrainController =
 
 					spawnsArray: [],
 					extensionsArray: [],
+					extractorsArray: [],
 					containersArray: [],
 					storageArray: [],
+					labsArray: [],
 					linksArray: [],
 					towersArray: [],
 					wallsArray: []

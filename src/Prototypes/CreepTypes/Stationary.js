@@ -6,6 +6,8 @@ module.exports = function ()
 
 		let room = this.room;
 
+		console.log('fucktits');
+
 		for(let energySourceID in room.memory.jobs.stationaryJobBoard.harvestEnergy)
 		{
 
@@ -32,6 +34,20 @@ module.exports = function ()
 			}
 		}
 
+		/*
+		for(let resourceID in room.memory.jobs.stationaryJobBoard.harvestResource)
+		{
+
+			let harvestResourceJob = room.memory.jobs.stationaryJobBoard.harvestResource[resourceID];
+			if (harvestResourceJob.active == false)
+			{
+				job = {
+					targetID: resourceID,
+					type: "harvestResource"
+				};
+			}
+		}*/
+
 		return job;
 	}
 
@@ -44,7 +60,7 @@ module.exports = function ()
 				case "harvestEnergy":
 					if(this.room.memory.jobs.stationaryJobBoard.harvestEnergy[this.memory.job.targetID]) //if job still exists
 					{
-						this.runStationaryHarvester();
+						this.runStationaryEnergyHarvester();
 					}
 					else
 					{

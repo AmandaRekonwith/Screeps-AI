@@ -48,32 +48,44 @@ module.exports = function ()
 
 		if (this.memory.currentTask == "Working" && this.memory.job == null)
 		{
+			let numberOfSmallestWorkerCreeps = room.memory.creeps.workerCreeps.smallestWorkerCreepsArray.length;
+			let numberOfSmallerWorkerCreeps = room.memory.creeps.workerCreeps.smallerWorkerCreepsArray.length;
+			let numberOfSmallWorkerCreeps = room.memory.creeps.workerCreeps.smallWorkerCreepsArray.length;
+			let numberOfBigWorkerCreeps = room.memory.creeps.workerCreeps.bigWorkerCreepsArray.length;
+			let numberOfBiggerWorkerCreeps = room.memory.creeps.workerCreeps.biggerWorkerCreepsArray.length;
+			let numberOfBiggestWorkerCreeps = room.memory.creeps.workerCreeps.biggestWorkerCreepsArray.length;
+			let totalNumberOfWorkerCreeps = numberOfSmallestWorkerCreeps + numberOfSmallerWorkerCreeps + numberOfSmallWorkerCreeps + numberOfBigWorkerCreeps + numberOfBiggerWorkerCreeps + numberOfBiggestWorkerCreeps;
+
 			let routineJobsArray = new Array();
-			for (let extensionID in this.room.memory.jobs.generalJobBoard.supplyExtension)
-			{
-				let job = {
-					targetID: extensionID,
-					type: "supplyExtension"
-				};
-				routineJobsArray.push(job);
-			}
 
-			for (let spawnID in this.room.memory.jobs.generalJobBoard.supplySpawn)
+			if(totalNumberOfWorkerCreeps == 0)
 			{
-				let job = {
-					targetID: spawnID,
-					type: "supplySpawn"
-				};
-				routineJobsArray.push(job);
-			}
+				for (let extensionID in this.room.memory.jobs.generalJobBoard.supplyExtension)
+				{
+					let job = {
+						targetID: extensionID,
+						type: "supplyExtension"
+					};
+					routineJobsArray.push(job);
+				}
 
-			for (let towerID in this.room.memory.jobs.generalJobBoard.supplyTower)
-			{
-				let job = {
-					targetID: towerID,
-					type: "supplyTower"
-				};
-				routineJobsArray.push(job);
+				for (let spawnID in this.room.memory.jobs.generalJobBoard.supplySpawn)
+				{
+					let job = {
+						targetID: spawnID,
+						type: "supplySpawn"
+					};
+					routineJobsArray.push(job);
+				}
+
+				for (let towerID in this.room.memory.jobs.generalJobBoard.supplyTower)
+				{
+					let job = {
+						targetID: towerID,
+						type: "supplyTower"
+					};
+					routineJobsArray.push(job);
+				}
 			}
 
 			let jobsCount = routineJobsArray.length;
@@ -84,7 +96,6 @@ module.exports = function ()
 			}
 			else
 			{
-
 				if(room.storage)
 				{
 					if(room.memory.jobs.generalJobBoard.supplyStorage[room.storage.id])
@@ -126,14 +137,8 @@ module.exports = function ()
 						}
 						break;
 					case "collectDroppedEnergy":
-						if (this.room.memory.jobs.haulerJobBoard.collectDroppedEnergy[this.memory.job.targetID]) //if job still exists
-						{
-							this.runHaulerCollectDroppedEnergy();
-						}
-						else
-						{
-							this.memory.job = null;
-						}
+						//console.log(this.memory.job.targetID);
+
 						break;
 					default:
 				}

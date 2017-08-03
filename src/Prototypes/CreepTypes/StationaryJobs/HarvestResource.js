@@ -1,0 +1,110 @@
+module.exports = function ()
+{
+	Creep.prototype.runStationaryResourceHarvester = function ()
+	{
+		/*
+		let room = this.room;
+		let resourceID = this.memory.job.targetID;
+		let resource = Game.getObjectById(resourceID);
+		let job = room.memory.jobs.stationaryJobBoard.harvestResource[resourceID];
+		
+		let currentTask = this.memory.currentTask;
+
+		console.log(resourceID);
+		room.memory.jobs.stationaryJobBoard.harvestResource[resourceID].creepID = this.id;
+		room.memory.jobs.stationaryJobBoard.harvestResource[resourceID].active = true;
+
+		let resourceXPosition = resource.pos.x;
+		let resourceYPosition = resource.pos.y;
+
+		let lab = null;
+		let labExists = false;
+
+		let structuresArray = room.lookForAtArea(LOOK_STRUCTURES, resourceYPosition - 2, resourceXPosition - 2, resourceYPosition + 2, resourceXPosition +2, true);
+		let structuresCount = structuresArray.length;
+
+		for(let x=0; x<structuresCount; x++)
+		{
+			let structure = structuresArray[x].structure;
+
+			if(structure.structureType == "lab")
+			{
+				lab = structure;
+				labExists = true;
+			}
+		}
+
+		let jobPosition = null;
+
+		if(labExists == true)
+		{
+			let possibleJobPositionsArray = new Array();
+			possibleJobPositionsArray.push({x:resource.pos.x-1, y:resource.pos.y-1});
+			possibleJobPositionsArray.push({x:resource.pos.x,   y:resource.pos.y-1});
+			possibleJobPositionsArray.push({x:resource.pos.x+1, y:resource.pos.y-1});
+			possibleJobPositionsArray.push({x:resource.pos.x-1, y:resource.pos.y});
+			possibleJobPositionsArray.push({x:resource.pos.x+1, y:resource.pos.y});
+			possibleJobPositionsArray.push({x:resource.pos.x-1, y:resource.pos.y+1});
+			possibleJobPositionsArray.push({x:resource.pos.x,   y:resource.pos.y+1});
+			possibleJobPositionsArray.push({x:resource.pos.x+1, y:resource.pos.y+1});
+
+			for(let x=0; x<8; x++)
+			{
+				if(room.memory.environment.terrainMapArray[possibleJobPositionsArray[x].x][possibleJobPositionsArray[x].y]
+					&& room.lookForAtArea(room.lookForAtArea(LOOK_STRUCTURES, resourceYPosition - 1, resourceXPosition - 1, resourceYPosition + 1, resourceXPosition + 1, true).length == 2))
+				{
+					jobPosition = possibleJobPositionsArray[x];
+					break;
+				}
+			}
+		}
+
+
+
+		if ((this.pos.x != jobPosition.x) || (this.pos.y != jobPosition.y))
+		{
+			this.moveTo(jobPosition.x, jobPosition.y, {visualizePathStyle: {stroke: '#ffaa00'}});
+			this.memory.currentTask = "WalkingToJobSite";
+		}
+		else
+		{
+			this.memory.currentTask = "Harvesting";
+		}
+
+		if(	(this.memory.currentTask == "Harvesting" || this.memory.currentTask == "Working"))
+		{
+			if ( _.sum(this.carry) == this.carryCapacity)
+			{
+				this.memory.currentTask = "Working";
+			}
+
+			if(this.memory.currentTask == "Harvesting")
+			{
+				let action = this.harvest(resource);
+			}
+
+			if(this.memory.currentTask == "Working")
+			{
+				let action = this.transfer(lab, resource.resourceType);
+			}
+
+			if ( _.sum(this.carry) == 0)
+			{
+				this.memory.currentTask = "Harvesting";
+			}
+		}
+
+
+		 */
+
+		/*
+		 if(this.carry.resource == this.carryCapacity && this.memory.currentTask == "Harvesting")
+		 {
+		 this.memory.currentTask = "DoneHarvesting";
+		 }
+		 */
+		//let containersPositionsArray = job.containersPositionsArray;
+
+
+	}
+}

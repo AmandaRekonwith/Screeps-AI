@@ -15,11 +15,10 @@ module.exports = function ()
 			}
 		}
 
-		if (this.room.storage)
+		if (this.room.storage && this.room.storage.store[RESOURCE_ENERGY] > 0)
 		{
 			let energySource = {type: "storage", targetID: this.room.storage.id};
 			energySourcesArray.push(energySource);
-			//energySourcesArray.push(energySource);
 		}
 
 		let energySourcesCount = energySourcesArray.length;
@@ -30,6 +29,8 @@ module.exports = function ()
 			this.memory.currentTask = "Getting Energy";
 			return energySourcesArray[energySourceRandomizer].type;
 		}
+
+
 
 		let containerWithEnergyArray = this.room.find(FIND_STRUCTURES, {
 			filter: (i) => i.structureType == STRUCTURE_CONTAINER &&

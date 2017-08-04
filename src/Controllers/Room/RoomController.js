@@ -15,6 +15,23 @@ let RoomController =
 			if(controller != undefined)
 			{
 				let roomControllerLevel = controller.level;
+
+				let numberOfTicksToWaitToCheckIfCreepsNeedToBeSpawned = 10;
+				switch (roomControllerLevel)
+				{
+					case 1:
+						numberOfTicksToWaitToCheckIfCreepsNeedToBeSpawned = 5;
+						break;
+					case 2:
+						numberOfTicksToWaitToCheckIfCreepsNeedToBeSpawned = 10;
+						break;
+					case 3:
+						numberOfTicksToWaitToCheckIfCreepsNeedToBeSpawned = 20;
+						break;
+					default:
+						numberOfTicksToWaitToCheckIfCreepsNeedToBeSpawned = 35;
+				}
+
 				if (roomControllerLevel < 5)
 				{
 					room.memory.DEFCON = 3;
@@ -39,7 +56,7 @@ let RoomController =
 						if (room.memory.structures.spawnsArray.length > 0)
 						{
 							console.log(Game.time);
-							if(Game.time % 35 == 0)
+							if(Game.time % numberOfTicksToWaitToCheckIfCreepsNeedToBeSpawned == 0)
 							{
 								creepsController.spawnCreeps(room);
 							}

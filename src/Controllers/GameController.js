@@ -255,8 +255,6 @@ let GameController =
 		let lowestAmountOfTimeLeftToLiveOfRemoteBuildStructureCreeps = 1500;
 		let lowestAmountOfTimeLeftToLiveOfRemoteUpgradeControllerCreeps = 1500;
 
-		let lowestAmountOfTimeLeftToLiveOfSmallestStationaryCreeps = 1500;
-		let lowestAmountOfTimeLeftToLiveOfBigStationaryCreeps =1500;
 		let lowestAmountOfTimeLeftToLiveOfStationaryCreeps = 1500;
 		let creepToDie;
 
@@ -271,8 +269,9 @@ let GameController =
 			room.memory.creeps.workerCreeps.biggerWorkerCreepsArray = new Array();
 			room.memory.creeps.workerCreeps.biggestWorkerCreepsArray = new Array();
 			room.memory.creeps.haulerCreeps = new Array();
-			room.memory.creeps.stationaryCreeps.smallestStationaryCreepsArray = new Array();
-			room.memory.creeps.stationaryCreeps.bigStationaryCreepsArray = new Array();
+			room.memory.creeps.stationaryCreeps = new Array();
+			//room.memory.creeps.stationaryCreeps.smallestStationaryCreepsArray = new Array();
+			//room.memory.creeps.stationaryCreeps.bigStationaryCreepsArray = new Array();
 			room.memory.creeps.remoteCreeps.claimerCreepsArray = new Array();
 			room.memory.creeps.remoteCreeps.remoteBuildStructureCreepsArray = new Array();
 			room.memory.creeps.remoteCreeps.remoteUpgradeControllerCreepsArray = new Array();
@@ -293,8 +292,8 @@ let GameController =
 			switch (creepType)
 			{
 				case 'worker':
-					let workerCreepSize = creep.memory.size;
-					switch (workerCreepSize)
+					let creepSize = creep.memory.size;
+					switch (creepSize)
 					{
 						case 'smallest':
 							if (creep.ticksToLive < lowestAmountOfTimeLeftToLiveOfSmallestWorkerCreeps)
@@ -377,30 +376,14 @@ let GameController =
 					}
 					break;
 				case 'stationary':
-					let stationaryCreepSize = creep.memory.size;
-					switch (stationaryCreepSize)
+					if (creep.ticksToLive < lowestAmountOfTimeLeftToLiveOfStationaryCreeps)
 					{
-						case 'smallest':
-							if (creep.ticksToLive < lowestAmountOfTimeLeftToLiveOfSmallestStationaryCreeps)
-							{
-								room.memory.creeps.workerCreeps.smallestStationaryCreepsArray.unshift(creep);
-								lowestAmountOfTimeLeftToLiveOfSmallestStationaryCreeps = creep.ticksToLive;
-							}
-							else
-							{
-								room.memory.creeps.workerCreeps.smallestStationaryCreepsArray.push(creep);
-							}
-							break;
-						case 'big':
-							if (creep.ticksToLive < lowestAmountOfTimeLeftToLiveOfBigStationaryCreeps)
-							{
-								room.memory.creeps.workerCreeps.bigStationaryCreepsArray.unshift(creep);
-								lowestAmountOfTimeLeftToLiveOfBigStationaryCreeps = creep.ticksToLive;
-							}
-							else
-							{
-								room.memory.creeps.workerCreeps.bigStationaryCreepsArray.push(creep);
-							}
+						room.memory.creeps.stationaryCreeps.unshift(creep);
+						lowestAmountOfTimeLeftToLiveOfStationaryCreeps = creep.ticksToLive;
+					}
+					else
+					{
+						room.memory.creeps.stationaryCreeps.push(creep);
 					}
 					break;
 				case 'claimer':

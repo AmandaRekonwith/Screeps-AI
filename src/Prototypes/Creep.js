@@ -58,10 +58,23 @@ module.exports = function ()
 				{
 					this.memory.energySource = {type: "source", targetID: energySource.id};
 					this.memory.currentTask = "Getting Energy";
+
+					return "source";
 				}
 			}
+		}
 
-			return "source";
+		let flags = this.room.find(FIND_FLAGS);
+		let flagCount = flags.length;
+		for(let x=0; x<flagCount; x++)
+		{
+			let flag = flags[x];
+			if(flag.color == COLOR_GREEN)
+			{
+				this.memory.energySource = {type: "otherRoom", targetID: flag};
+				this.memory.currentTask = "Getting Energy";
+				return "otherRoom";
+			}
 		}
 
 		return "NO ENERGY FOUND";
@@ -86,6 +99,9 @@ module.exports = function ()
 					break;
 				case "source":
 					this.getEnergyFromSource();
+					break;
+				case "otherRoom":
+					this.getEnergyFromOtherRoom();
 					break;
 				default:
 					break;
@@ -161,6 +177,55 @@ module.exports = function ()
 		}
 	}
 
+	Creep.prototype.getEnergyFromOtherRoom = function ()
+	{
+		let flag = this.memory.energySource.targetID;
+
+		let flags = this.room.find(FIND_FLAGS);
+		let greenFlags = new Array();
+		let flagsCount = flags.length;
+
+		for(let x=0; x<flagsCount; x++)
+		{
+			let flag = flags[x];
+			if(flag.color == COLOR_GREEN)
+			{
+				greenFlags.push(flag);
+			}
+		}
+
+		let greenFlagsCount = greenFlags.length;
+		if(greenFlags.length == 0)
+		{
+			if(!this.memory.remoteSourceID || this.memory.remoteSourceID == null)
+			{
+				let sources = this.room.find(FIND_SOURCES);
+				let sourceRandomizer = Math.floor((Math.random() * sources.length));
+				this.memory.remoteSourceID = sources[sourceRandomizer].id;
+			}
+
+			let source = Game.getObjectById(this.memory.remoteSourceID);
+
+			let action = this.harvest(source);
+
+			if (action == ERR_NOT_IN_RANGE)
+			{
+				this.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
+			}
+		}
+		else
+		{
+			if(!this.memory.remoteSourceFlagName || this.memory.remoteSourceFlagName == null)
+			{
+				let flagRandomizer = Math.floor((Math.random() * greenFlagsCount));
+				this.memory.remoteSourceFlagName =greenFlags[flagRandomizer].name;
+			}
+
+			this.moveTo(Game.flags[this.memory.remoteSourceFlagName]);
+		}
+	}
+
+
 	Creep.prototype.run = function ()
 	{
 		if (this.memory.currentTask == null || (this.memory.currentTask == "Getting Energy" && this.memory.energySource == null))
@@ -177,27 +242,60 @@ module.exports = function ()
 		if (this.memory.currentTask != "Working" && this.carry[RESOURCE_ENERGY] == this.carryCapacity)
 		{
 			this.memory.currentTask = "Working";
+			if(this.memory.remoteSourceFlagName)
+			{
+				delete this.memory.remoteSourceFlagName;
+			}
+			if(this.memory.remoteSourceID)
+			{
+				delete this.memory.remoteSourceID;
+			}
+			if(this.memory.remoteSource)
+			{
+				delete this.memory.remoteSource;
+			}
 		}
 
 		if (this.memory.currentTask == "Working")
 		{
-			switch (this.memory.type)
+			if(this.room.controller.level == 0)
 			{
-				case "worker":
-					this.runWorker();
-					break;
-				case "hauler":
-					this.runHauler();
-					break;
-				case "stationary":
-					this.runStationary();
-					break;
-				default:
-					"";
+				let flags = this.room.find(FIND_FLAGS);
+				let brownFlags = new Array();
+				let flagsCount = flags.length;
+				for(let x=0; x<flagsCount; x++)
+				{
+					let flag = flags[x];
+					if(flag.color == COLOR_BROWN)
+					{
+						brownFlags.push(flag);
+					}
+				}
+
+				if(brownFlags.length > 0)
+				{
+					this.moveTo(brownFlags[0].pos.x, brownFlags[0].pos.y);
+				}
+			}
+			else
+			{
+				switch (this.memory.type)
+				{
+					case "worker":
+						this.runWorker();
+						break;
+					case "hauler":
+						this.runHauler();
+						break;
+					case "stationary":
+						this.runStationary();
+						break;
+					default:
+						"";
+				}
 			}
 		}
 	}
-
 
 	Creep.prototype.FisherYatesShuffle = function (array)
 	{

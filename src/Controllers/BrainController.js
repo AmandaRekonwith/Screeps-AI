@@ -141,10 +141,7 @@ let BrainController =
 						biggestWorkerCreepsArray: []
 					},
 					haulerCreeps: [],
-					stationaryCreeps: {
-						smallestStationaryCreepsArray: [],
-						bigStationaryCreepsArray: []
-					}
+					stationaryCreeps: []
 				};
 
 				room.memory.structures = {

@@ -404,9 +404,9 @@ var RoomJobsController =
 				}
 				else
 				{
-					if(room.memory.environment.terrainMapArray[storagePositionX - 1][ storagePositionY - 1] == 1)
+					if(room.memory.environment.terrainMapArray[storagePositionX - 1][ storagePositionY] == 1)
 					{
-						jobPosition = {x: storagePositionX - 1, y: storagePositionY - 1};
+						jobPosition = {x: storagePositionX - 1, y: storagePositionY};
 					}
 					else
 					{

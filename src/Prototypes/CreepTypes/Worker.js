@@ -41,58 +41,76 @@ module.exports = function ()
 		let creepXPosition = this.pos.x;
 		let creepYPosition = this.pos.y;
 
-		let routineJobsArray = new Array();
-		for (let extensionID in this.room.memory.jobs.generalJobBoard.supplyExtension)
-		{
-			let job = {
-				targetID: extensionID,
-				type: "supplyExtension"
-			};
-			routineJobsArray.push(job);
-		}
+		let percentageChanceOfUpgradingController = 2;
 
-		for (let spawnID in this.room.memory.jobs.generalJobBoard.supplySpawn)
+		let upgradeControllerChance = Math.floor((Math.random() * 100));
+		if(upgradeControllerChance >= percentageChanceOfUpgradingController)
 		{
-			let job = {
-				targetID: spawnID,
-				type: "supplySpawn"
-			};
-			routineJobsArray.push(job);
-		}
-
-		for (let towerID in this.room.memory.jobs.generalJobBoard.supplyTower)
-		{
-			let job = {
-				targetID: towerID,
-				type: "supplyTower"
-			};
-			routineJobsArray.push(job);
-		}
-
-		/*
-		if(this.room.memory.structures.wallsArray.length > 0)
-		{
-			let wall = this.room.memory.structures.wallsArray[0];
-			let wallJob = this.room.memory.jobs.workerJobBoard.routineJobs.repairWall[wall.id];
-			if (wallJob)
+			let routineJobsArray = new Array();
+			for (let extensionID in this.room.memory.jobs.generalJobBoard.supplyExtension)
 			{
 				let job = {
-					targetID: wall.id,
-					type: "repairWall"
+					targetID: extensionID,
+					type: "supplyExtension"
 				};
 				routineJobsArray.push(job);
 			}
-		}*/
 
-		let jobsCount = routineJobsArray.length;
-		if(jobsCount > 0)
-		{
-			let jobRandomizer = Math.floor((Math.random() * jobsCount));
-			return routineJobsArray[jobRandomizer];
+			for (let spawnID in this.room.memory.jobs.generalJobBoard.supplySpawn)
+			{
+				let job = {
+					targetID: spawnID,
+					type: "supplySpawn"
+				};
+				routineJobsArray.push(job);
+			}
+
+			for (let towerID in this.room.memory.jobs.generalJobBoard.supplyTower)
+			{
+				let job = {
+					targetID: towerID,
+					type: "supplyTower"
+				};
+				routineJobsArray.push(job);
+			}
+
+			let percentageChanceOfAddingRepairWallJobController = 30;
+			let repairWallChance = Math.floor((Math.random() * 100));
+
+			if(repairWallChance <= percentageChanceOfAddingRepairWallJobController)
+			{
+				if (this.room.memory.structures.wallsArray.length > 0)
+				{
+					let wall = this.room.memory.structures.wallsArray[0];
+					if(wall.hits < 100000)
+					{
+						let wallJob = this.room.memory.jobs.workerJobBoard.routineJobs.repairWall[wall.id];
+						if (wallJob)
+						{
+							let job = {
+								targetID: wall.id,
+								type: "repairWall"
+							};
+							routineJobsArray.push(job);
+						}
+					}
+				}
+			}
+
+			let jobsCount = routineJobsArray.length;
+			if (jobsCount > 0)
+			{
+				let jobRandomizer = Math.floor((Math.random() * jobsCount));
+				return routineJobsArray[jobRandomizer];
+			}
+			else
+			{
+				return null;
+			}
 		}
 		else
 		{
-			return null;
+			return this.getUpgradeControllerJob();
 		}
 	}
 

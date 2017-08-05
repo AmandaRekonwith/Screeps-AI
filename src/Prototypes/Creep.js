@@ -228,70 +228,78 @@ module.exports = function ()
 
 	Creep.prototype.run = function ()
 	{
-		if (this.memory.currentTask == null || (this.memory.currentTask == "Getting Energy" && this.memory.energySource == null))
+		if(this.pos.x == 0)
 		{
-			this.memory.currentTask = "Getting Energy";
-			let where = this.checkWhereToGetEnergy();
+			console.log("FFFFUUUUCK");
+			this.moveTo(1, this.pos.y);
 		}
-
-		if (this.memory.currentTask == "Getting Energy")
+		else
 		{
-			this.getEnergy();
-		}
+			if (this.memory.currentTask == null || (this.memory.currentTask == "Getting Energy" && this.memory.energySource == null))
+			{
+				this.memory.currentTask = "Getting Energy";
+				let where = this.checkWhereToGetEnergy();
+			}
 
-		if (this.memory.currentTask != "Working" && this.carry[RESOURCE_ENERGY] == this.carryCapacity)
-		{
-			this.memory.currentTask = "Working";
-			if(this.memory.remoteSourceFlagName)
+			if (this.memory.currentTask == "Getting Energy")
 			{
-				delete this.memory.remoteSourceFlagName;
+				this.getEnergy();
 			}
-			if(this.memory.remoteSourceID)
-			{
-				delete this.memory.remoteSourceID;
-			}
-			if(this.memory.remoteSource)
-			{
-				delete this.memory.remoteSource;
-			}
-		}
 
-		if (this.memory.currentTask == "Working")
-		{
-			if(this.room.controller.level == 0)
+			if (this.memory.currentTask != "Working" && this.carry[RESOURCE_ENERGY] == this.carryCapacity)
 			{
-				let flags = this.room.find(FIND_FLAGS);
-				let brownFlags = new Array();
-				let flagsCount = flags.length;
-				for(let x=0; x<flagsCount; x++)
+				this.memory.currentTask = "Working";
+				if (this.memory.remoteSourceFlagName)
 				{
-					let flag = flags[x];
-					if(flag.color == COLOR_BROWN)
+					delete this.memory.remoteSourceFlagName;
+				}
+				if (this.memory.remoteSourceID)
+				{
+					delete this.memory.remoteSourceID;
+				}
+				if (this.memory.remoteSource)
+				{
+					delete this.memory.remoteSource;
+				}
+			}
+
+			if (this.memory.currentTask == "Working")
+			{
+				if (this.room.controller.level == 0)
+				{
+					let flags = this.room.find(FIND_FLAGS);
+					let brownFlags = new Array();
+					let flagsCount = flags.length;
+					for (let x = 0; x < flagsCount; x++)
 					{
-						brownFlags.push(flag);
+						let flag = flags[x];
+						if (flag.color == COLOR_BROWN)
+						{
+							brownFlags.push(flag);
+						}
+					}
+
+					if (brownFlags.length > 0)
+					{
+						this.moveTo(brownFlags[0].pos.x, brownFlags[0].pos.y);
 					}
 				}
-
-				if(brownFlags.length > 0)
+				else
 				{
-					this.moveTo(brownFlags[0].pos.x, brownFlags[0].pos.y);
-				}
-			}
-			else
-			{
-				switch (this.memory.type)
-				{
-					case "worker":
-						this.runWorker();
-						break;
-					case "hauler":
-						this.runHauler();
-						break;
-					case "stationary":
-						this.runStationary();
-						break;
-					default:
-						"";
+					switch (this.memory.type)
+					{
+						case "worker":
+							this.runWorker();
+							break;
+						case "hauler":
+							this.runHauler();
+							break;
+						case "stationary":
+							this.runStationary();
+							break;
+						default:
+							"";
+					}
 				}
 			}
 		}

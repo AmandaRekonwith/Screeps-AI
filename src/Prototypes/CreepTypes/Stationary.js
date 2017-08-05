@@ -53,41 +53,49 @@ module.exports = function ()
 
 	Creep.prototype.runStationary = function ()
 	{
-		if (this.memory.job != null)
+		if(this.pos.x == 0)
 		{
-			switch (this.memory.job.type)
+			console.log("FFFFUUUUCK");
+			this.moveTo(1, this.pos.y);
+		}
+		else
+		{
+			if (this.memory.job != null)
 			{
-				case "harvestEnergy":
-					if(this.room.memory.jobs.stationaryJobBoard.harvestEnergy[this.memory.job.targetID]) //if job still exists
-					{
-						this.runStationaryEnergyHarvester();
-					}
-					else
-					{
-						this.memory.job = null;
-					}
-					break;
-				case "manageStorageAndTerminal":
-					if(this.room.memory.structures.storageArray[0])
-					{
-						let storageID = this.room.memory.structures.storageArray[0].id;
-
-						if(this.room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID]) //if job still exists
+				switch (this.memory.job.type)
+				{
+					case "harvestEnergy":
+						if (this.room.memory.jobs.stationaryJobBoard.harvestEnergy[this.memory.job.targetID]) //if job still exists
 						{
-							this.runManageStorageAndTerminal();
+							this.runStationaryEnergyHarvester();
 						}
 						else
 						{
 							this.memory.job = null;
 						}
-					}
-					break;
-				default:
+						break;
+					case "manageStorageAndTerminal":
+						if (this.room.memory.structures.storageArray[0])
+						{
+							let storageID = this.room.memory.structures.storageArray[0].id;
+
+							if (this.room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID]) //if job still exists
+							{
+								this.runManageStorageAndTerminal();
+							}
+							else
+							{
+								this.memory.job = null;
+							}
+						}
+						break;
+					default:
+				}
 			}
-		}
-		else
-		{
-			this.memory.job = this.getStationaryJob();
+			else
+			{
+				this.memory.job = this.getStationaryJob();
+			}
 		}
 	}
 }

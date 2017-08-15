@@ -146,7 +146,7 @@ module.exports = function ()
 					MOVE];
 				size = "smaller";
 			}
-			if(roomLevel == 4)
+			if(roomLevel >= 4)
 			{
 				body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
 					CARRY, CARRY, CARRY,

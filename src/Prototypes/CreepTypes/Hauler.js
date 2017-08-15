@@ -116,89 +116,96 @@ module.exports = function ()
 
 	Creep.prototype.runHauler = function ()
 	{
-		if (this.memory.currentTask == "Getting Energy" || this.memory.currentTask == null)
+		if(this.pos.x == 0)
 		{
-			if(this.memory.job == null || !this.memory.job)
-			{
-				this.memory.job = this.getHaulerJob();
-			}
-			else
-			{
-				switch (this.memory.job.type)
-				{
-					case "moveEnergyFromContainer":
-						if (this.room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[this.memory.job.targetID]) //if job still exists
-						{
-							this.runHaulerMoveEnergyFromContainer();
-						}
-						else
-						{
-							this.memory.job = null;
-						}
-						break;
-					case "collectDroppedEnergy":
-						//console.log(this.memory.job.targetID);
-
-						break;
-					default:
-				}
-			}
+			this.moveTo(1, this.pos.y);
 		}
-
-		if (this.memory.currentTask == "Working")
+		else
 		{
-			if(this.memory.job != null)
+			if (this.memory.currentTask == "Getting Energy" || this.memory.currentTask == null)
 			{
-				switch (this.memory.job.type)
+				if(this.memory.job == null || !this.memory.job)
 				{
-					case "supplyExtension":
-						if (this.room.memory.jobs.generalJobBoard.supplyExtension[this.memory.job.targetID])
-						{
-							this.supplyExtension();
-						}
-						else
-						{
-							this.memory.job = null;
-						}
-						break;
-					case "supplySpawn":
-						if (this.room.memory.jobs.generalJobBoard.supplySpawn[this.memory.job.targetID])
-						{
-							this.supplySpawn();
-						}
-						else
-						{
-							this.memory.job = null;
-						}
-						break;
-					case "supplyTower":
-						if (this.room.memory.jobs.generalJobBoard.supplyTower[this.memory.job.targetID])
-						{
-							this.supplyTower();
-						}
-						else
-						{
-							this.memory.job = null;
-						}
-						break;
-					case "supplyStorage":
-						if (this.room.memory.jobs.generalJobBoard.supplyStorage[this.memory.job.targetID])
-						{
-							this.supplyStorage();
-						}
-						else
-						{
-							this.memory.job = null;
-						}
-						break;
-					default:
+					this.memory.job = this.getHaulerJob();
+				}
+				else
+				{
+					switch (this.memory.job.type)
+					{
+						case "moveEnergyFromContainer":
+							if (this.room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[this.memory.job.targetID]) //if job still exists
+							{
+								this.runHaulerMoveEnergyFromContainer();
+							}
+							else
+							{
+								this.memory.job = null;
+							}
+							break;
+						case "collectDroppedEnergy":
+							//console.log(this.memory.job.targetID);
 
-						break;
+							break;
+						default:
+					}
 				}
 			}
-			else
+
+			if (this.memory.currentTask == "Working")
 			{
-				this.memory.job = this.getHaulerJob();
+				if(this.memory.job != null)
+				{
+					switch (this.memory.job.type)
+					{
+						case "supplyExtension":
+							if (this.room.memory.jobs.generalJobBoard.supplyExtension[this.memory.job.targetID])
+							{
+								this.supplyExtension();
+							}
+							else
+							{
+								this.memory.job = null;
+							}
+							break;
+						case "supplySpawn":
+							if (this.room.memory.jobs.generalJobBoard.supplySpawn[this.memory.job.targetID])
+							{
+								this.supplySpawn();
+							}
+							else
+							{
+								this.memory.job = null;
+							}
+							break;
+						case "supplyTower":
+							if (this.room.memory.jobs.generalJobBoard.supplyTower[this.memory.job.targetID])
+							{
+								this.supplyTower();
+							}
+							else
+							{
+								this.memory.job = null;
+							}
+							break;
+						case "supplyStorage":
+							if (this.room.memory.jobs.generalJobBoard.supplyStorage[this.memory.job.targetID])
+							{
+								this.supplyStorage();
+							}
+							else
+							{
+								this.memory.job = null;
+							}
+							break;
+						default:
+
+							break;
+					}
+				}
+				else
+				{
+					this.memory.job = this.getHaulerJob();
+				}
 			}
 		}
 	}

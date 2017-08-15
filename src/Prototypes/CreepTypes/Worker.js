@@ -2,88 +2,88 @@ module.exports = function ()
 {
 	Creep.prototype.getFirstPriorityJob = function ()
 	{
-		 let percentageChanceOfWorkingFirstPriorityJob = 95;
+		let percentageChanceOfWorkingFirstPriorityJob = 95;
 
-		 let typeOfJobRandomizer = Math.floor((Math.random() * 100));
+		let typeOfJobRandomizer = Math.floor((Math.random() * 100));
 
-		 if (typeOfJobRandomizer < percentageChanceOfWorkingFirstPriorityJob)
-		 {
-			 for (let constructionSiteID in this.room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure)
-			 {
-				 let job = {
-					 targetID: constructionSiteID,
-					 type: "buildStructure"
-				 };
-				 return job;
-			 }
+		if (typeOfJobRandomizer < percentageChanceOfWorkingFirstPriorityJob)
+		{
+			for (let constructionSiteID in this.room.memory.jobs.workerJobBoard.firstPriorityJobs.buildStructure)
+			{
+				let job = {
+					targetID: constructionSiteID,
+					type: "buildStructure"
+				};
+				return job;
+			}
 
-			 for (let structureID in this.room.memory.jobs.workerJobBoard.routineJobs.repairStructure)
-			 {
-				 let job = {
-					 targetID: structureID,
-					 type: "repairStructure"
-				 };
-				 return job;
-			 }
-		 }
+			for (let structureID in this.room.memory.jobs.workerJobBoard.routineJobs.repairStructure)
+			{
+				let job = {
+					targetID: structureID,
+					type: "repairStructure"
+				};
+				return job;
+			}
+		}
 		else
-		 {
-			 return this.getUpgradeControllerJob();
-		 }
+		{
+			return null;
+		}
 
 		//return this.getRoutineJob(); //if no first priority jobs....
 	},
 
-	Creep.prototype.getRoutineJob = function ()
-	{
-		let DEFCON = this.room.memory.DEFCON;
-
-		let creepXPosition = this.pos.x;
-		let creepYPosition = this.pos.y;
-
-		let percentageChanceOfUpgradingController = 2;
-
-		let upgradeControllerChance = Math.floor((Math.random() * 100));
-		if(upgradeControllerChance >= percentageChanceOfUpgradingController)
+		Creep.prototype.getRoutineJob = function ()
 		{
-			let routineJobsArray = new Array();
-			for (let extensionID in this.room.memory.jobs.generalJobBoard.supplyExtension)
-			{
-				let job = {
-					targetID: extensionID,
-					type: "supplyExtension"
-				};
-				routineJobsArray.push(job);
-			}
+			let DEFCON = this.room.memory.DEFCON;
 
-			for (let spawnID in this.room.memory.jobs.generalJobBoard.supplySpawn)
-			{
-				let job = {
-					targetID: spawnID,
-					type: "supplySpawn"
-				};
-				routineJobsArray.push(job);
-			}
+			let creepXPosition = this.pos.x;
+			let creepYPosition = this.pos.y;
 
-			for (let towerID in this.room.memory.jobs.generalJobBoard.supplyTower)
-			{
-				let job = {
-					targetID: towerID,
-					type: "supplyTower"
-				};
-				routineJobsArray.push(job);
-			}
+			let percentageChanceOfUpgradingController = 2;
 
-			let percentageChanceOfAddingRepairWallJobController = 30;
-			let repairWallChance = Math.floor((Math.random() * 100));
-
-			if(repairWallChance <= percentageChanceOfAddingRepairWallJobController)
+			let upgradeControllerChance = Math.floor((Math.random() * 100));
+			if(upgradeControllerChance >= percentageChanceOfUpgradingController)
 			{
-				if (this.room.memory.structures.wallsArray.length > 0)
+				let routineJobsArray = new Array();
+				for (let extensionID in this.room.memory.jobs.generalJobBoard.supplyExtension)
 				{
-					let wall = this.room.memory.structures.wallsArray[0];
-					if(wall.hits < 100000)
+					let job = {
+						targetID: extensionID,
+						type: "supplyExtension"
+					};
+					routineJobsArray.push(job);
+				}
+
+				for (let spawnID in this.room.memory.jobs.generalJobBoard.supplySpawn)
+				{
+					let job = {
+						targetID: spawnID,
+						type: "supplySpawn"
+					};
+					routineJobsArray.push(job);
+				}
+
+				for (let towerID in this.room.memory.jobs.generalJobBoard.supplyTower)
+				{
+					let job = {
+						targetID: towerID,
+						type: "supplyTower"
+					};
+					routineJobsArray.push(job);
+				}
+
+				let percentageChanceOfAddingRepairWallJobController = 30;
+
+				let repairWallChance = Math.floor((Math.random() * 100));
+
+				if(repairWallChance <= percentageChanceOfAddingRepairWallJobController)
+				{
+					if (this.room.memory.structures.wallsArray.length > 0)
 					{
+						let wall = this.room.memory.structures.wallsArray[0];
+
 						let wallJob = this.room.memory.jobs.workerJobBoard.routineJobs.repairWall[wall.id];
 						if (wallJob)
 						{
@@ -95,24 +95,23 @@ module.exports = function ()
 						}
 					}
 				}
-			}
 
-			let jobsCount = routineJobsArray.length;
-			if (jobsCount > 0)
-			{
-				let jobRandomizer = Math.floor((Math.random() * jobsCount));
-				return routineJobsArray[jobRandomizer];
+				let jobsCount = routineJobsArray.length;
+				if (jobsCount > 0)
+				{
+					let jobRandomizer = Math.floor((Math.random() * jobsCount));
+					return routineJobsArray[jobRandomizer];
+				}
+				else
+				{
+					return null;
+				}
 			}
 			else
 			{
-				return null;
+				return this.getUpgradeControllerJob();
 			}
 		}
-		else
-		{
-			return this.getUpgradeControllerJob();
-		}
-	}
 
 	Creep.prototype.getUpgradeControllerJob = function ()
 	{
@@ -129,11 +128,25 @@ module.exports = function ()
 
 		let room = this.room;
 
-		job = this.getRoutineJob();
+
+		if(this.room.energyAvailable < this.room.energyCapacityAvailable / 1.5 || this.room.energyAvailable < 1300)
+		{
+			job = this.getRoutineJob();
+		}
 
 		if(job == null)
 		{
 			job = this.getFirstPriorityJob();
+		}
+
+		if(job == null)
+		{
+			job = this.getRoutineJob();
+		}
+
+		if(job == null)
+		{
+			job = this.getUpgradeControllerJob();
 		}
 
 		return job;

@@ -108,11 +108,11 @@ let GameController =
 
 			//find containers
 			/*
-			const containersWithEnergy = room.find(FIND_STRUCTURES, {
-				filter: (i) => i.structureType == STRUCTURE_CONTAINER &&
-				i.store[RESOURCE_ENERGY] > 0
-			});
-			*/
+			 const containersWithEnergy = room.find(FIND_STRUCTURES, {
+			 filter: (i) => i.structureType == STRUCTURE_CONTAINER &&
+			 i.store[RESOURCE_ENERGY] > 0
+			 });
+			 */
 
 			let structureContainersArray = room.find(FIND_STRUCTURES, {
 				filter: (i) => i.structureType == STRUCTURE_CONTAINER
@@ -185,13 +185,13 @@ let GameController =
 					structure.room.memory.structures.mapArray[structure.pos.x][structure.pos.y] = 5;
 					break;
 				/* keeperLairs are not in game hash, add these after this script (if needed)
-				case 'keeperLair':
-					structure.room.memory.structuresMapArray[structure.pos.x][structure.pos.y] = 6;
-				*/
+				 case 'keeperLair':
+				 structure.room.memory.structuresMapArray[structure.pos.x][structure.pos.y] = 6;
+				 */
 				/* portals are not in game hash, add these after this script (if needed)
-				case 'portal':
-					structure.room.memory.structuresMapArray[structure.pos.x][structure.pos.y] = 7;
-					*/
+				 case 'portal':
+				 structure.room.memory.structuresMapArray[structure.pos.x][structure.pos.y] = 7;
+				 */
 				case 'link':
 					structure.room.memory.structures.mapArray[structure.pos.x][structure.pos.y] = 8;
 					structure.room.memory.structures.linksArray.push(structure);
@@ -220,9 +220,9 @@ let GameController =
 				case 'terminal':
 					structure.room.memory.structures.mapArray[structure.pos.x][structure.pos.y] = 15;
 					break;
-				/* containers are not in game hash because they are not 'owned' by the player... code above puts it in this array
-				case 'container':
-				 structure.room.memory.structures.mapArray[structure.pos.x][structure.pos.y] = 16;*/
+					/* containers are not in game hash because they are not 'owned' by the player... code above puts it in this array
+					 case 'container':
+					 structure.room.memory.structures.mapArray[structure.pos.x][structure.pos.y] = 16;*/
 					break;
 				case 'nuker':
 					structure.room.memory.structures.mapArray[structure.pos.x][structure.pos.y] = 17;

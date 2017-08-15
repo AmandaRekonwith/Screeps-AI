@@ -11,7 +11,14 @@ module.exports = function ()
 			for(let x=0; x<droppedEnergyCount; x++)
 			{
 				let energySource = {type: "droppedEnergy", targetID: droppedEnergyArray[0].id};
-				energySourcesArray.push(energySource);
+				let energySourceGameObject = Game.getObjectById(droppedEnergyArray[0].id)
+				if(energySourceGameObject)
+				{
+					if(energySourceGameObject.pos.x > 2 && energySourceGameObject.pos.x < 47 && energySourceGameObject.pos.y > 2 && energySourceGameObject.pos.y < 47)
+					{
+						energySourcesArray.push(energySource);
+					}
+				}
 			}
 		}
 
@@ -150,17 +157,20 @@ module.exports = function ()
 	{
 		let energySource = Game.getObjectById(this.memory.energySource.targetID);
 
-		if(energySource.store[RESOURCE_ENERGY] == 0)
+		if(energySource != null)
 		{
-			let where = this.checkWhereToGetEnergy();
-		}
-		else
-		{
-			let action = this.withdraw(energySource, RESOURCE_ENERGY);
-
-			if (action == ERR_NOT_IN_RANGE)
+			if(energySource.store[RESOURCE_ENERGY] == 0)
 			{
-				this.moveTo(energySource, {visualizePathStyle: {stroke: '#ffaa00'}});
+				let where = this.checkWhereToGetEnergy();
+			}
+			else
+			{
+				let action = this.withdraw(energySource, RESOURCE_ENERGY);
+
+				if (action == ERR_NOT_IN_RANGE)
+				{
+					this.moveTo(energySource, {visualizePathStyle: {stroke: '#ffaa00'}});
+				}
 			}
 		}
 	}
@@ -230,7 +240,6 @@ module.exports = function ()
 	{
 		if(this.pos.x == 0)
 		{
-			console.log("FFFFUUUUCK");
 			this.moveTo(1, this.pos.y);
 		}
 		else

@@ -280,61 +280,61 @@ var RoomJobsController =
 
 		//delete hauler jobs first if objects disappeared...or there is no energy in containers.
 		/*
-		for(let energyID in room.memory.jobs.haulerJobBoard.collectDroppedEnergy)
-		{
-			if (!Game.getObjectById(energyID))
-			{
-				delete room.memory.jobs.haulerJobBoard.collectDroppedEnergy[energyID];
-			}
-		}
+		 for(let energyID in room.memory.jobs.haulerJobBoard.collectDroppedEnergy)
+		 {
+		 if (!Game.getObjectById(energyID))
+		 {
+		 delete room.memory.jobs.haulerJobBoard.collectDroppedEnergy[energyID];
+		 }
+		 }
 
-		let energySources = room.find(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
+		 let energySources = room.find(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
 
-		let energySourcesCount = energySources.length;
-		if(energySourcesCount > 0)
-		{
-			for(let x=0; x<energySourcesCount; x++)
-			{
-				let energySource = energySources[x];
+		 let energySourcesCount = energySources.length;
+		 if(energySourcesCount > 0)
+		 {
+		 for(let x=0; x<energySourcesCount; x++)
+		 {
+		 let energySource = energySources[x];
 
-				if(!room.memory.jobs.haulerJobBoard.collectDroppedEnergy[energySource.id])
-				{
-					room.memory.jobs.haulerJobBoard.collectDroppedEnergy[energySource.id] = {};
-				}
-			}
-		}*/
+		 if(!room.memory.jobs.haulerJobBoard.collectDroppedEnergy[energySource.id])
+		 {
+		 room.memory.jobs.haulerJobBoard.collectDroppedEnergy[energySource.id] = {};
+		 }
+		 }
+		 }*/
 	},
 
 	/*
-	getNumberOfAvailableStationaryJobs: function (room)
-	{
-		let stationaryHarvesterJobs = room.memory.jobs.stationaryJobBoard.harvestEnergy;
-		let manageStorageAndTerminalJobs = room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal;
+	 getNumberOfAvailableStationaryJobs: function (room)
+	 {
+	 let stationaryHarvesterJobs = room.memory.jobs.stationaryJobBoard.harvestEnergy;
+	 let manageStorageAndTerminalJobs = room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal;
 
-		let numberOfAvailableStationaryHarvesterJobs = 0;
-		for (let energySourceID in stationaryHarvesterJobs)
-		{
-			let stationaryHarvesterJob = stationaryHarvesterJobs[energySourceID];
+	 let numberOfAvailableStationaryHarvesterJobs = 0;
+	 for (let energySourceID in stationaryHarvesterJobs)
+	 {
+	 let stationaryHarvesterJob = stationaryHarvesterJobs[energySourceID];
 
-			if (stationaryHarvesterJob.creepID == null && stationaryHarvesterJob.active == false)
-			{
-				numberOfAvailableStationaryHarvesterJobs += 1;
-			}
-		}
+	 if (stationaryHarvesterJob.creepID == null && stationaryHarvesterJob.active == false)
+	 {
+	 numberOfAvailableStationaryHarvesterJobs += 1;
+	 }
+	 }
 
-		for (let energySourceID in manageStorageAndTerminalJobs)
-		{
-			let manageStorageAndTerminalJob = manageStorageAndTerminalJobs[energySourceID];
+	 for (let energySourceID in manageStorageAndTerminalJobs)
+	 {
+	 let manageStorageAndTerminalJob = manageStorageAndTerminalJobs[energySourceID];
 
-			if (manageStorageAndTerminalJob.creepID == null && manageStorageAndTerminalJob.active == false)
-			{
-				numberOfAvailableStationaryHarvesterJobs += 1;
-			}
-		}
+	 if (manageStorageAndTerminalJob.creepID == null && manageStorageAndTerminalJob.active == false)
+	 {
+	 numberOfAvailableStationaryHarvesterJobs += 1;
+	 }
+	 }
 
-		return numberOfAvailableStationaryHarvesterJobs;
-	},
-	*/
+	 return numberOfAvailableStationaryHarvesterJobs;
+	 },
+	 */
 
 	scanStationaryJobs: function (room)
 	{
@@ -385,7 +385,6 @@ var RoomJobsController =
 			let storageID = room.storage.id;
 			if(!room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID])
 			{
-				let storageID = room.memory.structures.storageArray[0].id;
 				let storage = Game.getObjectById(storageID);
 
 				let storagePositionX = storage.pos.x;
@@ -400,7 +399,7 @@ var RoomJobsController =
 
 				if(room.terminal)
 				{
-					jobPosition = {x: room.terminal.pos.x, y: room.terminal.pos.y + 1};
+					jobPosition = {x: room.terminal.pos.x - 1, y: room.terminal.pos.y + 1};
 				}
 				else
 				{

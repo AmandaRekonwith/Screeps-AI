@@ -35,18 +35,18 @@ module.exports = function ()
 		}
 
 		/*
-		for(let resourceID in room.memory.jobs.stationaryJobBoard.harvestResource)
-		{
+		 for(let resourceID in room.memory.jobs.stationaryJobBoard.harvestResource)
+		 {
 
-			let harvestResourceJob = room.memory.jobs.stationaryJobBoard.harvestResource[resourceID];
-			if (harvestResourceJob.active == false)
-			{
-				job = {
-					targetID: resourceID,
-					type: "harvestResource"
-				};
-			}
-		}*/
+		 let harvestResourceJob = room.memory.jobs.stationaryJobBoard.harvestResource[resourceID];
+		 if (harvestResourceJob.active == false)
+		 {
+		 job = {
+		 targetID: resourceID,
+		 type: "harvestResource"
+		 };
+		 }
+		 }*/
 
 		return job;
 	}

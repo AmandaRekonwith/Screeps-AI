@@ -6,8 +6,6 @@ module.exports = function ()
 
 		let room = this.room;
 
-		console.log('fucktits');
-
 		for(let energySourceID in room.memory.jobs.stationaryJobBoard.harvestEnergy)
 		{
 
@@ -26,13 +24,25 @@ module.exports = function ()
 			let manageStorageAndTerminalJob = room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[energySourceID];
 			if (manageStorageAndTerminalJob.active == false)
 			{
-				console.log(room.controller.id);
 				job = {
 					targetID: room.controller.id,
 					type: "manageStorageAndTerminal"
 				};
 			}
 		}
+
+		for(let resourceID in room.memory.jobs.stationaryJobBoard.harvestResource)
+		{
+			let harvestResourceJob = room.memory.jobs.stationaryJobBoard.harvestResource[resourceID];
+			if (harvestResourceJob.active == false)
+			{
+				job = {
+					targetID: resourceID,
+					type: "harvestResource"
+				};
+			}
+		}
+
 
 		/*
 		 for(let resourceID in room.memory.jobs.stationaryJobBoard.harvestResource)
@@ -55,7 +65,6 @@ module.exports = function ()
 	{
 		if(this.pos.x == 0)
 		{
-			console.log("FFFFUUUUCK");
 			this.moveTo(1, this.pos.y);
 		}
 		else
@@ -68,6 +77,16 @@ module.exports = function ()
 						if (this.room.memory.jobs.stationaryJobBoard.harvestEnergy[this.memory.job.targetID]) //if job still exists
 						{
 							this.runStationaryEnergyHarvester();
+						}
+						else
+						{
+							this.memory.job = null;
+						}
+						break;
+					case "harvestResource":
+						if (this.room.memory.jobs.stationaryJobBoard.harvestResource[this.memory.job.targetID]) //if job still exists
+						{
+							this.runStationaryResourceHarvester();
 						}
 						else
 						{

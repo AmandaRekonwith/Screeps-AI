@@ -21,86 +21,114 @@ module.exports = function ()
 		}
 		else
 		{
-			if(this.carry.energy < this.carryCapacity &&
-				(this.memory.currentTask == "WalkingToJobSite"
-				|| this.memory.currentTask == "Harvesting"))
+			//console.log(this.room.memory.structures.terminalsArray.length);
+			if(this.room.memory.structures.terminalsArray.length > 0 && this.room.terminal.store[RESOURCE_ENERGY] < 20000)
 			{
-				this.memory.currentTask = "Harvesting";
+				let terminal = this.room.memory.structures.terminalsArray[0];
 
-				if(this.carry.energy == this.carryCapacity)
+				if(this.memory.currentTask == "WalkingToJobSite" || this.memory.currentTask == "Harvesting" || this.memory.currentTask == null)
 				{
-					this.memory.currentTask = "Working";
-				}
-				else
-				{
-					let withdrawingFromLink = false;
+					let action = this.withdraw(room.storage, RESOURCE_ENERGY);
 
-					let checkForTerminalLinksArray = this.room.lookForAtArea(LOOK_STRUCTURES,this.pos.y-1,this.pos.x-1,this.pos.y+1,this.pos.x+1, true);
-
-					let checkForTerminalLinksArrayCount = checkForTerminalLinksArray.length;
-					if(checkForTerminalLinksArrayCount > 0)
+					if(this.carry[RESOURCE_ENERGY] == this.carryCapacity)
 					{
-						for(let x=0; x<checkForTerminalLinksArrayCount; x++)
-						{
-							let structureObject = checkForTerminalLinksArray[x];
-							if(structureObject.structure.structureType == "link")
-							{
-								let link = structureObject.structure;
-								if(link.energy > 0)
-								{
-									withdrawingFromLink = true;
-									this.withdraw(link, RESOURCE_ENERGY);
-								}
-							}
-						}
+						this.memory.currentTask = "SupplyTerminal";
 					}
+				}
 
-					if(withdrawingFromLink == false)
+				if(this.memory.currentTask == "SupplyTerminal")
+				{
+					let action = this.transfer(terminal, RESOURCE_ENERGY);
+
+					if(this.carry[RESOURCE_ENERGY] == 0)
 					{
-						this.withdraw(storage, RESOURCE_ENERGY);
+						this.memory.currentTask = null;
 					}
 				}
 			}
 			else
 			{
-				this.memory.currentTask = "Working";
-
-				let manageStorageAndTerminalJobsArray = new Array();
-
-				let checkForTerminalConstructionSiteArray = this.room.lookForAtArea(LOOK_CONSTRUCTION_SITES,this.pos.y-1,this.pos.x-1,this.pos.y+1,this.pos.x+1, true);
-				if(checkForTerminalConstructionSiteArray.length > 0)
-				{
-					let constructionSite = this.room.lookForAt(LOOK_CONSTRUCTION_SITES, checkForTerminalConstructionSiteArray[0].x, checkForTerminalConstructionSiteArray[0].y);
-					let job = {
-						targetID: constructionSite[0].id,
-						type: "build"
-					};
-					manageStorageAndTerminalJobsArray.push(job);
-				}
-
-				let job = {
-					targetID: this.room.controller.id,
-					type: "upgradeController"
-				};
-				manageStorageAndTerminalJobsArray.push(job);
-
-				let jobRandomizer = Math.floor((Math.random() * manageStorageAndTerminalJobsArray.length));
-				let manageStorageAndTerminalJob = manageStorageAndTerminalJobsArray[jobRandomizer];
-
-				switch (manageStorageAndTerminalJob.type)
-				{
-					case 'build':
-						this.build(Game.getObjectById(manageStorageAndTerminalJob.targetID));
-						break;
-					case 'upgradeController':
-						this.upgradeController(Game.getObjectById(manageStorageAndTerminalJob.targetID));
-						break;
-					default:
-				}
-
-				if (this.carry.energy == 0)
+				if(this.carry.energy < this.carryCapacity &&
+					(this.memory.currentTask == "WalkingToJobSite"
+					|| this.memory.currentTask == "Harvesting"))
 				{
 					this.memory.currentTask = "Harvesting";
+
+					if(this.carry.energy == this.carryCapacity)
+					{
+						this.memory.currentTask = "Working";
+					}
+					else
+					{
+						let withdrawingFromLink = false;
+
+						let checkForTerminalLinksArray = this.room.lookForAtArea(LOOK_STRUCTURES,this.pos.y-1,this.pos.x-1,this.pos.y+1,this.pos.x+1, true);
+
+						let checkForTerminalLinksArrayCount = checkForTerminalLinksArray.length;
+						if(checkForTerminalLinksArrayCount > 0)
+						{
+							for(let x=0; x<checkForTerminalLinksArrayCount; x++)
+							{
+								let structureObject = checkForTerminalLinksArray[x];
+								if(structureObject.structure.structureType == "link")
+								{
+									let link = structureObject.structure;
+									if(link.energy > 0)
+									{
+										withdrawingFromLink = true;
+										this.withdraw(link, RESOURCE_ENERGY);
+									}
+								}
+							}
+						}
+
+						if(withdrawingFromLink == false)
+						{
+							this.withdraw(storage, RESOURCE_ENERGY);
+						}
+					}
+				}
+				else
+				{
+					this.memory.currentTask = "Working";
+
+					let manageStorageAndTerminalJobsArray = new Array();
+
+					let checkForTerminalConstructionSiteArray = this.room.lookForAtArea(LOOK_CONSTRUCTION_SITES, this.pos.y - 1, this.pos.x - 1, this.pos.y + 1, this.pos.x + 1, true);
+					if (checkForTerminalConstructionSiteArray.length > 0)
+					{
+						let constructionSite = this.room.lookForAt(LOOK_CONSTRUCTION_SITES, checkForTerminalConstructionSiteArray[0].x, checkForTerminalConstructionSiteArray[0].y);
+						let job = {
+							targetID: constructionSite[0].id,
+							type: "build"
+						};
+						manageStorageAndTerminalJobsArray.push(job);
+					}
+
+					let job = {
+						targetID: this.room.controller.id,
+						type: "upgradeController"
+					};
+					manageStorageAndTerminalJobsArray.push(job);
+
+					let jobRandomizer = Math.floor((Math.random() * manageStorageAndTerminalJobsArray.length));
+					let manageStorageAndTerminalJob = manageStorageAndTerminalJobsArray[jobRandomizer];
+
+					switch (manageStorageAndTerminalJob.type)
+					{
+						case 'build':
+							this.build(Game.getObjectById(manageStorageAndTerminalJob.targetID));
+							break;
+						case 'upgradeController':
+							this.upgradeController(Game.getObjectById(manageStorageAndTerminalJob.targetID));
+							break;
+						default:
+					}
+
+					if (this.carry.energy == 0)
+					{
+						this.memory.currentTask = "Harvesting";
+					}
 				}
 			}
 		}

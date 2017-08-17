@@ -81,7 +81,7 @@ let RoomConstructionExtensionsController =
 	{
 		let roomControllerLevel = room.controller.level;
 
-		if (roomControllerLevel > 1)
+		if (roomControllerLevel > 10)
 		{
 			let extensions = room.find(FIND_MY_STRUCTURES,
 				{

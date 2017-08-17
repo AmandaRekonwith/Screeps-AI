@@ -248,7 +248,7 @@ var RoomJobsController =
 			}
 			else
 			{
-				if (Game.getObjectById(containerID).store[RESOURCE_ENERGY] == 0)
+				if (Game.getObjectById(containerID).store[RESOURCE_ENERGY] <= 499)
 				{
 					delete room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[containerID];
 				}
@@ -263,9 +263,24 @@ var RoomJobsController =
 		//create hauler jobs, based on how many storage and containers exist... will fidget with this eventually
 		if (storageCount > 0)
 		{
+			/*
+			let ignoreStructureContainersArray = room.find(FIND_STRUCTURES, {
+				filter: (i) => i.structureType == STRUCTURE_CONTAINER
+				&& i.store[RESOURCE_ENERGY] <= 499
+			});
+			let ignoreStructureContainersCount = structureContainersArray.length;
+
+			for (let x = 0; x < ignoreStructureContainersCount; x++)
+			{
+				if (room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[ignoreStructureContainersArray[x].id])
+				{
+					delete room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[ignoreStructureContainersArray[x]];
+				}
+			}*/
+
 			let structureContainersArray = room.find(FIND_STRUCTURES, {
 				filter: (i) => i.structureType == STRUCTURE_CONTAINER
-				&& i.store[RESOURCE_ENERGY] > 0
+				&& i.store[RESOURCE_ENERGY] >= 500
 			});
 			let structureContainersCount = structureContainersArray.length;
 
@@ -520,26 +535,121 @@ var RoomJobsController =
 			let extractorExists = false;
 			let extractorsArray = room.memory.structures.extractorsArray;
 			let extractorsCount = extractorsArray.length;
-			for(let y=0; y<extractorsCount; y++)
+
+			/*for(let y=0; y<extractorsCount; y++)
 			{
 				let extractor = extractorsArray[y];
 				if(resource.pos.x == extractor.pos.x && resource.pos.y == extractor.pos.y)
 				{
 					extractorExists = true;
 				}
-			}
+			}*/
 
-			if(extractorExists)
+
+
+			if(extractorsCount > 0)
 			{
-				if(!room.memory.jobs.stationaryJobBoard.harvestResource[resourceID])
+				if(room.terminal)
 				{
-					room.memory.jobs.stationaryJobBoard.harvestResource[resourceID] =
+					if(!room.memory.jobs.haulerJobBoard.supplyTerminalResource[room.terminal.id])
 					{
-						active: false,
-						creepID: null
+						room.memory.jobs.haulerJobBoard.supplyTerminalResource[room.terminal.id] = {};
+					}
+
+					let top = 2;
+					let left = 2;
+					let bottom = 2;
+					let right = 2;
+
+					if(resource.pos.y - 2 < 0)
+					{
+						top = 1;
+						if(resource.pos.y - 1 < 0)
+						{
+							top = 0;
+						}
+					}
+
+					if(resource.pos.x - 2 < 0)
+					{
+						left = 1;
+						if(resource.pos.x - 1 < 0)
+						{
+							left = 0;
+						}
+					}
+
+					if(resource.pos.y + 2 > 49)
+					{
+						bottom = 1;
+						if(resource.pos.y + 1 > 49)
+						{
+							bottom = 0;
+						}
+					}
+
+					if(resource.pos.x + 2 > 49)
+					{
+						right = 1;
+						if(resource.pos.x + 1 > 49)
+						{
+							right = 0;
+						}
+					}
+
+					let structures = room.lookForAtArea(LOOK_STRUCTURES, resource.pos.y - top, resource.pos.x - left, resource.pos.y + bottom, resource.pos.x + right, true);
+					let structuresCount = structures.length;
+
+					labExists = false;
+
+					for(let k=0; k<structuresCount; k++)
+					{
+						let structureObject = structures[k];
+
+						if(structureObject.structure.structureType == "lab")
+						{
+							labExists = true;
+							if(!room.memory.jobs.stationaryJobBoard.harvestResource[resource.id])
+							{
+								room.memory.jobs.stationaryJobBoard.harvestResource[resource.id] =
+								{
+									active: false,
+									creepID: null
+								}
+							}
+
+							if(!room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal[structureObject.structure.id] &&
+								structureObject.structure.mineralAmount >= 500)
+							{
+								room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal[structureObject.structure.id] = {};
+							}
+						}
+					}
+
+					if(labExists == false)
+					{
+						if(room.memory.jobs.stationaryJobBoard.harvestResource[resource.id])
+						{
+							delete room.memory.jobs.stationaryJobBoard.harvestResource[resource.id];
+						}
+					}
+				} // no terminal
+				else
+				{
+					for(terminalID in room.memory.jobs.haulerJobBoard.supplyTerminalResource)
+					{
+						delete room.memory.jobs.haulerJobBoard.supplyTerminalResource[terminalID];
 					}
 				}
 			}
+			else // no extractor
+			{
+				if(room.memory.jobs.stationaryJobBoard.harvestResource[resource.id])
+				{
+					delete room.memory.jobs.stationaryJobBoard.harvestResource[resource.id];
+				}
+			}
+
 
 		}
 	}

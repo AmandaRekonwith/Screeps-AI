@@ -4,19 +4,22 @@ module.exports = function ()
 	{
 		let energySourcesArray = new Array();
 
-		let droppedEnergyArray = this.room.find(FIND_DROPPED_RESOURCES,RESOURCE_ENERGY);
+		let droppedEnergyArray = this.room.find(FIND_DROPPED_RESOURCES);
 		let droppedEnergyCount = droppedEnergyArray.length;
 		if(droppedEnergyCount > 0)
 		{
 			for(let x=0; x<droppedEnergyCount; x++)
 			{
-				let energySource = {type: "droppedEnergy", targetID: droppedEnergyArray[0].id};
-				let energySourceGameObject = Game.getObjectById(droppedEnergyArray[0].id)
-				if(energySourceGameObject)
+				if(droppedEnergyArray[0].type == RESOURCE_ENERGY)
 				{
-					if(energySourceGameObject.pos.x > 2 && energySourceGameObject.pos.x < 47 && energySourceGameObject.pos.y > 2 && energySourceGameObject.pos.y < 47)
+					let energySource = {type: "droppedEnergy", targetID: droppedEnergyArray[0].id};
+					let energySourceGameObject = Game.getObjectById(droppedEnergyArray[0].id)
+					if (energySourceGameObject)
 					{
-						energySourcesArray.push(energySource);
+						if (energySourceGameObject.pos.x > 2 && energySourceGameObject.pos.x < 47 && energySourceGameObject.pos.y > 2 && energySourceGameObject.pos.y < 47)
+						{
+							energySourcesArray.push(energySource);
+						}
 					}
 				}
 			}

@@ -72,6 +72,14 @@ module.exports = function ()
 						type: "supplyTower"
 					};
 					routineJobsArray.push(job);
+					routineJobsArray.push(job);
+					routineJobsArray.push(job);
+					routineJobsArray.push(job);
+					routineJobsArray.push(job);
+					routineJobsArray.push(job);
+					routineJobsArray.push(job);
+					routineJobsArray.push(job);
+					routineJobsArray.push(job);
 				}
 
 				let percentageChanceOfAddingRepairWallJobController = 30;
@@ -80,6 +88,7 @@ module.exports = function ()
 
 				if(repairWallChance <= percentageChanceOfAddingRepairWallJobController)
 				{
+					/*
 					if (this.room.memory.structures.wallsArray.length > 0)
 					{
 						let wall = this.room.memory.structures.wallsArray[0];
@@ -94,6 +103,7 @@ module.exports = function ()
 							routineJobsArray.push(job);
 						}
 					}
+					*/
 				}
 
 				let jobsCount = routineJobsArray.length;
@@ -129,7 +139,7 @@ module.exports = function ()
 		let room = this.room;
 
 
-		if(this.room.energyAvailable < this.room.energyCapacityAvailable / 1.5 || this.room.energyAvailable < 1300)
+		if(this.room.energyAvailable < this.room.energyCapacityAvailable / 2)
 		{
 			job = this.getRoutineJob();
 		}

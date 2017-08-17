@@ -14,6 +14,11 @@ module.exports = function ()
 				this.memory.currentTask = "Getting Energy";
 				let container = Game.getObjectById(containerID);
 
+				if(container.store[RESOURCE_ENERGY] <= 500)
+				{
+					this.memory.currentTask = null;
+				}
+
 				let action = this.withdraw(container, RESOURCE_ENERGY);
 
 				if (action == ERR_NOT_IN_RANGE)
@@ -21,7 +26,7 @@ module.exports = function ()
 					this.moveTo(container, {visualizePathStyle: {stroke: '#ffaa00'}});
 				}
 
-				if (this.carry.energy == this.carryCapacity && this.memory.currentTask == "Getting Energy")
+				if (this.carry[RESOURCE_ENERGY] == this.carryCapacity && this.memory.currentTask == "Getting Energy")
 				{
 					this.memory.currentTask = "Working";
 					room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[containerID].creepID = null;

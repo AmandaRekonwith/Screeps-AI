@@ -33,6 +33,10 @@ module.exports.loop = function ()
             {
                tower.attack(closestHostile);
             }
+            else
+            {
+                tower.repair(room.memory.structures.rampartsArray[0]);
+            }
         }
     }
 

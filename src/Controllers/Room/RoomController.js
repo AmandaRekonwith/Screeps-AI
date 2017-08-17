@@ -55,7 +55,7 @@ let RoomController =
 						roomExtensionsConstructionController.run(room);
 						if (room.memory.structures.spawnsArray.length > 0)
 						{
-							console.log(Game.time);
+						//	console.log(Game.time);
 							if(Game.time % numberOfTicksToWaitToCheckIfCreepsNeedToBeSpawned == 0)
 							{
 								creepsController.spawnCreeps(room);

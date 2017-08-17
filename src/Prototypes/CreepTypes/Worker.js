@@ -71,15 +71,13 @@ module.exports = function ()
 						targetID: towerID,
 						type: "supplyTower"
 					};
-					routineJobsArray.push(job);
-					routineJobsArray.push(job);
-					routineJobsArray.push(job);
-					routineJobsArray.push(job);
-					routineJobsArray.push(job);
-					routineJobsArray.push(job);
-					routineJobsArray.push(job);
-					routineJobsArray.push(job);
-					routineJobsArray.push(job);
+
+
+					numberOfExtensions = this.room.memory.structures.extensionsArray.length / 2;
+					for(let z=0; z<numberOfExtensions; z++)
+					{
+						routineJobsArray.push(job);
+					}
 				}
 
 				let percentageChanceOfAddingRepairWallJobController = 30;
@@ -139,7 +137,7 @@ module.exports = function ()
 		let room = this.room;
 
 
-		if(this.room.energyAvailable < this.room.energyCapacityAvailable / 2)
+		if(this.room.energyAvailable < this.room.energyCapacityAvailable / 1.2)
 		{
 			job = this.getRoutineJob();
 		}

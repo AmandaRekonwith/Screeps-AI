@@ -16,27 +16,45 @@ module.exports = function ()
 
 				let action = null;
 
-				if(this.room.name == "W17S12" || this.room.name == "W17S13")
+				if(lab.mineralAmount >= 500)
 				{
-					action = this.withdraw(lab,RESOURCE_HYDROGEN);
+					if (this.room.name == "W17S12" || this.room.name == "W17S13")
+					{
+						action = this.withdraw(lab, RESOURCE_HYDROGEN);
+					}
+
+					if (this.room.name == "W16S11")
+					{
+						action = this.withdraw(lab, RESOURCE_OXYGEN);
+					}
+
+					if (action == ERR_NOT_IN_RANGE)
+					{
+						this.moveTo(lab, {visualizePathStyle: {stroke: '#ffaa00'}});
+					}
+
+					if ((_.sum(this.carry) == this.carryCapacity) && this.memory.currentTask == "Getting Resource")
+					{
+						this.memory.currentTask = "Working";
+						room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal[labID].creepID = null;
+
+						this.memory.job = null;
+					}
 				}
-
-				if(this.room.name == "W16S11")
+				else
 				{
-					action = this.withdraw(lab, RESOURCE_OXYGEN);
-				}
+					if(_.sum(this.carry) > 0)
+					{
+						this.memory.currentTask = "Working";
+						room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal[labID].creepID = null;
 
-				if (action == ERR_NOT_IN_RANGE)
-				{
-					this.moveTo(lab, {visualizePathStyle: {stroke: '#ffaa00'}});
-				}
-
-				if ( (_.sum(this.carry) == this.carryCapacity) && this.memory.currentTask == "Getting Resource")
-				{
-					this.memory.currentTask = "Working";
-					room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal[labID].creepID = null;
-
-					this.memory.job = null;
+						this.memory.job = null;
+					}
+					else
+					{
+						this.memory.currentTask = null;
+						this.memory.job = null;
+					}
 				}
 			}
 		}

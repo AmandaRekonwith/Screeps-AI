@@ -119,17 +119,13 @@ let RoomCreepsController =
 			numberOfBuildingJobs += 1;
 		}
 
-		let maximumNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources;
-		if(maximumNumberOfWorkerCreeps < 5 && room.controller.level < 3)
-		{
-			maximumNumberOfWorkerCreeps = 15;
-		}
+		let maximumNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources + 5;
 
 		if(room.controller.level >= 2)
 		{
 			maximumNumberOfWorkerCreeps = maximumNumberOfWorkerCreeps
-			 - (numberOfStationaryCreeps * 3)
-			 - (numberOfHaulerCreeps * 3)
+			 - (numberOfStationaryCreeps * 2)
+			 - (numberOfHaulerCreeps * 2)
 			 + numberOfBuildingJobs;
 
 			if(maximumNumberOfWorkerCreeps < 2)

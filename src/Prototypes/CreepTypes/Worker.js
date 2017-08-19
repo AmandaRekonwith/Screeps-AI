@@ -16,7 +16,7 @@ module.exports = function ()
 				};
 				return job;
 			}
-
+/*
 			for (let structureID in this.room.memory.jobs.workerJobBoard.routineJobs.repairStructure)
 			{
 				let job = {
@@ -24,7 +24,7 @@ module.exports = function ()
 					type: "repairStructure"
 				};
 				return job;
-			}
+			}*/
 		}
 		else
 		{
@@ -73,7 +73,7 @@ module.exports = function ()
 					};
 
 
-					numberOfExtensions = this.room.memory.structures.extensionsArray.length / 2;
+					numberOfExtensions = this.room.memory.structures.extensionsArray.length / 5;
 					for(let z=0; z<numberOfExtensions; z++)
 					{
 						routineJobsArray.push(job);

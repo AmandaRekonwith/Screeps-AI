@@ -62,10 +62,6 @@ module.exports = function ()
 
 				return job;
 			}
-			else
-			{
-
-			}
 		}
 
 		return null;
@@ -75,6 +71,11 @@ module.exports = function ()
 	{
 		let job = null;
 		let room = this.room;
+
+		if(this.memory.currentTask == "Working" && _.sum(this.carry) == 0)
+		{
+			this.memory.currentTask = null;
+		}
 
 		if ((this.memory.currentTask == null || this.memory.currentTask == "Getting Energy" || this.memory.currentTask == "Getting Resource")
 			&& (this.memory.job == null || !this.memory.job))
@@ -95,6 +96,14 @@ module.exports = function ()
 					if(job == null)
 					{
 						job = this.haulerCollectEnergy();
+						if(job != null)
+						{
+							this.memory.currentTask = "Getting Energy";
+						}
+					}
+					else
+					{
+						this.memory.currentTask = "Getting Resource";
 					}
 				}
 				else
@@ -103,6 +112,14 @@ module.exports = function ()
 					if(job == null)
 					{
 						job = this.haulerCollectResource();
+						if(job != null)
+						{
+							this.memory.currentTask = "Getting Resource";
+						}
+					}
+					else
+					{
+						this.memory.currentTask = "Getting Energy";
 					}
 				}
 			}
@@ -122,7 +139,20 @@ module.exports = function ()
 
 		if (this.memory.currentTask == "Working" && (this.memory.job == null || !this.memory.job))
 		{
-			if (this.carry[RESOURCE_ENERGY] > 0)
+			if (_.sum(this.carry) > 0 && this.carry[RESOURCE_ENERGY] == 0)
+			{
+				if (room.terminal)
+				{
+					let job = {
+						targetID: room.terminal.id,
+						type: "supplyTerminalResource"
+					}
+
+					return job;
+				}
+			}
+
+			if(this.carry[RESOURCE_ENERGY] > 0)
 			{
 				let numberOfSmallestWorkerCreeps = room.memory.creeps.workerCreeps.smallestWorkerCreepsArray.length;
 				let numberOfSmallerWorkerCreeps = room.memory.creeps.workerCreeps.smallerWorkerCreepsArray.length;
@@ -134,7 +164,7 @@ module.exports = function ()
 
 				let routineJobsArray = new Array();
 
-				if (totalNumberOfWorkerCreeps < 2)
+				if (totalNumberOfWorkerCreeps == 0 || !room.storage)
 				{
 					for (let extensionID in this.room.memory.jobs.generalJobBoard.supplyExtension)
 					{
@@ -164,46 +194,21 @@ module.exports = function ()
 					}
 				}
 
-				let jobsCount = routineJobsArray.length;
-				if (jobsCount > 0)
+				if (room.storage)
 				{
-					let jobRandomizer = Math.floor((Math.random() * jobsCount));
-					return routineJobsArray[jobRandomizer];
-				}
-				else
-				{
-					if (room.storage)
-					{
-						if (room.memory.jobs.generalJobBoard.supplyStorage[room.storage.id])
-						{
-							let job = {
-								targetID: room.storage.id,
-								type: "supplyStorage"
-							}
-
-							return job;
-						}
-					}
-				}
-
-				return null;
-			}
-			else
-			{
-				if (_.sum(this.carry) > 0 && this.carry[RESOURCE_ENERGY] == 0)
-				{
-					if (room.terminal)
+					if (room.memory.jobs.generalJobBoard.supplyStorage[room.storage.id])
 					{
 						let job = {
-							targetID: room.terminal.id,
-							type: "supplyTerminalResource"
+							targetID: room.storage.id,
+							type: "supplyStorage"
 						}
 
-						return job;
+						routineJobsArray.push(job);
 					}
 				}
 
-				return null;
+				let jobRandomizer = Math.floor((Math.random() * routineJobsArray.length));
+				return routineJobsArray[jobRandomizer];
 			}
 		}
 	}

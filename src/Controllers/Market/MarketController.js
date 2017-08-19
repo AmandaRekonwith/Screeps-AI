@@ -2,6 +2,7 @@ let MarketController =
 {
 	sellEverything()
 	{
+		/*
 		let rooms = Game.rooms;
 		for (let roomName in Game.rooms)
 		{
@@ -10,9 +11,9 @@ let MarketController =
 			if(roomName == "W16S11")
 			{
 				let totalAmountOfOxygen = room.terminal.store[RESOURCE_OXYGEN];
-				console.log(totalAmountOfOxygen);
+				//console.log(totalAmountOfOxygen);
 			}
-		}
+		}*/
 	}
 };
 

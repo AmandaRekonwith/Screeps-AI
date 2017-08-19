@@ -35,7 +35,30 @@ module.exports.loop = function ()
             }
             else
             {
-                tower.repair(room.memory.structures.rampartsArray[0]);
+                let creepsArray = room.find(FIND_MY_CREEPS);
+                let creepsCount = creepsArray.length;
+
+                let damagedCreep = null;
+
+                for(z=0; z<creepsCount; z++)
+                {
+                    if(creepsArray[z].hits < creepsArray[z].hitsMax )
+                    {
+                        damagedCreep = creepsArray[z];
+                    }
+                }
+
+                if(damagedCreep != null)
+                {
+                    tower.heal(damagedCreep);
+                }
+                else
+                {
+                    if (room.storage.store[RESOURCE_ENERGY] > 90000)
+                    {
+                        tower.repair(room.memory.structures.rampartsArray[0]);
+                    }
+                }
             }
         }
     }

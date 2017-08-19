@@ -22,8 +22,6 @@ module.exports = function ()
 						if(structure.structureType == "extension" && structure.energy < structure.energyCapacity)
 						{
 							action2 = this.transfer(structure, RESOURCE_ENERGY);
-
-							console.log(action2);
 						}
 					}
 				}

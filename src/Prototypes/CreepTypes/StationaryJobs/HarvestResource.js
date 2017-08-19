@@ -49,22 +49,40 @@ module.exports = function ()
 
 			 for (let x = 0; x < 8; x++)
 			 {
-				 let numberOfAdjacentStructures = room.lookForAtArea(LOOK_STRUCTURES, possibleJobPositionsArray[x].y - 1, possibleJobPositionsArray[x].x - 1,  possibleJobPositionsArray[x].y + 1,  possibleJobPositionsArray[x].x + 1, true).length;
+				 let adjacentStructures = room.lookForAtArea(LOOK_STRUCTURES, possibleJobPositionsArray[x].y - 1, possibleJobPositionsArray[x].x - 1,  possibleJobPositionsArray[x].y + 1,  possibleJobPositionsArray[x].x + 1, true);
+				 let adjacentStructuresCount = adjacentStructures.length;
 
-				 if(numberOfAdjacentStructures == 2)
+				 let labAndExtractorCount = 0;
+
+				 for(let z=0; z<adjacentStructuresCount; z++)
 				 {
-					 jobPosition = possibleJobPositionsArray[x];
+					 if(adjacentStructures[z].structure.structureType == "lab" || adjacentStructures[z].structure.structureType == "extractor")
+					 {
+						 labAndExtractorCount += 1;
+					 }
+				 }
+
+				 if(labAndExtractorCount == 2)
+				 {
+					 if(room.memory.environment.terrainMapArray[possibleJobPositionsArray[x].x][possibleJobPositionsArray[x].y] != 3)
+					 {
+
+						 jobPosition = possibleJobPositionsArray[x];
+					 }
 				 }
 			 }
 
-			 if ((this.pos.x != jobPosition.x) || (this.pos.y != jobPosition.y))
+			 if(jobPosition != null)
 			 {
-				 this.moveTo(jobPosition.x, jobPosition.y, {visualizePathStyle: {stroke: '#ffaa00'}});
-				 this.memory.currentTask = "WalkingToJobSite";
-			 }
-			 else
-			 {
-				 this.memory.currentTask = "Harvesting";
+				 if ((this.pos.x != jobPosition.x) || (this.pos.y != jobPosition.y))
+				 {
+					 this.moveTo(jobPosition.x, jobPosition.y, {visualizePathStyle: {stroke: '#ffaa00'}});
+					 this.memory.currentTask = "WalkingToJobSite";
+				 }
+				 else
+				 {
+					 this.memory.currentTask = "Harvesting";
+				 }
 			 }
 
 			 if (this.memory.currentTask == "Harvesting")
@@ -83,11 +101,6 @@ module.exports = function ()
 			 if (this.memory.currentTask == "Working")
 			 {
 				 let action = this.transfer(lab, resource.mineralType);
-			 }
-
-			 if (_.sum(this.carry) == 0)
-			 {
-				 this.memory.currentTask = "Harvesting";
 			 }
 		 }
 

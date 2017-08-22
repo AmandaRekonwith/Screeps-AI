@@ -223,4 +223,26 @@ module.exports = function ()
 				job: null
 			});
 		};
+
+	//1250 energy required, 4 tough parts, 2 attack parts, 2 heal parts, 2 ranged attack parts, 5 move parts
+	StructureSpawn.prototype.createInfantryCreep =
+		function ()
+		{
+			var body = [TOUGH, TOUGH,
+				ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK,
+			MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
+			HEAL]
+			/* var body = [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH,
+				MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
+				ATTACK, ATTACK, ATTACK, ATTACK, ATTACK
+
+			];
+			*/
+			var creepName = controllerCreepsNameGenerator.getName();
+			this.createCreep(body, creepName, {
+				type: "infantry",
+				currentTask: null,
+				job: null
+			});
+		};
 };

@@ -29,9 +29,59 @@ module.exports.loop = function ()
             //var hostiles = room.find(FIND_HOSTILE_CREEPS);
 
             var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+
+            let target = null;
+            let maximumHealCount = 0;
+
             if(closestHostile != null)
             {
-               tower.attack(closestHostile);
+                let hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
+                let hostileCreepsCount = hostileCreeps.length;
+
+                for(let y=0; y<hostileCreepsCount; y++)
+                {
+                    let hostileCreep = hostileCreeps[y];
+
+                    let hostileCreepBodyParts = hostileCreep.body;
+                    let hostileCreepBodyPartsCount = hostileCreepBodyParts.length;
+
+                    let healCount = 0;
+
+                    for (let z=0; z < hostileCreepBodyPartsCount; z++)
+                    {
+                        hostileCreepBodyPart = hostileCreepBodyParts[z];
+
+                        if (hostileCreepBodyPart.type == "heal")
+                        {
+                            healCount += 1;
+
+                            target = hostileCreep;
+                        }
+                    }
+
+                    if(healCount > maximumHealCount)
+                    {
+                        maximumHealCount = healCount;
+                    }
+                }
+
+                console.log(maximumHealCount);
+                if(maximumHealCount < 3 * towersCount)
+                {
+                    if (target != null)
+                    {
+                        tower.attack(target);
+                    }
+                    else
+                    {
+                        tower.attack(closestHostile);
+                    }
+                }
+                else
+                {
+                    //repair whatever wall the fucks are attacking
+
+                }
             }
             else
             {
@@ -54,7 +104,7 @@ module.exports.loop = function ()
                 }
                 else
                 {
-                    if (room.storage.store[RESOURCE_ENERGY] > 90000)
+                    if (room.storage.store[RESOURCE_ENERGY] > 900000)
                     {
                         tower.repair(room.memory.structures.rampartsArray[0]);
                     }

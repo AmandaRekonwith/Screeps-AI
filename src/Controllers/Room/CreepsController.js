@@ -36,6 +36,8 @@ require('Prototypes_CreepTypes_RemoteJobs_ClaimController')();
 require('Prototypes_CreepTypes_RemoteJobs_RemoteBuildStructure')();
 require('Prototypes_CreepTypes_RemoteJobs_RemoteUpgradeController')();
 
+require('Prototypes_CreepTypes_Infantry')();
+
 let RoomCreepsController =
 {
 	spawnCreeps: function (room)
@@ -108,6 +110,13 @@ let RoomCreepsController =
 		for(let flagName in room.memory.flags.remoteUpgradeController)
 		{
 			maximumNumberOfRemoteUpgradeControllerCreeps += 1;
+		}
+
+		let numberOfInfantryCreeps = room.memory.creeps.infantryCreeps.length;
+		let maximumNumberOfInfantryCreeps = 0;
+		for(let flagName in room.memory.flags.attack)
+		{
+			maximumNumberOfInfantryCreeps += 1;
 		}
 
 		//MY CURRENT FORMULA FOR SPAWNING SHIT
@@ -268,7 +277,7 @@ let RoomCreepsController =
 						//now spawn a claimer if necessary
 						if (numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps)
 						{
-							console.log('numberOfClaimerCreeps: ' + numberOfClaimerCreeps + " maximumNumberOfClaimerCreeps: " + maximumNumberOfClaimerCreeps);
+							console.log('numberOfClaimerCreeps:    ' + numberOfClaimerCreeps + " maximumNumberOfClaimerCreeps:   " + maximumNumberOfClaimerCreeps);
 							if (numberOfClaimerCreeps < maximumNumberOfClaimerCreeps)
 							{
 								numberOfSpawns = room.memory.structures.spawnsArray.length;
@@ -277,7 +286,7 @@ let RoomCreepsController =
 								spawn.createClaimerCreep(room);
 							}
 
-							console.log('numberOfRemoteBuildStructureCreeps: ' + numberOfRemoteBuildStructureCreeps + " maximumNumberOfRemoteBuildStructureCreeps: " + maximumNumberOfRemoteBuildStructureCreeps);
+							console.log('numberOfRemoteBuildStructureCreeps:      ' + numberOfRemoteBuildStructureCreeps + " maximumNumberOfRemoteBuildStructureCreeps: " + maximumNumberOfRemoteBuildStructureCreeps);
 							if (numberOfRemoteBuildStructureCreeps < maximumNumberOfRemoteBuildStructureCreeps)
 							{
 								numberOfSpawns = room.memory.structures.spawnsArray.length;
@@ -294,6 +303,17 @@ let RoomCreepsController =
 								let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
 								spawn.createRemoteUpgradeControllerCreep(room);
 							}
+
+							console.log('numberOfInfantryCreeps:   ' + numberOfInfantryCreeps + " maximumNumberOfInfantryCreeps: " + maximumNumberOfInfantryCreeps);
+							if (numberOfInfantryCreeps < maximumNumberOfInfantryCreeps)
+							{
+								numberOfSpawns = room.memory.structures.spawnsArray.length;
+								let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
+								let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
+								spawn.createInfantryCreep(room);
+							}
+
+							//maximumNumberOfInfantryCreeps
 
 							console.log("------");
 						}//more than one stationary creep
@@ -560,6 +580,14 @@ let RoomCreepsController =
 			let remoteUpgradeControllerCreep = remoteUpgradeControllerCreepsArray[x];
 
 			remoteUpgradeControllerCreep.runRemote();
+		}
+
+		let infantryCreepsArray = room.memory.creeps.infantryCreeps;
+		let infantryCreepsCount = infantryCreepsArray.length;
+		for(let x=0; x<infantryCreepsCount; x++)
+		{
+			let infantryCreep = infantryCreepsArray[x];
+			infantryCreep.runInfantry();
 		}
 	}
 };

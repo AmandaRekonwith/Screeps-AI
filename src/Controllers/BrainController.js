@@ -53,135 +53,138 @@ let BrainController =
 
 			if(room)
 			{
-				if (room.controller.level > 0)
+				if (!room.memory.DEFCON)
 				{
+					room.memory.DEFCON = 3;
+				}
 
-					if (!room.memory.DEFCON)
-					{
-						room.memory.DEFCON = 3;
-					}
+				if (!room.memory.ownership)
+				{
+					room.memory.ownership = false;
+				}
 
-					if (!room.memory.environment || !room.memory.environment.energySourcesArray)
-					{
-						room.memory.environment = {
-							terrainMapArray: [],
-							energySourcesArray: [],
-							resourcesArray: []
-						};
-					}
+				if (!room.memory.environment || !room.memory.environment.energySourcesArray)
+				{
+					room.memory.environment = {
+						terrainMapArray: [],
+						energySourcesArray: [],
+						resourcesArray: []
+					};
+				}
 
-					if (!room.memory.construction)
-					{
-						room.memory.construction = {
-							extensionPlacement: {
-								RightUp: {x: 0, y: 0},
-								RightDown: {x: 0, y: 0},
-								LeftUp: {x: 0, y: 0},
-								LeftDown: {x: 0, y: 0}
-							}
-						};
-					}
-
-					if (!room.memory.jobs)
-					{
-						room.memory.jobs = {
-							claimerJobBoard: {
-								claimController: {},
-								reserveController: {}
-							},
-							generalJobBoard: {
-								supplyExtension: {},
-								supplySpawn: {},
-								supplyStorage: {},
-								supplyTower: {}
-							},
-							workerJobBoard: {
-								firstPriorityJobs: {
-									buildStructure: {}
-								},
-								routineJobs: {
-									repairWall: {},
-									repairStructure: {}
-								}
-							},
-							haulerJobBoard: {
-								collectDroppedEnergy: {},
-								moveEnergyFromContainer: {},
-								moveResourceFromLabToTerminal: {},
-								supplyTerminalResource: {}
-							},
-							stationaryJobBoard: {
-								mapArray: [],
-
-								manageStorageAndTerminal: {},
-								harvestEnergy: {},
-								harvestResource: {}
-							}
-						};
-						let stationaryJobSitesMapArray = new Array();
-						for (let x = 0; x < 50; x++)
-						{
-							stationaryJobSitesMapArray[x] = new Array();
-							for (let y = 0; y < 50; y++)
-							{
-								stationaryJobSitesMapArray[x][y] = 0;
-							}
+				if (!room.memory.construction)
+				{
+					room.memory.construction = {
+						extensionPlacement: {
+							RightUp: {x: 0, y: 0},
+							RightDown: {x: 0, y: 0},
+							LeftUp: {x: 0, y: 0},
+							LeftDown: {x: 0, y: 0}
 						}
-						room.memory.jobs.stationaryJobBoard.mapArray = stationaryJobSitesMapArray;
-					}
+					};
+				}
 
-					//These need to be scanned each tick... so clear them out every tick
-					room.memory.creeps = {
-						remoteCreeps: {
-							claimerCreepsArray: [],
-							remoteBuildStructureCreepsArray: [],
-							remoteUpgradeControllerCreepsArray: []
+				if (!room.memory.jobs)
+				{
+					room.memory.jobs = {
+						claimerJobBoard: {
+							claimController: {},
+							reserveController: {}
 						},
-						workerCreeps: {
-							smallestWorkerCreepsArray: [],
-							smallerWorkerCreepsArray: [],
-							smallWorkerCreepsArray: [],
-							bigWorkerCreepsArray: [],
-							biggerWorkerCreepsArray: [],
-							biggestWorkerCreepsArray: []
+						generalJobBoard: {
+							supplyExtension: {},
+							supplySpawn: {},
+							supplyStorage: {},
+							supplyTower: {}
 						},
-						haulerCreeps: [],
-						stationaryCreeps: []
+						workerJobBoard: {
+							firstPriorityJobs: {
+								buildStructure: {}
+							},
+							routineJobs: {
+								repairWall: {},
+								repairStructure: {}
+							}
+						},
+						haulerJobBoard: {
+							collectDroppedEnergy: {},
+							moveEnergyFromContainer: {},
+							moveResourceFromLabToTerminal: {},
+							supplyTerminalResource: {}
+						},
+						stationaryJobBoard: {
+							mapArray: [],
+
+							manageStorageAndTerminal: {},
+							harvestEnergy: {},
+							harvestResource: {}
+						}
 					};
-
-					room.memory.structures = {
-						mapArray: [],
-
-						spawnsArray: [],
-						extensionsArray: [],
-						extractorsArray: [],
-						containersArray: [],
-						storageArray: [],
-						labsArray: [],
-						linksArray: [],
-						terminalsArray: [],
-						towersArray: [],
-						wallsArray: [],
-						rampartsArray: []
-					};
-
-					room.memory.flags = {
-						claimController: {},
-						remoteBuildStructure: {},
-						remoteUpgradeController: {}
-					};
-
-					let structuresMapArray = new Array();
+					let stationaryJobSitesMapArray = new Array();
 					for (let x = 0; x < 50; x++)
 					{
-						structuresMapArray[x] = new Array();
+						stationaryJobSitesMapArray[x] = new Array();
 						for (let y = 0; y < 50; y++)
 						{
-							structuresMapArray[x][y] = 0;
+							stationaryJobSitesMapArray[x][y] = 0;
 						}
 					}
-					room.memory.structures.mapArray = structuresMapArray;
+					room.memory.jobs.stationaryJobBoard.mapArray = stationaryJobSitesMapArray;
 				}
+
+				//These need to be scanned each tick... so clear them out every tick
+				room.memory.creeps = {
+					remoteCreeps: {
+						claimerCreepsArray: [],
+						remoteBuildStructureCreepsArray: [],
+						remoteUpgradeControllerCreepsArray: []
+					},
+					workerCreeps: {
+						smallestWorkerCreepsArray: [],
+						smallerWorkerCreepsArray: [],
+						smallWorkerCreepsArray: [],
+						bigWorkerCreepsArray: [],
+						biggerWorkerCreepsArray: [],
+						biggestWorkerCreepsArray: []
+					},
+					haulerCreeps: [],
+					stationaryCreeps: [],
+					infantryCreeps: []
+				};
+
+				room.memory.structures = {
+					mapArray: [],
+
+					spawnsArray: [],
+					extensionsArray: [],
+					extractorsArray: [],
+					containersArray: [],
+					storageArray: [],
+					labsArray: [],
+					linksArray: [],
+					terminalsArray: [],
+					towersArray: [],
+					wallsArray: [],
+					rampartsArray: []
+				};
+
+				room.memory.flags = {
+					claimController: {},
+					remoteBuildStructure: {},
+					remoteUpgradeController: {},
+					attack: {}
+				};
+
+				let structuresMapArray = new Array();
+				for (let x = 0; x < 50; x++)
+				{
+					structuresMapArray[x] = new Array();
+					for (let y = 0; y < 50; y++)
+					{
+						structuresMapArray[x][y] = 0;
+					}
+				}
+				room.memory.structures.mapArray = structuresMapArray;
 			}
 		}
 	},

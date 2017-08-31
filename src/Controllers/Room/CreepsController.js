@@ -135,7 +135,7 @@ let RoomCreepsController =
 
 		let maximumNumberOfWorkerCreeps = totalNumberOfOpenTilesNextToEnergySources + 3;
 
-		if(room.controller.level >= 2)
+		if(room.controller.level >= 4)
 		{
 			maximumNumberOfWorkerCreeps = maximumNumberOfWorkerCreeps
 			 - (numberOfStationaryCreeps * 2)
@@ -162,24 +162,23 @@ let RoomCreepsController =
 			{
 				maximumNumberOfWorkerCreeps = 2;
 			}*/
-		}
 
-		if(numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps &&
-		numberOfStationaryCreeps == maximumNumberOfStationaryCreeps &&
-		numberOfBuildingJobs == 0)
-		{
-			maximumNumberOfWorkerCreeps = 0;
-		}
+			if(numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps &&
+				numberOfStationaryCreeps == maximumNumberOfStationaryCreeps &&
+				numberOfBuildingJobs == 0)
+			{
+				maximumNumberOfWorkerCreeps = 0;
+			}
 
-		if((numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps ||
-			(numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps - 1)) &&
-			((numberOfStationaryCreeps == maximumNumberOfStationaryCreeps) ||
-			(numberOfStationaryCreeps == maximumNumberOfStationaryCreeps - 1)) &&
-			numberOfBuildingJobs == 0)
-		{
-			maximumNumberOfWorkerCreeps = 0;
+			if((numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps ||
+				(numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps - 1)) &&
+				((numberOfStationaryCreeps == maximumNumberOfStationaryCreeps) ||
+				(numberOfStationaryCreeps == maximumNumberOfStationaryCreeps - 1)) &&
+				numberOfBuildingJobs == 0)
+			{
+				maximumNumberOfWorkerCreeps = 0;
+			}
 		}
-
 
 		/*
 

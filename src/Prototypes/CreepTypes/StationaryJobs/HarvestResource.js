@@ -37,17 +37,17 @@ module.exports = function ()
 		 if(labExists == true)
 		 {
 			 let possibleJobPositionsArray = new Array();
-			 possibleJobPositionsArray.push({x: resource.pos.x - 1, y: resource.pos.y - 1});
-			 possibleJobPositionsArray.push({x: resource.pos.x, y: resource.pos.y - 1});
-			 possibleJobPositionsArray.push({x: resource.pos.x + 1, y: resource.pos.y - 1});
-			 possibleJobPositionsArray.push({x: resource.pos.x - 1, y: resource.pos.y});
-			 possibleJobPositionsArray.push({x: resource.pos.x + 1, y: resource.pos.y});
-			 possibleJobPositionsArray.push({x: resource.pos.x - 1, y: resource.pos.y + 1});
-			 possibleJobPositionsArray.push({x: resource.pos.x, y: resource.pos.y + 1});
-			 possibleJobPositionsArray.push({x: resource.pos.x + 1, y: resource.pos.y + 1});
+			 if(room.memory.environment.terrainMapArray[resource.pos.x - 1][resource.pos.y - 1] != 3){ possibleJobPositionsArray.push({x: resource.pos.x - 1, y: resource.pos.y - 1}); }
+			 if(room.memory.environment.terrainMapArray[resource.pos.x][resource.pos.y - 1] != 3){ possibleJobPositionsArray.push({x: resource.pos.x, y: resource.pos.y - 1}); }
+			 if(room.memory.environment.terrainMapArray[resource.pos.x + 1][resource.pos.y - 1] != 3){ possibleJobPositionsArray.push({x: resource.pos.x + 1, y: resource.pos.y - 1}); }
+			 if(room.memory.environment.terrainMapArray[resource.pos.x - 1][resource.pos.y] != 3){ possibleJobPositionsArray.push({x: resource.pos.x - 1, y: resource.pos.y}); }
+			 if(room.memory.environment.terrainMapArray[resource.pos.x + 1][resource.pos.y] != 3){ possibleJobPositionsArray.push({x: resource.pos.x + 1, y: resource.pos.y}); }
+			 if(room.memory.environment.terrainMapArray[resource.pos.x - 1][resource.pos.y + 1] != 3){ possibleJobPositionsArray.push({x: resource.pos.x - 1, y: resource.pos.y + 1}); }
+			 if(room.memory.environment.terrainMapArray[resource.pos.x][resource.pos.y + 1] != 3){ possibleJobPositionsArray.push({x: resource.pos.x, y: resource.pos.y + 1}); }
+			 if(room.memory.environment.terrainMapArray[resource.pos.x + 1][resource.pos.y + 1] != 3){ possibleJobPositionsArray.push({x: resource.pos.x + 1, y: resource.pos.y + 1}); }
 
-
-			 for (let x = 0; x < 8; x++)
+			 let possibleJobPositionsCount = possibleJobPositionsArray.length;
+			 for (let x = 0; x < possibleJobPositionsCount; x++)
 			 {
 				 let adjacentStructures = room.lookForAtArea(LOOK_STRUCTURES, possibleJobPositionsArray[x].y - 1, possibleJobPositionsArray[x].x - 1,  possibleJobPositionsArray[x].y + 1,  possibleJobPositionsArray[x].x + 1, true);
 				 let adjacentStructuresCount = adjacentStructures.length;
@@ -62,13 +62,9 @@ module.exports = function ()
 					 }
 				 }
 
-				 if(labAndExtractorCount == 2)
+				 if(labAndExtractorCount >= 2)
 				 {
-					 if(room.memory.environment.terrainMapArray[possibleJobPositionsArray[x].x][possibleJobPositionsArray[x].y] != 3)
-					 {
-
-						 jobPosition = possibleJobPositionsArray[x];
-					 }
+					 jobPosition = possibleJobPositionsArray[x];
 				 }
 			 }
 

@@ -84,9 +84,9 @@ module.exports = function ()
 
 				let repairWallChance = Math.floor((Math.random() * 100));
 
-				if(repairWallChance <= percentageChanceOfAddingRepairWallJobController)
+				if((this.room.memory.structures.wallsArray[0] && this.room.memory.structures.wallsArray[0] < (Math.pow(2,this.room.controller.level) * 5000)) ||
+				(this.room.memory.structures.wallsArray[0] < this.room.storage && repairWallChance <= percentageChanceOfAddingRepairWallJobController && this.room.storage.store[RESOURCE_ENERGY] > 900000))
 				{
-					/*
 					if (this.room.memory.structures.wallsArray.length > 0)
 					{
 						let wall = this.room.memory.structures.wallsArray[0];
@@ -101,7 +101,28 @@ module.exports = function ()
 							routineJobsArray.push(job);
 						}
 					}
-					*/
+				}
+
+				let percentageChanceOfAddingRepairRampartJobController = 30;
+
+				let repairRampartChance = Math.floor((Math.random() * 100));
+
+				if(this.room.storage && repairRampartChance <= percentageChanceOfAddingRepairRampartJobController && this.room.storage.store[RESOURCE_ENERGY] > 900000)
+				{
+					if (this.room.memory.structures.rampartsArray.length > 0)
+					{
+						let rampart = this.room.memory.structures.rampartsArray[0];
+
+						let rampartJob = this.room.memory.jobs.workerJobBoard.routineJobs.repairRampart[rampart.id];
+						if (rampartJob)
+						{
+							let job = {
+								targetID: rampart.id,
+								type: "repairStructure"
+							};
+							routineJobsArray.push(job);
+						}
+					}
 				}
 
 				let jobsCount = routineJobsArray.length;

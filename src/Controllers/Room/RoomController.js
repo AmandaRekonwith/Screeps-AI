@@ -1,4 +1,5 @@
 let creepsController = require('Controllers_Room_CreepsController');
+let towersController = require('Controllers_Room_TowersController');
 let linksController = require('Controllers_Room_LinksController');
 let roomExtensionsConstructionController = require('Controllers_Room_Construction_ExtensionsController');
 
@@ -67,6 +68,7 @@ let RoomController =
 
 			linksController.run(room);
 			creepsController.run(room);
+			towersController.run(room);
 		}
 	},
 

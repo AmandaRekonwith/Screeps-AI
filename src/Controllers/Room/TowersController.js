@@ -105,7 +105,7 @@ let TowersController =
 
 			if (room.memory.structures.rampartsArray[0] && room.memory.structures.rampartsArray[0].hits < (Math.pow(2, room.controller.level) * 5000))
 			{
-				console.log(room.memory.structures.rampartsArray[0].hits + "   " + (Math.pow(2, room.controller.level) * 5000));
+				//console.log(room.memory.structures.rampartsArray[0].hits + "   " + (Math.pow(2, room.controller.level) * 5000));
 
 				action = tower.repair(room.memory.structures.rampartsArray[0]);
 			}
@@ -122,7 +122,7 @@ let TowersController =
 		{
 			if (room.memory.structures.wallsArray[0] && room.memory.structures.wallsArray[0].hits < (Math.pow(2, room.controller.level) * 5000))
 			{
-				console.log(room.memory.structures.wallsArray[0].hits + "   " + (Math.pow(2, room.controller.level) * 5000));
+				//console.log(room.memory.structures.wallsArray[0].hits + "   " + (Math.pow(2, room.controller.level) * 5000));
 
 				tower.repair(room.memory.structures.wallsArray[0]);
 			}

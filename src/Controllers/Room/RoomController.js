@@ -1,6 +1,7 @@
 let creepsController = require('Controllers_Room_CreepsController');
 let towersController = require('Controllers_Room_TowersController');
 let linksController = require('Controllers_Room_LinksController');
+let marketController = require('Controllers_Room_MarketController');
 let roomExtensionsConstructionController = require('Controllers_Room_Construction_ExtensionsController');
 
 require('Prototypes_Source')();
@@ -30,7 +31,7 @@ let RoomController =
 						numberOfTicksToWaitToCheckIfCreepsNeedToBeSpawned = 20;
 						break;
 					default:
-						numberOfTicksToWaitToCheckIfCreepsNeedToBeSpawned = 35;
+						numberOfTicksToWaitToCheckIfCreepsNeedToBeSpawned = 25;
 				}
 
 				if (roomControllerLevel < 5)
@@ -53,13 +54,17 @@ let RoomController =
 				{
 					if(room.memory.structures.spawnsArray.length > 0)
 					{
-						roomExtensionsConstructionController.run(room);
+						//roomExtensionsConstructionController.run(room);
 						if (room.memory.structures.spawnsArray.length > 0)
 						{
 						//	console.log(Game.time);
 							if(Game.time % numberOfTicksToWaitToCheckIfCreepsNeedToBeSpawned == 0)
 							{
 								creepsController.spawnCreeps(room);
+								if(room.terminal)
+								{
+									marketController.run(room);
+								}
 							}
 						}
 					}

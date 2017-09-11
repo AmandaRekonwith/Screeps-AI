@@ -26,7 +26,7 @@ module.exports = function ()
 			{
 				let terminal = this.room.memory.structures.terminalsArray[0];
 
-				if(this.memory.currentTask == "WalkingToJobSite" || this.memory.currentTask == "Harvesting" || this.memory.currentTask == null)
+				if(this.memory.currentTask == "WalkingToJobSite" || this.memory.currentTask == "Harvesting" || this.memory.currentTask == "Working" || this.memory.currentTask == null)
 				{
 					let action = this.withdraw(room.storage, RESOURCE_ENERGY);
 

@@ -163,18 +163,17 @@ let RoomCreepsController =
 				maximumNumberOfWorkerCreeps = 2;
 			}*/
 
-			if(numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps &&
-				numberOfStationaryCreeps == maximumNumberOfStationaryCreeps &&
+			if( (numberOfHaulerCreeps != 0 && numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps) &&
+				(numberOfStationaryCreeps != 0 && numberOfStationaryCreeps == maximumNumberOfStationaryCreeps) &&
 				numberOfBuildingJobs == 0)
 			{
 				maximumNumberOfWorkerCreeps = 0;
 			}
 
-			if((numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps ||
-				(numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps - 1)) &&
-				((numberOfStationaryCreeps == maximumNumberOfStationaryCreeps) ||
-				(numberOfStationaryCreeps == maximumNumberOfStationaryCreeps - 1)) &&
-				numberOfBuildingJobs == 0)
+			if(numberOfHaulerCreeps != 0 && numberOfStationaryCreeps != 0 && numberOfBuildingJobs == 0 && (numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps ||
+				numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps - 1) &&
+				(numberOfStationaryCreeps == maximumNumberOfStationaryCreeps ||
+				numberOfStationaryCreeps == maximumNumberOfStationaryCreeps - 1))
 			{
 				maximumNumberOfWorkerCreeps = 0;
 			}
@@ -252,7 +251,7 @@ let RoomCreepsController =
 					}
 
 					console.log("numberOfStationaryCreeps:  " + numberOfStationaryCreeps + " maximumNumberOfStationaryCreeps: " + maximumNumberOfStationaryCreeps);
-					if (numberOfStationaryCreeps == maximumNumberOfStationaryCreeps
+					if (numberOfStationaryCreeps >= maximumNumberOfStationaryCreeps
 						&& numberOfStationaryCreeps > 0
 						&& room.controller.level >= 4)
 					{
@@ -274,7 +273,7 @@ let RoomCreepsController =
 						}
 
 						//now spawn a claimer if necessary
-						if (numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps)
+						if (numberOfHaulerCreeps >= maximumNumberOfContainerHaulerCreeps)
 						{
 							console.log('numberOfClaimerCreeps:    ' + numberOfClaimerCreeps + " maximumNumberOfClaimerCreeps:   " + maximumNumberOfClaimerCreeps);
 							if (numberOfClaimerCreeps < maximumNumberOfClaimerCreeps)

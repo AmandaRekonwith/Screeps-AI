@@ -212,10 +212,15 @@ module.exports = function ()
 	StructureSpawn.prototype.createRemoteBuildStructureCreep =
 		function ()
 		{
-			var body = [WORK, WORK, WORK,
+			 var body = [WORK,
+			 CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
+			 MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
+			 ];
+
+			/*var body = [WORK, WORK, WORK,
 				CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
 				MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE
-			];
+			];*/
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				type: "remoteBuildStructure",

@@ -12,7 +12,16 @@ module.exports = function ()
 			{
 				let action2 = null;
 
-				let structuresInRange = this.room.lookForAtArea(LOOK_STRUCTURES, this.pos.y-1, this.pos.x-1, this.pos.y+1, this.pos.x+1, true);
+				let topLeft = {};
+				if(this.pos.y-1 < 0){ topLeft.y = 0}else{topLeft.y = this.pos.y-1}
+				if(this.pos.x -1 < 0){ topLeft.x = 0}else{topLeft.x = this.pos.x-1}
+
+				let bottomRight = {};
+				if(this.pos.y+1 > 49){ bottomRight.y = 49}else{bottomRight.y = this.pos.y+1}
+				if(this.pos.x+1 > 49){ bottomRight.x = 49}else{bottomRight.x = this.pos.x+1}
+
+				let structuresInRange = this.room.lookForAtArea(LOOK_STRUCTURES, topLeft.y, topLeft.x, bottomRight.y, bottomRight.x, true);
+
 				let structuresInRangeCount = structuresInRange.length;
 				if(structuresInRangeCount > 0)
 				{
@@ -30,6 +39,12 @@ module.exports = function ()
 				{
 					action2 = this.moveTo(storage, {visualizePathStyle: {stroke: '#ffffff'}});
 				}
+
+				if(this.id == '59b5491b1041e66abdc1597d')
+				{
+					console.log(action2);
+				}
+
 			}
 
 			if ( _.sum(storage.store) == storage.storeCapacity) // job complete

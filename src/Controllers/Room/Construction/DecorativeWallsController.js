@@ -13,9 +13,17 @@ let DecorativeWallsController =
 
 		if(room.name == "W16S11")
 		{
-			let wallsArray = [];
-			return wallsArray[[26,1],[27,1],[28, 1],[29,1]]
+			let wallsArray = [[26,1],[27,1],[28, 1],[29,1]];
+			return wallsArray;
 		}
+
+		if(room.name == "W17S12")
+		{
+			let wallsArray = [[10,3],[11,3],[12,3],[10,4],[11,4],[12,4],[13,4],[13,5],[14,5],[14,6],[15,6],[15,7],[16,7],[17,8]
+				,[18,9],[19,10],[19,11],[18,11],[18,12],[21,3],[22,3],[23,3],[24,47]];
+			return wallsArray;
+		}
+
 
 		return null;
 	}

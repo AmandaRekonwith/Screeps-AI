@@ -11,34 +11,31 @@ module.exports = function ()
 			if (creepPosition != flag.pos)
 			{
 				let action = this.moveTo(flag.pos, {visualizePathStyle: {stroke: '#ffffff'}});
-
-				let constructionSite = this.room.lookForAt(LOOK_CONSTRUCTION_SITES, flag.pos);
-				if (constructionSite)
-				{
-					let action = this.build(constructionSite[0]);
-				}
-
-				let structure = this.room.lookForAt(LOOK_STRUCTURES, flag.pos);
-				if (structure)
-				{
-					let action2 = this.repair(structure[0]);
-				}
-
-				let controller = this.room.controller;
-				if (controller)
-				{
-					let action3 = this.upgradeController(controller);
-				}
-
-				if(this.carry[RESOURCE_ENERGY] == 0)
-				{
-					this.memory.currentTask = "Getting Energy";
-				}
 			}
 		}
 		else
 		{
-			this.memory.job = null;
+			let constructionSite = Game.getObjectById(this.memory.job.targetID);
+
+			let action = this.build(constructionSite);
+
+			if(action == ERR_NOT_IN_RANGE)
+			{
+				this.moveTo(constructionSite);
+			}
+			else
+			{
+				let action2 = this.upgradeController(this.room.controller);
+				if(action2 == ERR_NOT_IN_RANGE)
+				{
+					this.moveTo(this.room.controller);
+				}
+			}
+
+			if(this.carry[RESOURCE_ENERGY] == 0)
+			{
+				this.memory.currentTask = null;
+			}
 		}
 	}
 }

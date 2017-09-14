@@ -22,27 +22,62 @@ module.exports = function ()
 		else
 		{
 			//console.log(this.room.memory.structures.terminalsArray.length);
-			if(this.room.memory.structures.terminalsArray.length > 0 && this.room.terminal.store[RESOURCE_ENERGY] < 20000)
+
+			let structuresInRange = this.room.lookForAtArea(LOOK_STRUCTURES, this.pos.y-1, this.pos.x-1, this.pos.y+1, this.pos.x+1, true);
+
+			let structuresInRangeCount = structuresInRange.length;
+
+			let towerToSupply = null;
+
+			if(structuresInRangeCount > 0)
 			{
-				let terminal = this.room.memory.structures.terminalsArray[0];
-
-				if(this.memory.currentTask == "WalkingToJobSite" || this.memory.currentTask == "Harvesting" || this.memory.currentTask == "Working" || this.memory.currentTask == null)
+				for(let x=0; x<structuresInRangeCount; x++)
 				{
-					let action = this.withdraw(room.storage, RESOURCE_ENERGY);
-
-					if(this.carry[RESOURCE_ENERGY] == this.carryCapacity)
+					let structure = structuresInRange[x].structure;
+					if(structure.structureType == "tower" && structure.energy < structure.energyCapacity - 150)
 					{
-						this.memory.currentTask = "SupplyTerminal";
+						towerToSupply = structure;
 					}
 				}
+			}
 
-				if(this.memory.currentTask == "SupplyTerminal")
+			//these take priority over normal upgrading of controller, building, or withdrawing energy from link
+			if(towerToSupply != null || (this.room.memory.structures.terminalsArray.length > 0 && this.room.terminal.store[RESOURCE_ENERGY] < 20000))
+			{
+				if(towerToSupply != null)
 				{
-					let action = this.transfer(terminal, RESOURCE_ENERGY);
-
-					if(this.carry[RESOURCE_ENERGY] == 0)
+					if (this.memory.currentTask == "WalkingToJobSite" || this.memory.currentTask == "Harvesting" || this.memory.currentTask == "Working" || this.memory.currentTask == null)
 					{
-						this.memory.currentTask = null;
+						let action = this.withdraw(room.storage, RESOURCE_ENERGY);
+
+						if (this.carry[RESOURCE_ENERGY] == this.carryCapacity)
+						{
+							this.memory.currentTask = "SupplyTower";
+						}
+					}
+
+					if (this.memory.currentTask == "SupplyTower")
+					{
+						let action = this.transfer(towerToSupply, RESOURCE_ENERGY);
+					}
+				}
+				else
+				{
+					let terminal = this.room.memory.structures.terminalsArray[0];
+
+					if (this.memory.currentTask == "WalkingToJobSite" || this.memory.currentTask == "Harvesting" || this.memory.currentTask == "Working" || this.memory.currentTask == null)
+					{
+						let action = this.withdraw(room.storage, RESOURCE_ENERGY);
+
+						if (this.carry[RESOURCE_ENERGY] == this.carryCapacity)
+						{
+							this.memory.currentTask = "SupplyTerminal";
+						}
+					}
+
+					if (this.memory.currentTask == "SupplyTerminal")
+					{
+						let action = this.transfer(terminal, RESOURCE_ENERGY);
 					}
 				}
 			}
@@ -124,12 +159,12 @@ module.exports = function ()
 							break;
 						default:
 					}
-
-					if (this.carry.energy == 0)
-					{
-						this.memory.currentTask = "Harvesting";
-					}
 				}
+			}
+
+			if (this.carry.energy == 0)
+			{
+				this.memory.currentTask = "Harvesting";
 			}
 		}
 	}

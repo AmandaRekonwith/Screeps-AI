@@ -18,15 +18,9 @@ module.exports = function ()
 
 				if(lab.mineralAmount >= 500)
 				{
-					if (this.room.name == "W17S12" || this.room.name == "W17S13")
-					{
-						action = this.withdraw(lab, RESOURCE_HYDROGEN);
-					}
+					let resource = Game.getObjectById(this.room.memory.environment.resourcesArray[0]);
 
-					if (this.room.name == "W16S11")
-					{
-						action = this.withdraw(lab, RESOURCE_OXYGEN);
-					}
+					action = this.withdraw(lab, resource.mineralType);
 
 					if (action == ERR_NOT_IN_RANGE)
 					{

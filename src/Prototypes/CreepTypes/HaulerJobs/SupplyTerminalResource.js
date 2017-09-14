@@ -2,21 +2,18 @@ module.exports = function ()
 {
 	Creep.prototype.supplyTerminalResource = function ()
 	{
+
+		console.log('what the fuckkk');
+
 		let terminal = Game.getObjectById(this.memory.job.targetID);
 
 		if (terminal)
 		{
 			let action = null;
 
-			if(this.room.name == "W17S12" || this.room.name == "W17S13")
-			{
-				action = this.transfer(terminal, RESOURCE_HYDROGEN);
-			}
+			let resource = Game.getObjectById(this.room.memory.environment.resourcesArray[0]);
 
-			if(this.room.name == "W16S11")
-			{
-				action = this.transfer(terminal, RESOURCE_OXYGEN);
-			}
+			action = this.transfer(terminal, resource.mineralType);
 
 			if (action == ERR_NOT_IN_RANGE)
 			{

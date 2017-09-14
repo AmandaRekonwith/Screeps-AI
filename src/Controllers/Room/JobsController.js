@@ -398,49 +398,47 @@ var RoomJobsController =
 		if(room.storage)
 		{
 			let storageID = room.storage.id;
+			let storage = room.storage;
 			if(!room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID])
 			{
-				let storage = Game.getObjectById(storageID);
+				let manageStorageAndTerminalJob = {};
+				manageStorageAndTerminalJob.active = false;
+				manageStorageAndTerminalJob.creepID = null;
 
-				let storagePositionX = storage.pos.x;
-				let storagePositionY = storage.pos.y;
+				room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID] = manageStorageAndTerminalJob;
+			}
 
-				//FOR NOW, I am making sure the storage container is within distance of the upgrade controller
-				// (this is not automated, but placed on the game map by hand)
-				//AND am MANUALLY making sure the space above the storage unit is empty, and in range of the upgrade controller.
-				//that will be the site of this job. ... so that said, x-1, y - 1.
+			let jobPosition = null;
 
-				let jobPosition = null;
+			let storagePositionX = storage.pos.x;
+			let storagePositionY = storage.pos.y;
 
-				if(room.terminal)
+			//FOR NOW, I am making sure the storage container is within distance of the upgrade controller
+			// (this is not automated, but placed on the game map by hand)
+			//AND am MANUALLY making sure the space above the storage unit is empty, and in range of the upgrade controller.
+			//that will be the site of this job. ... so that said, x-1, y - 1.
+
+
+			if(room.terminal)
+			{
+				jobPosition = {x: room.terminal.pos.x - 1, y: room.terminal.pos.y + 1};
+			}
+			else
+			{
+				if(room.memory.environment.terrainMapArray[storagePositionX - 1][ storagePositionY] != 3)
 				{
-					jobPosition = {x: room.terminal.pos.x - 1, y: room.terminal.pos.y + 1};
+					jobPosition = {x: storagePositionX - 1, y: storagePositionY};
 				}
 				else
 				{
-					if(room.memory.environment.terrainMapArray[storagePositionX - 1][ storagePositionY] == 1)
+					if (room.memory.environment.terrainMapArray[storagePositionX][storagePositionY - 1] != 3)
 					{
-						jobPosition = {x: storagePositionX - 1, y: storagePositionY};
+						jobPosition = {x: storagePositionX, y: storagePositionY - 1};
 					}
-					else
-					{
-						if (room.memory.environment.terrainMapArray[storagePositionX][storagePositionY - 1] == 1)
-						{
-							jobPosition = {x: storagePositionX, y: storagePositionY - 1};
-						}
-					}
-				}//terminal
-
-				if(jobPosition != null)
-				{
-					let manageStorageAndTerminalJob = {};
-					manageStorageAndTerminalJob.pos = jobPosition;
-					manageStorageAndTerminalJob.active = false;
-					manageStorageAndTerminalJob.creepID = null;
-
-					room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID] = manageStorageAndTerminalJob;
 				}
-			}
+			}//terminal
+
+			room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID].pos = jobPosition;
 		}
 	},
 

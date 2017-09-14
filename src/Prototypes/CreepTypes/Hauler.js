@@ -88,9 +88,9 @@ module.exports = function ()
 
 			if(_.sum(this.carry) == 0)
 			{
-				let percentageChanceCollectResource = 24;
+				let percentageChanceCollectResource = 50;
 				let chanceRandomizer = Math.floor((Math.random() * 100));
-				if(chanceRandomizer < 24)
+				if(chanceRandomizer < percentageChanceCollectResource)
 				{
 					job = this.haulerCollectResource();
 					if(job == null)
@@ -184,6 +184,7 @@ module.exports = function ()
 						routineJobsArray.push(job);
 					}
 
+					/*
 					for (let towerID in this.room.memory.jobs.generalJobBoard.supplyTower)
 					{
 						let job = {
@@ -192,6 +193,7 @@ module.exports = function ()
 						};
 						routineJobsArray.push(job);
 					}
+					*/
 				}
 
 				if (room.storage)
@@ -307,14 +309,7 @@ module.exports = function ()
 							}
 							break;
 						case "supplyTerminalResource":
-							if (this.room.memory.jobs.haulerJobBoard.supplyTerminalResource[this.memory.job.targetID])
-							{
-								this.supplyTerminalResource();
-							}
-							else
-							{
-								this.memory.job = null;
-							}
+							this.supplyTerminalResource();
 							break;
 						default:
 

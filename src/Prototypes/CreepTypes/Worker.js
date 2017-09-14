@@ -47,6 +47,7 @@ module.exports = function ()
 			if(upgradeControllerChance >= percentageChanceOfUpgradingController)
 			{
 				let routineJobsArray = new Array();
+
 				for (let extensionID in this.room.memory.jobs.generalJobBoard.supplyExtension)
 				{
 					let job = {
@@ -65,17 +66,14 @@ module.exports = function ()
 					routineJobsArray.push(job);
 				}
 
-				for (let towerID in this.room.memory.jobs.generalJobBoard.supplyTower)
+				if(!this.room.storage)
 				{
-					let job = {
-						targetID: towerID,
-						type: "supplyTower"
-					};
-
-
-					numberOfExtensions = this.room.memory.structures.extensionsArray.length / 5;
-					for(let z=0; z<numberOfExtensions; z++)
+					for (let towerID in this.room.memory.jobs.generalJobBoard.supplyTower)
 					{
+						let job = {
+							targetID: towerID,
+							type: "supplyTower"
+						};
 						routineJobsArray.push(job);
 					}
 				}

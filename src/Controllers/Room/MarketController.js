@@ -2,7 +2,7 @@ var MarketController =
 {
 	run: function (room)
 	{
-		if(room.terminal.store[RESOURCE_ENERGY] >= 20000)
+		if(room.terminal.store[RESOURCE_ENERGY] >= 1000)
 		{
 			let resource = null;
 			if(room.terminal.store[RESOURCE_HYDROGEN] >= 20000){ resource = RESOURCE_HYDROGEN; }
@@ -36,9 +36,9 @@ var MarketController =
 
 					if(highestMarketBuyOrderPrice >= .01)
 					{
-						if(highestMarketBuyOrder.remainingAmount >= 20000)
+						if(highestMarketBuyOrder.remainingAmount >= 500)
 						{
-							result = Game.market.deal(highestMarketBuyOrder.id, 20000, room.name);
+							result = Game.market.deal(highestMarketBuyOrder.id, 500, room.name);
 						}
 						else
 						{

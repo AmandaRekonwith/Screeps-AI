@@ -1,8 +1,8 @@
 var statsController = require('Controllers_Stats_StatsController');
-//var statsController2 = require('Controllers_Stats_StatsController2');
+//(var statsController2 = require('Controllers_Stats_StatsController2');
 var brainController = require('Controllers_BrainController');
 //require('Libraries_XMLHttpRequest');
-//let require('http://www.google.com/');
+//let require'http://www.google.com/');
 
 
 module.exports.loop = function ()

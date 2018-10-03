@@ -20,57 +20,52 @@ module.exports = function ()
 		}
 		else
 		{
-			this.memory.currentTask = "Harvesting";
-		}
-
-		if(	(this.memory.currentTask == "Harvesting" || this.memory.currentTask == "Working"))
-		{
-			if (energySource.energy == 0 || this.carry.energy == this.carryCapacity)
+			//AT JOB SITE
+			switch(this.memory.currentTask) 
 			{
-				this.memory.currentTask = "Working";
-			}
-
-			if(this.memory.currentTask == "Harvesting")
-			{
-				let action = this.harvest(energySource);
-			}
-
-			if(this.memory.currentTask == "Working")
-			{
-				if(container.hits < container.hitsMax)
-				{
-					let action = this.repair(container);
-				}
-				else
-				{
-					//if(container.store[RESOURCE_ENERGY] == container.storeCapacity)
-					/* I've run into an issue where the containers are somehow getting resources that are not energy put into them.
-					I need to develop a fix. Until then, hardcoding 2000, to ensure that the above check is passed. */
-					if(_.sum(container.store) == container.storeCapacity)
+				case "Harvesting":
+		        	let action = this.harvest(energySource);
+		       	 	break;
+	       	 	case "Working":
+		        	if(container.hits < container.hitsMax)
 					{
-						let linksArray = room.lookForAtArea(LOOK_STRUCTURES, this.pos.y - 1, this.pos.x - 1, this.pos.y + 1, this.pos.x + 1, true);
-						let linksCount = linksArray.length;
-						for(let y=0; y<linksCount; y++)
-						{
-							let structure = linksArray[y].structure;
-							if(structure.structureType == "link")
-							{
-								this.transfer(structure, RESOURCE_ENERGY);
-							}
-						}
+						let action = this.repair(container);
 					}
 					else
 					{
-						let action = this.transfer(container, RESOURCE_ENERGY);
-					}
-				}
+						//if(container.store[RESOURCE_ENERGY] == container.storeCapacity)
+						/* I've run into an issue where the containers are somehow getting resources that are not energy put into them.
+						I need to develop a fix. Until then, hardcoding 2000, to ensure that the above check is passed. 
 
-				if (this.carry.energy == 0)
-				{ 
-					this.memory.currentTask = "Harvesting";
-				}
-			}
-		}
+						Additionally, I'm testing the hypothesis that it's more efficient to simply zap energy to the main base,
+						if a link exists. Thus, if links exist, prioritize links first (instead of containers), and reduce the number of haulers...
+
+						I've since found that hypothesis to work, but seems less efficient than hauling.
+						Now trying container priority with one hauler.*/
+						
+						if(_.sum(container.store) < 2000)
+						{
+							let action = this.transfer(container, RESOURCE_ENERGY);
+						}
+						else
+						{
+							let link = this.pos.findInRange(FIND_MY_STRUCTURES, 1,
+							{filter: {structureType: STRUCTURE_LINK}})[0];
+
+							if(link && (link.energyCapacity - link.energy) > this.carry[RESOURCE_ENERGY])
+							{
+								this.transfer(link, RESOURCE_ENERGY);
+							}
+						}
+					}
+					break;
+		    }
+
+			//NOW CHECK TO CHANGE JOB STATUS
+			if (this.carry.energy == this.carryCapacity){ this.memory.currentTask = "Working"; }
+			if (this.carry.energy == 0){ this.memory.currentTask = "Harvesting"; }
+
+		}//at job site
 
 
 

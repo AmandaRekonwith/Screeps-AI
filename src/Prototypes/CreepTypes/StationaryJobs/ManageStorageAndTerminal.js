@@ -1,5 +1,30 @@
 module.exports = function ()
 {
+	/* The logic of the following code can be summarized in laymen's terms as follows...
+
+	Go to the job site.
+
+	Move energy
+		IF link has energy, prioritize that first. Move fuel out of link.
+		If no energy in link, grab a bunch of energy out of storage.
+
+	Then Determine what job to do.
+		If, the storage tank contains more than 10000 energy do a randomized list of jobs
+			These jobs include:
+			Making sure all turrets are charged. This is PRIORITIZED FIRST.
+			then, a random set of jobs, including.
+			- building construction sites around the job site
+			- /* not implemented yet * repairing buildings around job site
+			- upgrading controller *note* because of the way this is programmed, this will be for one tick only.*
+
+			- ensuring the terminal has at least 10000 energy
+			- if it does, then possibly reinsert energy into storage
+
+		If, the storage tank does not contain more than 10000 energy,
+			just fill the storage tank
+	*/
+
+
 	Creep.prototype.runManageStorageAndTerminal = function ()
 	{
 		let room = this.room;
@@ -22,20 +47,18 @@ module.exports = function ()
 		else
 		{
 			//AT JOB SITE
-			if(this.carry.energy < this.carryCapacity &&
-				(this.memory.currentTask == "WalkingToJobSite"
-				|| this.memory.currentTask == "Harvesting"))
+			if(this.memory.currentTask == "Harvesting")
 			{
 				let link = this.pos.findInRange(FIND_MY_STRUCTURES, 1,
 				{filter: {structureType: STRUCTURE_LINK}})[0];
 
-				if(link.energy > 0)
+				if(link && link.energy > 0)
 				{
 					this.withdraw(link, RESOURCE_ENERGY);
 				}
 				else
 				{
-					if(this.room.storage.store[RESOURCE_ENERGY] > 5000)
+					if(this.room.storage.store[RESOURCE_ENERGY] > 10000)
 					{
 						this.withdraw(this.room.storage, RESOURCE_ENERGY);
 					}
@@ -44,82 +67,121 @@ module.exports = function ()
 
 			if(this.memory.currentTask == "Working")
 			{
-				let structuresInRange = this.room.lookForAtArea(LOOK_STRUCTURES, this.pos.y-1, this.pos.x-1, this.pos.y+1, this.pos.x+1, true);
-
-				let structuresInRangeCount = structuresInRange.length;
-
-				let towerToSupply = null;
-
-				if(structuresInRangeCount > 0)
+				let jobType = null;
+				let jobTarget = null;
+				//FIGURE OUT WHAT JOB TO DO FIRST
+				if(this.room.storage.store[RESOURCE_ENERGY] > 10000)
 				{
-					for(let x=0; x<structuresInRangeCount; x++)
+					let structuresInRange = this.room.lookForAtArea(LOOK_STRUCTURES, this.pos.y-1, this.pos.x-1, this.pos.y+1, this.pos.x+1, true);
+					let structuresInRangeCount = structuresInRange.length;
+					let towerToSupply = null;
+					if(structuresInRangeCount > 0)
 					{
-						let structure = structuresInRange[x].structure;
-						if(structure.structureType == "tower" && structure.energy < structure.energyCapacity - 150)
+						for(let x=0; x<structuresInRangeCount; x++)
 						{
-							towerToSupply = structure;
+							let structure = structuresInRange[x].structure;
+							if(structure.structureType == "tower" && structure.energy < structure.energyCapacity - 150)
+							{
+								towerToSupply = structure;
+							}
 						}
 					}
-				}
-
-				//these take priority over normal upgrading of controller, building, or withdrawing energy from link
-				if(towerToSupply != null)
-				{
-					let action = this.transfer(towerToSupply, RESOURCE_ENERGY);
-				}
-				else
-				{
-					if(this.room.memory.structures.terminalsArray.length > 0 && this.room.terminal.store[RESOURCE_ENERGY] < 20000)
+					if(towerToSupply != null)
 					{
-						let terminal = this.room.memory.structures.terminalsArray[0];
-						let action = this.transfer(terminal, RESOURCE_ENERGY);
+						jobType = "supplyTower";
+						jobTarget = towerToSupply;
 					}
 					else
 					{
-						if(this.room.storage)
+						let manageStorageAndTerminalJobsArray = new Array();
+
+						let checkForConstructionSiteArray = this.room.lookForAtArea(LOOK_CONSTRUCTION_SITES, this.pos.y - 1, this.pos.x - 1, this.pos.y + 1, this.pos.x + 1, true);
+						if (checkForConstructionSiteArray.length > 0)
 						{
-							if(_.sum(this.room.storage.store) < this.room.storage.storeCapacity)
-							{
-								let action = this.transfer(storage, RESOURCE_ENERGY);
-							}
+							let constructionSite = this.room.lookForAt(LOOK_CONSTRUCTION_SITES, checkForConstructionSiteArray[0].x, checkForConstructionSiteArray[0].y);
+							let constructionJob = {
+								target: constructionSite[0],
+								type: "build"
+							};
+							manageStorageAndTerminalJobsArray.push(constructionJob);
+						}
+
+						let upgradeJob = {
+							target: this.room.controller,
+							type: "upgradeController"
+						};
+						manageStorageAndTerminalJobsArray.push(upgradeJob);
+
+
+						if(this.room.terminal && this.room.terminal.store[RESOURCE_ENERGY] < 10000 && _.sum(this.room.terminal.store) <= 299000)
+						{
+							let storageJob = {
+								target: this.room.terminal,
+								type: "supplyTerminal"
+							};	
+							manageStorageAndTerminalJobsArray.push(storageJob);
 						}
 						else
 						{
-							let manageStorageAndTerminalJobsArray = new Array();
-
-							let checkForTerminalConstructionSiteArray = this.room.lookForAtArea(LOOK_CONSTRUCTION_SITES, this.pos.y - 1, this.pos.x - 1, this.pos.y + 1, this.pos.x + 1, true);
-							if (checkForTerminalConstructionSiteArray.length > 0)
+							if(this.room.storage && room.storage.store[RESOURCE_ENERGY] < 500000 )
 							{
-								let constructionSite = this.room.lookForAt(LOOK_CONSTRUCTION_SITES, checkForTerminalConstructionSiteArray[0].x, checkForTerminalConstructionSiteArray[0].y);
-								let job = {
-									targetID: constructionSite[0].id,
-									type: "build"
-								};
-								manageStorageAndTerminalJobsArray.push(job);
+								let storageJob = {
+									target: this.room.storage,
+									type: "storeEnergy"
+								};	
+								manageStorageAndTerminalJobsArray.push(storageJob);
 							}
+						}
 
-							let job = {
-								targetID: this.room.controller.id,
-								type: "upgradeController"
-							};
-							manageStorageAndTerminalJobsArray.push(job);
 
-							let jobRandomizer = Math.floor((Math.random() * manageStorageAndTerminalJobsArray.length));
-							let manageStorageAndTerminalJob = manageStorageAndTerminalJobsArray[jobRandomizer];
+						let jobRandomizer = Math.floor((Math.random() * manageStorageAndTerminalJobsArray.length));
 
-							switch (manageStorageAndTerminalJob.type)
-							{
-								case 'build':
-									this.build(Game.getObjectById(manageStorageAndTerminalJob.targetID));
-									break;
-								case 'upgradeController':
-									this.upgradeController(Game.getObjectById(manageStorageAndTerminalJob.targetID));
-									break;
-								default:
-							}
+						let randomJob = manageStorageAndTerminalJobsArray[jobRandomizer];
+
+
+
+						jobType = randomJob.type;
+						jobTarget = randomJob.target;
+					}
+
+
+
+
+				}
+				else
+				{
+					if(this.room.storage)
+					{
+						if(_.sum(this.room.storage.store) < this.room.storage.storeCapacity)
+						{
+							jobType = "storeEnergy";
+							jobTarget = this.room.storage;
 						}
 					}
 				}
+
+				//now do JOB
+
+				let action = null;
+
+				switch (jobType) {
+				    case "supplyTower":
+				        action = this.transfer(jobTarget, RESOURCE_ENERGY);
+				        break; 
+				    case "supplyTerminal":
+				        action = this.transfer(jobTarget, RESOURCE_ENERGY);
+				        break; 
+				    case "storeEnergy":
+						action = this.transfer(jobTarget, RESOURCE_ENERGY);
+						break;
+					case "build":
+						action = this.build(jobTarget);
+						break;
+					case "upgradeController":
+						action = this.upgradeController(jobTarget);
+						break;
+				}
+
 			}
 
 			if(this.carry.energy == this.carryCapacity)

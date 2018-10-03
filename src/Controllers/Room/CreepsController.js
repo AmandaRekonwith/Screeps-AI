@@ -163,6 +163,12 @@ let RoomCreepsController =
 				maximumNumberOfWorkerCreeps = 2;
 			}*/
 
+			if(numberOfHaulerCreeps != 0 && numberOfStationaryCreeps != 0 && numberOfBuildingJobs == 0)
+			{
+				maximumNumberOfWorkerCreeps = 0;
+			}
+
+			/*
 			if( (numberOfHaulerCreeps != 0 && numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps) &&
 				(numberOfStationaryCreeps != 0 && numberOfStationaryCreeps == maximumNumberOfStationaryCreeps) &&
 				numberOfBuildingJobs == 0)
@@ -170,13 +176,14 @@ let RoomCreepsController =
 				maximumNumberOfWorkerCreeps = 0;
 			}
 
-			if(numberOfHaulerCreeps != 0 && numberOfStationaryCreeps != 0 && numberOfBuildingJobs == 0 && (numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps ||
+			if(numberOfHaulerCreeps != 0 && numberOfStationaryCreeps != 0 && numberOfBuildingJobs == 0 && (numberOfHaulerCreeps >= maximumNumberOfContainerHaulerCreeps ||
 				numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps - 1) &&
-				(numberOfStationaryCreeps == maximumNumberOfStationaryCreeps ||
+				(numberOfStationaryCreeps >= maximumNumberOfStationaryCreeps ||
 				numberOfStationaryCreeps == maximumNumberOfStationaryCreeps - 1))
 			{
 				maximumNumberOfWorkerCreeps = 0;
 			}
+			*/
 		}
 
 		/*

@@ -149,8 +149,8 @@ module.exports = function ()
 			if(roomLevel >= 4)
 			{
 				body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
-					CARRY, CARRY, CARRY,
-					MOVE, MOVE, MOVE];
+					CARRY, CARRY,
+					MOVE, MOVE];
 				size = "big";
 			}
 			var creepName = controllerCreepsNameGenerator.getName();
@@ -170,8 +170,8 @@ module.exports = function ()
 		function ()
 		{
 			var body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
-				CARRY, CARRY, CARRY,
-				MOVE, MOVE, MOVE];
+				CARRY, CARRY,
+				MOVE, MOVE];
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				type: "stationary",

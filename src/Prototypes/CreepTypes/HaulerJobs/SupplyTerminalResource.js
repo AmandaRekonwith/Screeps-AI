@@ -2,9 +2,6 @@ module.exports = function ()
 {
 	Creep.prototype.supplyTerminalResource = function ()
 	{
-
-		console.log('what the fuckkk');
-
 		let terminal = Game.getObjectById(this.memory.job.targetID);
 
 		if (terminal)

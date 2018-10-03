@@ -43,7 +43,10 @@ module.exports = function ()
 				}
 				else
 				{
-					if(container.store[RESOURCE_ENERGY] == container.storeCapacity)
+					//if(container.store[RESOURCE_ENERGY] == container.storeCapacity)
+					/* I've run into an issue where the containers are somehow getting resources that are not energy put into them.
+					I need to develop a fix. Until then, hardcoding 2000, to ensure that the above check is passed. */
+					if(_.sum(container.store) == container.storeCapacity)
 					{
 						let linksArray = room.lookForAtArea(LOOK_STRUCTURES, this.pos.y - 1, this.pos.x - 1, this.pos.y + 1, this.pos.x + 1, true);
 						let linksCount = linksArray.length;
@@ -63,7 +66,7 @@ module.exports = function ()
 				}
 
 				if (this.carry.energy == 0)
-				{
+				{ 
 					this.memory.currentTask = "Harvesting";
 				}
 			}

@@ -43,7 +43,7 @@ let RoomCreepsController =
 	spawnCreeps: function (room)
 	{
 		let DEFCON = room.memory.DEFCON;
-		//console.log("DEFCON: " + DEFCON);
+		console.log("NEW TICK: " + Game.time);
 		console.log("ROOM: " + room.name);
 
 		let spawn = room.memory.structures.spawnsArray[0];
@@ -86,7 +86,7 @@ let RoomCreepsController =
 		}
 
 		let maximumNumberOfStationaryCreeps = 0;
-		if(room.controller.level >= 2){	maximumNumberOfStationaryCreeps = maximumNumberOfHarvesterStationaryCreeps + maximumNumberOfContinuouslyUpgradeControllerCreeps + maximumNumberOfHarvestResourceCreeps; }
+		if(room.controller.level >= 2){	maximumNumberOfStationaryCreeps = maximumNumberOfHarvesterStationaryCreeps + maximumNumberOfContinuouslyUpgradeControllerCreeps /*+ maximumNumberOfHarvestResourceCreeps*/; }
 
 		let maximumNumberOfContainerHaulerCreeps = 0;
 		if(room.controller.level >= 4){	maximumNumberOfContainerHaulerCreeps = room.memory.structures.containersArray.length; }
@@ -201,7 +201,6 @@ let RoomCreepsController =
 		 }
 		 */
 
-		console.log("------");
 		console.log("totalNumberOfWorkerCreeps: " + totalNumberOfWorkerCreeps + " maximumNumberOfWorkerCreeps:     " + maximumNumberOfWorkerCreeps);
 
 		if (totalNumberOfWorkerCreeps < maximumNumberOfWorkerCreeps)
@@ -313,7 +312,6 @@ let RoomCreepsController =
 
 							//maximumNumberOfInfantryCreeps
 
-							console.log("------");
 						}//more than one stationary creep
 					}
 				}
@@ -412,6 +410,8 @@ let RoomCreepsController =
 			 }
 			 }*/
 		}
+
+		console.log("                 ");
 	},
 
 	getSmallestWorkerCreepClosestToDeath: function (room)

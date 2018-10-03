@@ -3,6 +3,8 @@ let marketController = require('Controllers_Market_MarketController');
 
 let BrainController =
 {
+
+//EXTERNAL METHODS
 	processStimuli: function ()
 	{
 		this.brainWash();
@@ -10,6 +12,13 @@ let BrainController =
 		gameController.scanRooms();
 	},
 
+	takeAction: function ()
+	{
+		gameController.run();
+		marketController.sellEverything();
+	},
+	
+//INTERNAL METHODS	
 	brainWash: function ()
 	{
 		this.deleteALLMemoryOnFirstRun();
@@ -187,12 +196,6 @@ let BrainController =
 				room.memory.structures.mapArray = structuresMapArray;
 			}
 		}
-	},
-
-	takeAction: function ()
-	{
-		gameController.run();
-		marketController.sellEverything();
 	}
 };
 

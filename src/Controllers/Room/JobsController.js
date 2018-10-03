@@ -354,7 +354,7 @@ var RoomJobsController =
 	scanStationaryJobs: function (room)
 	{
 		this.scanHarvestEnergyJobs(room);
-		this.scanHarvestResourceJobs(room);
+		//this.scanHarvestResourceJobs(room);
 		this.scanStationaryManageStorageAndTerminalJobs(room);
 	},
 

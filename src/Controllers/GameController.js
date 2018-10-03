@@ -4,6 +4,7 @@ let contructionDecorativeWallsController = require('Controllers_Room_Constructio
 
 let GameController =
 {
+//EXTERNAL METHODS
 	run: function ()
 	{
 		let rooms = Game.rooms;
@@ -14,7 +15,7 @@ let GameController =
 			roomController.run(room);
 		}
 	},
-
+	
 	scanFlags: function()
 	{
 		for (let roomName in Game.rooms)

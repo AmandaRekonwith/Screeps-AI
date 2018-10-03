@@ -8,6 +8,7 @@ var MarketController =
 			if(room.terminal.store[RESOURCE_HYDROGEN] >= 20000){ resource = RESOURCE_HYDROGEN; }
 			if(room.terminal.store[RESOURCE_OXYGEN] >= 20000){ resource = RESOURCE_OXYGEN; }
 			if(room.terminal.store[RESOURCE_LEMERGIUM] >= 20000){ resource = RESOURCE_LEMERGIUM; }
+			if(room.terminal.store[RESOURCE_UTRIUM] >= 20000){ resource = RESOURCE_UTRIUM; }
 
 			if(resource != null)
 			{
@@ -33,7 +34,7 @@ var MarketController =
 
 					let result = null;
 
-					if(highestMarketBuyOrderPrice >= .4)
+					if(highestMarketBuyOrderPrice >= .01)
 					{
 						if(highestMarketBuyOrder.remainingAmount >= 20000)
 						{

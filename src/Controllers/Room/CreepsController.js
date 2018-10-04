@@ -36,6 +36,8 @@ require('Prototypes_CreepTypes_RemoteJobs_ClaimController')();
 require('Prototypes_CreepTypes_RemoteJobs_RemoteBuildStructure')();
 require('Prototypes_CreepTypes_RemoteJobs_RemoteUpgradeController')();
 
+require('Prototypes_CreepTypes_Maintainer')();
+
 require('Prototypes_CreepTypes_Infantry')();
 
 let RoomCreepsController =
@@ -43,7 +45,6 @@ let RoomCreepsController =
 	spawnCreeps: function (room)
 	{
 		let DEFCON = room.memory.DEFCON;
-		console.log("NEW TICK: " + Game.time);
 		console.log("ROOM: " + room.name);
 
 		let spawn = room.memory.structures.spawnsArray[0];
@@ -219,35 +220,25 @@ let RoomCreepsController =
 		}
 		else
 		{
-			let ticksItTakesToSpawnNewStationaryCreep = 21;
-			let energyRequiredToSpawnStationaryCreep = 550;
-
 			if(room.controller.level >= 2)
 			{
-				if (room.controller.level == 3)
-				{
-					ticksItTakesToSpawnNewStationaryCreep = 30;
-					energyRequiredToSpawnStationaryCreep = 750;
-				}
-				if (room.controller.level >= 4)
-				{
-					ticksItTakesToSpawnNewStationaryCreep = 49;
-					energyRequiredToSpawnStationaryCreep = 1300;
-				}
+				let ticksItTakesToSpawnNewStationaryCreep = spawn.getTicksToSpawnStationaryCreep(room.controller.level);;
+				let energyRequiredToSpawnStationaryCreep = spawn.getEnergyRequiredToSpawnStationaryCreep(room.controller.level);
+				let approximateAmountOfTicksRequiredToWalkToJobSite = 20;
 
 				let containersArray = room.memory.structures.containersArray;
 				let containersCount = containersArray.length;
 
 				if(containersCount > 0)
 				{
-					let ticksTillOldestSmallestStationaryCreepDies = 0;
+					let ticksTillOldestStationaryCreepDies = 0;
 					if (room.memory.creeps.stationaryCreeps.length > 0)
 					{
-						ticksTillOldestSmallestStationaryCreepDies = room.memory.creeps.stationaryCreeps[0].ticksToLive;
+						ticksTillOldestStationaryCreepDies = room.memory.creeps.stationaryCreeps[0].ticksToLive;
 					}
 
 					if (((numberOfStationaryCreeps < maximumNumberOfStationaryCreeps) ||
-						(ticksTillOldestSmallestStationaryCreepDies < ticksItTakesToSpawnNewStationaryCreep && numberOfStationaryCreeps == maximumNumberOfStationaryCreeps))
+						(ticksTillOldestStationaryCreepDies < ticksItTakesToSpawnNewStationaryCreep && numberOfStationaryCreeps == maximumNumberOfStationaryCreeps))
 						&& room.energyAvailable >= energyRequiredToSpawnStationaryCreep)
 					{
 						let numberOfSpawns = room.memory.structures.spawnsArray.length;

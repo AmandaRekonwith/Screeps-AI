@@ -111,7 +111,6 @@ let BrainController =
 								buildStructure: {}
 							},
 							routineJobs: {
-								repairWall: {},
 								repairStructure: {}
 							}
 						},

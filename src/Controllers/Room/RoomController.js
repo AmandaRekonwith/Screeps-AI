@@ -18,7 +18,12 @@ let RoomController =
 			{
 				let roomControllerLevel = controller.level;
 
-				let numberOfTicksToWaitToCheckIfCreepsNeedToBeSpawned = 10;
+				let numberOfTicksToWaitToCheckIfCreepsNeedToBeSpawned = 1;
+				/*
+				I had previously thought that this was inducing a dramatic slowdown on my CPU usage.
+				However, I now believe this is not the case, so disabling this code unless it becomes necessary again in the future.
+				
+
 				switch (roomControllerLevel)
 				{
 					case 1:
@@ -32,7 +37,7 @@ let RoomController =
 						break;
 					default:
 						numberOfTicksToWaitToCheckIfCreepsNeedToBeSpawned = 25;
-				}
+				}*/
 
 				if (roomControllerLevel < 5)
 				{

@@ -4,8 +4,7 @@ module.exports = function ()
 	{
 		let droppedEnergyIDsArray = new Array();
 
-		/*
-		for (let energyID in room.memory.jobs.haulerJobBoard.collectDroppedEnergy)
+		for (let energyID in this.room.memory.jobs.haulerJobBoard.collectDroppedEnergy)
 		{
 			droppedEnergyIDsArray.push(energyID);
 		}
@@ -21,7 +20,6 @@ module.exports = function ()
 
 			return job;
 		}
-		*/
 
 		let containerIDsArray = new Array();
 
@@ -85,8 +83,7 @@ module.exports = function ()
 				this.memory.currentTask = "Working";
 				this.memory.job = null;
 			}
-
-			if(_.sum(this.carry) == 0)
+			else
 			{
 				let percentageChanceCollectResource = 50;
 				let chanceRandomizer = Math.floor((Math.random() * 100));
@@ -254,8 +251,14 @@ module.exports = function ()
 							}
 							break;
 						case "collectDroppedEnergy":
-							//console.log(this.memory.job.targetID);
-
+							if (this.room.memory.jobs.haulerJobBoard.collectDroppedEnergy[this.memory.job.targetID]) //if job still exists
+							{
+								this.runHaulerCollectDroppedEnergy();
+							}
+							else
+							{
+								this.memory.job = null;
+							}
 							break;
 						default:
 					}

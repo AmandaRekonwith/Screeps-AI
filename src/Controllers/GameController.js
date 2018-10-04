@@ -7,6 +7,23 @@ let GameController =
 //EXTERNAL METHODS
 	run: function ()
 	{
+		const monthNames = ["January", "February", "March", "April", "May", "June",
+		  "July", "August", "September", "October", "November", "December"
+		];
+		let calendarDate = new Date(Game.time*1000);
+		let hours = calendarDate.getHours();
+		// Minutes part from the timestamp
+		let minutes = "0" + calendarDate.getMinutes();
+		// Seconds part from the timestamp
+		let seconds = "0" + calendarDate.getSeconds();
+		// Will display time in 10:30:23 format
+		let month = calendarDate.getMonth();
+		let day = calendarDate.getDay();
+		let year = calendarDate.getYear(); 
+
+		var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2) + " ------ " + monthNames[month] + " " + day + ", " + year;
+
+		console.log(formattedTime);
 		let rooms = Game.rooms;
 		for (let roomName in Game.rooms)
 		{
@@ -288,6 +305,8 @@ let GameController =
 		let lowestAmountOfTimeLeftToLiveOfRemoteUpgradeControllerCreeps = 1500;
 
 		let lowestAmountOfTimeLeftToLiveOfStationaryCreeps = 1500;
+
+		let lowestAmountOfTimeLeftToLiveOfMaintenanceCreeps = 1500;
 
 		let lowestAmountOfTimeLeftToLiveOfInfantryCreeps = 1500;
 

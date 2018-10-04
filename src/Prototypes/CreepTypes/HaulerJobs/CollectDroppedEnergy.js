@@ -15,8 +15,7 @@ module.exports = function ()
 
 			if (!Game.getObjectById(this.memory.job.targetID)) // job complete
 			{
-				this.room.memory.jobs.haulerJobBoard.collectDroppedEnergy[droppedEnergy.id].creep = null;
-				this.room.memory.jobs.haulerJobBoard.collectDroppedEnergy[droppedEnergy.id].active = false;
+				this.room.memory.jobs.haulerJobBoard.collectDroppedEnergy[droppedEnergy.id] = null;
 
 				this.memory.job = null;
 			}
@@ -24,7 +23,7 @@ module.exports = function ()
 			if (this.carry[RESOURCE_ENERGY] == this.carryCapacity)
 			{
 				this.memory.currentTask = "Working";
-				this.room.memory.jobs.haulerJobBoard.collectDroppedEnergy[droppedEnergy.id].creep = null;
+				this.room.memory.jobs.haulerJobBoard.collectDroppedEnergy[droppedEnergy.id] = null;
 
 				this.memory.job = null;
 			}

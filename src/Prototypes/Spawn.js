@@ -123,6 +123,38 @@ module.exports = function ()
 			});
 		};
 
+
+	StructureSpawn.prototype.getTicksToSpawnStationaryCreep =
+		function (roomLevel)
+		{
+			switch(roomLevel) 
+			{
+			    case 2:
+			        return 7 * 3;
+			        break;
+			    case 3:
+			        return 8 * 3;
+			        break;
+			    default:
+			        return 14 * 3;
+			}
+		};
+
+		StructureSpawn.prototype.getEnergyRequiredToSpawnStationaryCreep =
+		function (roomLevel)
+		{
+			switch(roomLevel) 
+			{
+			    case 2:
+			        return 400 + 100 + 50;
+			        break;
+			    case 3:
+			        return 500 + 100 + 50;
+			        break;
+			    default:
+			        return 1000 + 100 + 100;
+			}
+		};
 	//1300 energy required, 4 work parts, 2 carry parts, 1 move parts, 21 ticks.
 	//1100
 	//1150 39 ticks

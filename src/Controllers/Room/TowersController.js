@@ -87,7 +87,11 @@ let TowersController =
 				}
 				else
 				{
-					this.repairRampartOrWall(room.name, tower.id);
+					/* I was doing all my wall and rampart repairs via tower laser because I thought it looked awesome.
+					Upon learning more about the game, I have found this is CRAZY inefficient,
+					and was causing a stagnation of my energy reserves.
+					Therefore, I've disabled this, when not under attack. */
+					//this.repairRampartOrWall(room.name, tower.id);
 				}
 			}
 		}

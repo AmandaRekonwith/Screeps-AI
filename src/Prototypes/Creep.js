@@ -4,7 +4,7 @@ module.exports = function ()
 	{
 		let energySourcesArray = new Array();
 
-		let droppedEnergyArray = this.room.find(FIND_DROPPED_RESOURCES);
+		let droppedEnergyArray = this.room.find(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
 		let droppedEnergyCount = droppedEnergyArray.length;
 		if(droppedEnergyCount > 0)
 		{
@@ -241,11 +241,7 @@ module.exports = function ()
 
 	Creep.prototype.run = function ()
 	{
-		if(this.pos.x == 0)
-		{
-			this.moveTo(1, this.pos.y);
-		}
-		else
+		if(this.memory.type == "worker")
 		{
 			if (this.memory.currentTask == null || (this.memory.currentTask == "Getting Energy" && this.memory.energySource == null))
 			{
@@ -261,6 +257,7 @@ module.exports = function ()
 			if (this.memory.currentTask != "Working" && this.carry[RESOURCE_ENERGY] == this.carryCapacity)
 			{
 				this.memory.currentTask = "Working";
+
 				if (this.memory.remoteSourceFlagName)
 				{
 					delete this.memory.remoteSourceFlagName;
@@ -296,24 +293,24 @@ module.exports = function ()
 						this.moveTo(brownFlags[0].pos.x, brownFlags[0].pos.y);
 					}
 				}
-				else
-				{
-					switch (this.memory.type)
-					{
-						case "worker":
-							this.runWorker();
-							break;
-						case "hauler":
-							this.runHauler();
-							break;
-						case "stationary":
-							this.runStationary();
-							break;
-						default:
-							"";
-					}
-				}
+
+				this.runWorker();
 			}
+		}
+
+
+/* NEED TO REVISE THE ABOVE CODE IN THE FUTURE. VERY MESSY. */
+
+		switch (this.memory.type)
+		{
+			case "hauler":
+				this.runHauler();
+				break;
+			case "stationary":
+				this.runStationary();
+				break;
+			default:
+				"";
 		}
 	}
 

@@ -20,6 +20,9 @@ module.exports = function ()
 		}
 		else
 		{
+			if (this.carry[RESOURCE_ENERGY] == this.carryCapacity){ this.memory.currentTask = "Working"; }
+			if (this.carry[RESOURCE_ENERGY] == 0){ this.memory.currentTask = "Harvesting"; }
+
 			//AT JOB SITE
 			switch(this.memory.currentTask) 
 			{
@@ -62,8 +65,7 @@ module.exports = function ()
 		    }
 
 			//NOW CHECK TO CHANGE JOB STATUS
-			if (this.carry.energy == this.carryCapacity){ this.memory.currentTask = "Working"; }
-			if (this.carry.energy == 0){ this.memory.currentTask = "Harvesting"; }
+			
 
 		}//at job site
 

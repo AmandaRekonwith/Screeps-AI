@@ -84,6 +84,13 @@ var RoomJobsController =
 		}
 
 		//scan walls
+
+		/* I used to have workers repair walls.
+		NO MORE! Turret heals ramparts and walls at critical levels.
+		A maintainer builds them up further.
+		*/
+
+		/*
 		let repairWallJobs = room.memory.jobs.workerJobBoard.routineJobs.repairWall;
 
 		for(let wallID in repairWallJobs)
@@ -111,6 +118,8 @@ var RoomJobsController =
 				room.memory.jobs.workerJobBoard.routineJobs.repairWall[wall.id] = {};
 			}
 		}
+
+		*/
 	},
 
 	scanGeneralJobs: function (room)
@@ -294,30 +303,27 @@ var RoomJobsController =
 		}
 
 		//delete hauler jobs first if objects disappeared...or there is no energy in containers.
-		/*
 		 for(let energyID in room.memory.jobs.haulerJobBoard.collectDroppedEnergy)
 		 {
-		 if (!Game.getObjectById(energyID))
-		 {
-		 delete room.memory.jobs.haulerJobBoard.collectDroppedEnergy[energyID];
-		 }
+			 if (!Game.getObjectById(energyID))
+			 {
+			 	delete room.memory.jobs.haulerJobBoard.collectDroppedEnergy[energyID];
+			 }
 		 }
 
-		 let energySources = room.find(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
-
-		 let energySourcesCount = energySources.length;
-		 if(energySourcesCount > 0)
-		 {
-		 for(let x=0; x<energySourcesCount; x++)
-		 {
-		 let energySource = energySources[x];
-
-		 if(!room.memory.jobs.haulerJobBoard.collectDroppedEnergy[energySource.id])
-		 {
-		 room.memory.jobs.haulerJobBoard.collectDroppedEnergy[energySource.id] = {};
-		 }
-		 }
-		 }*/
+		let droppedEnergySources = room.find(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
+		let droppedEnergySourcesCount = droppedEnergySources.length;
+		if(droppedEnergySourcesCount > 0)
+		{
+			for(let x=0; x<droppedEnergySourcesCount; x++)
+			{
+				let energySource = droppedEnergySources[0];
+				if (energySource.pos.x > 2 && energySource.pos.x < 47 && energySource.pos.y > 2 && energySource.pos.y < 47)
+				{
+					room.memory.jobs.haulerJobBoard.collectDroppedEnergy[energySource.id] = {};
+				}
+			}
+		}
 	},
 
 	/*

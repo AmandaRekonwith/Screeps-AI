@@ -1,10 +1,6 @@
-# Currently working on:
-1. Implementing terminal usage.
-2. A 'scavenger' worker job role.
-3. Harvesting mineral resources.
-4. Switching to typescript.
-5. Improving statistics logging.
-6. Fleshing out the wiki description of how this all is supposed to function.
+# Currently working on (As of 10/5/2018):
+1. Creating a new worker type Overseer, that assumes one of the roles currently being done by the 'Stationary' creep role.
+2. Building a system whereby the mineral and resource creeps are spawned right next to their work locations, and thereby can continually renew themselves.
 
 # Screeps-AI
 <img src="http://cdn.akamai.steamstatic.com/steam/apps/464350/header.jpg?t=1494837632">
@@ -22,7 +18,7 @@ as well as incorporating some funny elements, such as screeps talking to one ano
 <br/>Additionally, I hope that my code is as straightforward and understandable as possible.
 I am not a programmer that focuses on optimization, but rather, cohesive, well-organized, and commented code.
 
-<b>NOTE:</b> If you are looking for a one-stop shop, install, and conquer the universe codebase that is cryptically written in order to make the best use of memory and cpu usage, I advise you to look elsewhere.
+<b>NOTE:</b> If you are looking for a one-stop shop, install, and conquer the universe codebase that is cryptically written in order to make the best use of memory and cpu usage, I advise you to look elsewhere (Check out TooAngel and Overmind).
 
 Currently this code is in a primordial state.
 I have gotten to this point by first following along with thpion's awesome youtube 'noob guide' series
@@ -37,13 +33,12 @@ Briefly, what my code currently does:
 1. It automatically harvests resources, semi-efficiently. 
 2. It upgrades the room controller.
 3. It spawns progressively larger creeps depending on the room level.
-4. It builds extensions automatically (and deletes them if the room level drops)
-5. Worker creeps automatically respond and construct placed job sites, but do not yet automate the construction of roads, containers, storage, turrets, (basically anything except extensions at this point). They must be manually placed.
-6. Once a room is above level 5 and two containers are placed in the correct positions near an energy source,
+4. Worker creeps automatically respond and construct placed job sites, but do not yet automate the construction of roads, containers, storage, turrets, (basically anything except extensions at this point). They must be manually placed.
+5. Once a room is above level 5 and two containers are placed in the correct positions near an energy source,
 'stationary' creeps will begin to spawn, replacing the duties of worker creeps' harvesting.
 These will harvest and deposit resources in a container.
 Then, if a storage structure exists, hauler creeps will spawn and transport the energy to .. either directly to the storage if DEFCON is lower than 5, for other worker creeps to take and use as needed, or they will travel about supplying the spawn and extensions before the storage, thus maximizing the total energy collected and stored, and minimizing the need for multiple (if any) worker creeps.
-7. A mechanism for expanding to multiple rooms has been implemented but needs much refinement.
+6. A mechanism for expanding to multiple rooms has been implemented but needs much refinement.
 Basically, there is an additional group of creeps titled "Remote". If they detect an appropriately colored flag placed in the room, they spawn.
 Purple: Claimer
 Red: Upgrade Controller
@@ -51,7 +46,8 @@ Yellow: Build, Repair, or Upgrade whatever structure is flagged.
 
 These creeps require their colored flags to be placed on the exits of every room, and on the their final destination in order to function.
 Essentially they are following a 'bread crumb' trail to their desired destination.
-7. Towers attack the closest hostile creep. This needs further development.
+7. Towers attack the closest hostile creep if a healer is not present. If a healer is present, determines if it can kill the healer,
+and if not, heals the wall the hostiles are attacking instead.
 8. Rudimentary stats are now being recorded and displayed in Graphana, with the help of 
 https://screepspl.us/ and the work done by https://github.com/LispEngineer/screeps.
 
@@ -145,7 +141,7 @@ then imported this into the graphana dashboard.
 
 I ended up with something that looks like this:
 <img src="https://github.com/AmandaRekonwith/Screeps-AI/blob/master/graphanaexample.jpg">
-.. Not very pretty or useful, but interesting. I will refine this in the future.
+.. Not very pretty or particularly useful, but interesting. I will refine this in the future.
 
 -------------------------------------------------
 
@@ -157,6 +153,15 @@ Let me know if you have any questions, comments, or concerns!
 
 
 # Recent Updates
+<br/><b>08/03/2018</b> - Onwards and upwards!
+<br/>Lots of updates
+
+Came back after a year to find my civilization in disarray.
+Two rooms were conquered and the rest were glitching from various errors in code,
+but surviving nonetheless.
+
+I've cleaned up a lot of the code. Added a number of new features, and am quietly optimistic.
+
 <br/><b>07/01/2017</b> - Fat jobs, FatHarvesters, and onwards...
 <br/>Big update.
 

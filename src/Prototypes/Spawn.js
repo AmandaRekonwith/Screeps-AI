@@ -214,6 +214,21 @@ module.exports = function ()
 			});
 		};
 
+	//850 energy required
+	StructureSpawn.prototype.createMaintenanceCreep =
+		function ()
+		{
+			var body = [WORK, WORK, WORK,
+			CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
+			MOVE, MOVE, MOVE, MOVE, MOVE];
+			var creepName = controllerCreepsNameGenerator.getName();
+			this.createCreep(body, creepName, {
+				type: "maintainer",
+				currentTask: null,
+				job: null
+			});
+		};
+
 	//650 energy required, 1 claimer part, 1 move part.
 	StructureSpawn.prototype.createClaimerCreep =
 		function ()

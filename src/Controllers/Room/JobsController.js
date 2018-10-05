@@ -134,6 +134,14 @@ var RoomJobsController =
 	{
 		let supplyExtensionJobs = room.memory.jobs.generalJobBoard.supplyExtension;
 
+		for(let structureID in supplyExtensionJobs)
+		{
+			if(!Game.getObjectById(structureID))
+			{
+				delete room.memory.jobs.workerJobBoard.generalJobBoard.supplyExtension[structureID];
+			}
+		}
+
 		let extensionsArray = room.find(FIND_MY_STRUCTURES, {
 			filter: (structure) =>
 			{
@@ -163,6 +171,16 @@ var RoomJobsController =
 
 	scanGeneralSupplySpawnJobs: function (room)
 	{
+		let supplySpawnJobs = room.memory.jobs.generalJobBoard.supplySpawn;
+
+		for(let structureID in supplySpawnJobs)
+		{
+			if(!Game.getObjectById(structureID))
+			{
+				delete room.memory.jobs.generalJobBoard.supplySpawn[structureID];
+			}
+		}
+
 		let spawnsArray = room.find(FIND_MY_STRUCTURES, {
 			filter: (structure) =>
 			{
@@ -209,10 +227,31 @@ var RoomJobsController =
 				}
 			}
 		}
+		else
+		{
+			for(let storageID in room.memory.jobs.generalJobBoard.supplyStorage)
+			{
+				if(!Game.getObjectById(storageID))
+				{
+					delete room.memory.jobs.generalJobBoard.supplyStorage[structureID];
+				}
+			}
+		}
 	},
 
 	scanGeneralSupplyTowerJobs: function (room)
 	{
+		let supplyTowersJob = room.memory.jobs.generalJobBoard.supplyTower;
+
+		for(let structureID in supplyTowersJob)
+		{
+			if(!Game.getObjectById(structureID))
+			{
+				delete room.memory.jobs.generalJobBoard.supplyTower[structureID];
+			}
+		}
+
+
 		let towersArray = room.find(FIND_MY_STRUCTURES, {
 			filter: (structure) =>
 			{
@@ -272,6 +311,15 @@ var RoomJobsController =
 		//create hauler jobs, based on how many storage and containers exist... will fidget with this eventually
 		if (storageCount > 0)
 		{
+
+			for(let containerID in room.memory.jobs.haulerJobBoard.moveEnergyFromContainer)
+			{
+				if (!Game.getObjectById(containerID))
+				{
+					delete room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[containerID];
+				}
+			}
+				
 			/*
 			let ignoreStructureContainersArray = room.find(FIND_STRUCTURES, {
 				filter: (i) => i.structureType == STRUCTURE_CONTAINER
@@ -313,17 +361,15 @@ var RoomJobsController =
 
 		let droppedEnergySources = room.find(FIND_DROPPED_RESOURCES, RESOURCE_ENERGY);
 		let droppedEnergySourcesCount = droppedEnergySources.length;
-		if(droppedEnergySourcesCount > 0)
+		for(let x=0; x<droppedEnergySourcesCount; x++)
 		{
-			for(let x=0; x<droppedEnergySourcesCount; x++)
+			let energySource = droppedEnergySources[x];
+			if (energySource.pos.x > 2 && energySource.pos.x < 47 && energySource.pos.y > 2 && energySource.pos.y < 47)
 			{
-				let energySource = droppedEnergySources[0];
-				if (energySource.pos.x > 2 && energySource.pos.x < 47 && energySource.pos.y > 2 && energySource.pos.y < 47)
-				{
-					room.memory.jobs.haulerJobBoard.collectDroppedEnergy[energySource.id] = {};
-				}
+				room.memory.jobs.haulerJobBoard.collectDroppedEnergy[energySource.id] = {};
 			}
 		}
+
 	},
 
 	/*

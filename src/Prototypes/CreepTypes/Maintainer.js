@@ -5,7 +5,7 @@ module.exports = function ()
 		let typeOfJobRandomizer = Math.floor((Math.random() * 100));
 		let percentageChanceOfWorkingRampartRepairJob = 70;
 
-		if (typeOfJobRandomizer < percentageChanceOfWorkingFirstPriorityJob) //repair rampart
+		if (typeOfJobRandomizer < percentageChanceOfWorkingRampartRepairJob) //repair rampart
 		{
 			let rampart = this.room.memory.structures.rampartsArray[0];
 
@@ -13,7 +13,7 @@ module.exports = function ()
 				targetID: rampart.id,
 				type: "repair"
 			};
-			this.memory.job = job;
+			return job;
 		}
 		else
 		{
@@ -22,25 +22,44 @@ module.exports = function ()
 				targetID: wall.id,
 				type: "repair"
 			};
-			this.memory.job = job;
+			return job;
 		}
 	},
 
 	Creep.prototype.runMaintainer = function ()
 	{
-		if (this.memory.job != null)
+		if(this.room.memory.DEFCON == 5)
 		{
-			switch (this.memory.job.type)
+			if (this.memory.currentTask == "Getting Energy" || this.memory.currentTask == null)
 			{
-				case "repair":
-					this.repairTarget();
-					break;
-				default:
+				if(this.carry[RESOURCE_ENERGY] != this.carryCapacity)
+				{
+					this.memory.currentTask = "Getting Energy";
+					this.getEnergyFromStorage();
+				}
+				else
+				{
+					this.memory.currentTask = "Working";
+				}
 			}
-		}
-		else
-		{
-			this.memory.job = this.getJob();
+
+			if (this.memory.currentTask == "Working")
+			{
+				if (this.memory.job != null)
+				{
+					switch (this.memory.job.type)
+					{
+						case "repair":
+							this.repairDefense();
+							break;
+						default:
+					}
+				}
+				else
+				{
+					this.memory.job = this.getMaintainerJob();
+				}
+			}
 		}
 	},
 

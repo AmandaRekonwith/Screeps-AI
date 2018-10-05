@@ -6,7 +6,7 @@ module.exports = function ()
 
 		if (droppedEnergy)
 		{
-			action = this.pickup(droppedEnergy);
+			action = this.pickup(droppedEnergy, RESOURCE_ENERGY);
 
 			if (action == ERR_NOT_IN_RANGE)
 			{

@@ -188,7 +188,7 @@ let GameController =
 			}
 		}
 
-		let lowestHealthRampart = 30000000;
+		let lowestHealthRampartsArray = {};
 
 		for (let name in Game.structures)
 		{
@@ -221,10 +221,15 @@ let GameController =
 					break;
 				case 'rampart':
 					structure.room.memory.structures.mapArray[structure.pos.x][structure.pos.y] = 5;
-					if(structure.hits < lowestHealthRampart)
+					if(!lowestHealthRampartsArray[structure.room.name])
+					{
+						lowestHealthRampartsArray[structure.room.name] = 300000001;
+					}
+
+					if(structure.hits < lowestHealthRampartsArray[structure.room.name])
 					{
 						structure.room.memory.structures.rampartsArray.unshift(structure);
-						lowestHealthRampart = structure.hits;
+						lowestHealthRampartsArray[structure.room.name] = structure.hits;
 					}
 					else
 					{
@@ -489,6 +494,17 @@ let GameController =
 						else
 						{
 							room.memory.creeps.infantryCreeps.push(creep);
+						}
+						break;
+					case 'maintainer':
+						if (creep.ticksToLive < lowestAmountOfTimeLeftToLiveOfMaintenanceCreeps)
+						{
+							room.memory.creeps.maintenanceCreeps.unshift(creep);
+							lowestAmountOfTimeLeftToLiveOfMaintenanceCreeps = creep.ticksToLive;
+						}
+						else
+						{
+							room.memory.creeps.maintenanceCreeps.push(creep);
 						}
 						break;
 					default:

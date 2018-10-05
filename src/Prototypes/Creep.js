@@ -139,8 +139,7 @@ module.exports = function ()
 
 	Creep.prototype.getEnergyFromStorage = function ()
 	{
-		let energySource = Game.getObjectById(this.memory.energySource.targetID);
-
+		let energySource = this.room.storage;
 
 		if(energySource.store[RESOURCE_ENERGY] == 0)
 		{

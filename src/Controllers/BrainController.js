@@ -64,7 +64,7 @@ let BrainController =
 			{
 				if (!room.memory.DEFCON)
 				{
-					room.memory.DEFCON = 3;
+					room.memory.DEFCON = 5;
 				}
 
 				if (!room.memory.ownership)
@@ -156,6 +156,7 @@ let BrainController =
 						biggestWorkerCreepsArray: []
 					},
 					haulerCreeps: [],
+					maintenanceCreeps: [],
 					stationaryCreeps: [],
 					infantryCreeps: []
 				};

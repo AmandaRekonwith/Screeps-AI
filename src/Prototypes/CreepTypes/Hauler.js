@@ -11,10 +11,29 @@ module.exports = function ()
 
 		if (droppedEnergyIDsArray.length > 0)
 		{
-			droppedEnergyIDsArray = this.FisherYatesShuffle(droppedEnergyIDsArray);
+			//find closest dropped energy
+				let closestIndex = 0;
+				let leastDistance = 98;
+
+				let droppedEnergyCount = droppedEnergyIDsArray.length;
+				if(droppedEnergyCount > 0)
+				{
+					for(let x=0; x<droppedEnergyCount; x++)
+					{
+						let targetJobSite = Game.getObjectById(droppedEnergyIDsArray[x]);
+						let xDifference = Math.abs(this.pos.x - targetJobSite.pos.x);
+						let yDifference = Math.abs(this.pos.y - targetJobSite.pos.y);
+						let totalDifference = xDifference + yDifference;
+						if(totalDifference < leastDistance)
+						{
+							closestIndex = x;
+							leastDistance = totalDifference;
+						}
+					}
+				}
 
 			job = {
-				targetID: droppedEnergyIDsArray[0],
+				targetID: droppedEnergyIDsArray[closestIndex],
 				type: "collectDroppedEnergy"
 			};
 
@@ -30,12 +49,31 @@ module.exports = function ()
 
 		if (containerIDsArray.length > 0)
 		{
-			containerIDsArray = this.FisherYatesShuffle(containerIDsArray);
+			//find closest dropped energy
+			let closestIndex = 0;
+			let leastDistance = 98;
 
-			if (Game.getObjectById(containerIDsArray[0]).store[RESOURCE_ENERGY] >= 500)
+			let containersCount = containerIDsArray.length;
+			if(containersCount > 0)
+			{
+				for(let x=0; x<containersCount; x++)
+				{
+					let targetJobSite = Game.getObjectById(containerIDsArray[x]);
+					let xDifference = Math.abs(this.pos.x - targetJobSite.pos.x);
+					let yDifference = Math.abs(this.pos.y - targetJobSite.pos.y);
+					let totalDifference = xDifference + yDifference;
+					if(totalDifference < leastDistance)
+					{
+						closestIndex = x;
+						leastDistance = totalDifference;
+					}
+				}
+			}
+
+			if (Game.getObjectById(containerIDsArray[closestIndex]).store[RESOURCE_ENERGY] >= 500)
 			{
 				job = {
-					targetID: containerIDsArray[0],
+					targetID: containerIDsArray[closestIndex],
 					type: "moveEnergyFromContainer"
 				};
 
@@ -85,6 +123,11 @@ module.exports = function ()
 			}
 			else
 			{
+				this.memory.currentTask = "Getting Energy";
+				job = this.haulerCollectEnergy();
+
+				/*
+
 				let percentageChanceCollectResource = 50;
 				let chanceRandomizer = Math.floor((Math.random() * 100));
 				if(chanceRandomizer < percentageChanceCollectResource)
@@ -119,17 +162,21 @@ module.exports = function ()
 						this.memory.currentTask = "Getting Energy";
 					}
 				}
+				*/
 			}
 
+			/*
 			if(_.sum(this.carry) - this.carry[RESOURCE_ENERGY] == 0 && _.sum(this.carry > 0))
 			{
 				job = this.haulerCollectEnergy();
 			}
 
+
 			if (_.sum(this.carry) - this.carry[RESOURCE_ENERGY] > 0)
 			{
 				job = this.haulerCollectResource();
 			}
+			*/
 
 			return job;
 		}
@@ -195,134 +242,144 @@ module.exports = function ()
 
 				if (room.storage)
 				{
-					if (room.memory.jobs.generalJobBoard.supplyStorage[room.storage.id])
-					{
-						let job = {
-							targetID: room.storage.id,
-							type: "supplyStorage"
-						}
+					let job = {
+						targetID: room.storage.id,
+						type: "supplyStorage"
+					}
+					routineJobsArray.push(job);
+				}
 
-						routineJobsArray.push(job);
+				//find closest target
+				let closestIndex = 0;
+				let leastDistance = 98;
+
+				let jobsCount = routineJobsArray.length;
+				if(jobsCount > 0)
+				{
+					for(let x=0; x<jobsCount; x++)
+					{
+						let targetJobSite = Game.getObjectById(routineJobsArray[x].targetID);
+						let xDifference = Math.abs(this.pos.x - targetJobSite.pos.x);
+						let yDifference = Math.abs(this.pos.y - targetJobSite.pos.y);
+						let totalDifference = xDifference + yDifference;
+						if(totalDifference < leastDistance)
+						{
+							closestIndex = x;
+							leastDistance = totalDifference;
+						}
 					}
 				}
 
-				let jobRandomizer = Math.floor((Math.random() * routineJobsArray.length));
-				return routineJobsArray[jobRandomizer];
+				//let jobRandomizer = Math.floor((Math.random() * routineJobsArray.length));
+				return routineJobsArray[closestIndex];
 			}
 		}
 	}
 
 	Creep.prototype.runHauler = function ()
 	{
-		if(this.pos.x == 0)
+		if (this.memory.currentTask == "Getting Energy" || this.memory.currentTask == null || this.memory.currentTask == "Getting Resource")
 		{
-			this.moveTo(1, this.pos.y);
-		}
-		else
-		{
-			if (this.memory.currentTask == "Getting Energy" || this.memory.currentTask == null || this.memory.currentTask == "Getting Resource")
+			if(this.memory.job == null || !this.memory.job)
 			{
-				if(this.memory.job == null || !this.memory.job)
+				this.memory.job = this.getHaulerJob();
+			}
+			else
+			{
+				switch (this.memory.job.type)
 				{
-					this.memory.job = this.getHaulerJob();
-				}
-				else
-				{
-					switch (this.memory.job.type)
-					{
-						case "moveEnergyFromContainer":
-							if (this.room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[this.memory.job.targetID]) //if job still exists
-							{
-								this.runHaulerMoveEnergyFromContainer();
-							}
-							else
-							{
-								this.memory.job = null;
-							}
-							break;
-						case "moveResourceFromLabToTerminal":
-							if (this.room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal[this.memory.job.targetID]) //if job still exists
-							{
-								this.runHaulerMoveResourceFromLabToTerminal();
-							}
-							else
-							{
-								this.memory.job = null;
-							}
-							break;
-						case "collectDroppedEnergy":
-							if (this.room.memory.jobs.haulerJobBoard.collectDroppedEnergy[this.memory.job.targetID]) //if job still exists
-							{
-								this.runHaulerCollectDroppedEnergy();
-							}
-							else
-							{
-								this.memory.job = null;
-							}
-							break;
-						default:
-					}
+					case "moveEnergyFromContainer":
+						if (this.room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[this.memory.job.targetID]) //if job still exists
+						{
+							this.runHaulerMoveEnergyFromContainer();
+						}
+						else
+						{
+							this.memory.job = null;
+						}
+						break;
+					case "moveResourceFromLabToTerminal":
+						if (this.room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal[this.memory.job.targetID]) //if job still exists
+						{
+							this.runHaulerMoveResourceFromLabToTerminal();
+						}
+						else
+						{
+							this.memory.job = null;
+						}
+						break;
+					case "collectDroppedEnergy":
+						if (this.room.memory.jobs.haulerJobBoard.collectDroppedEnergy[this.memory.job.targetID]) //if job still exists
+						{
+							this.runHaulerCollectDroppedEnergy();
+						}
+						else
+						{
+							this.memory.job = null;
+						}
+						break;
+					default:
 				}
 			}
+		}
 
-			if (this.memory.currentTask == "Working")
+		if (this.memory.currentTask == "Working")
+		{
+			if(this.memory.job != null)
 			{
-				if(this.memory.job != null)
+				switch (this.memory.job.type)
 				{
-					switch (this.memory.job.type)
-					{
-						case "supplyExtension":
-							if (this.room.memory.jobs.generalJobBoard.supplyExtension[this.memory.job.targetID])
-							{
-								this.supplyExtension();
-							}
-							else
-							{
-								this.memory.job = null;
-							}
-							break;
-						case "supplySpawn":
-							if (this.room.memory.jobs.generalJobBoard.supplySpawn[this.memory.job.targetID])
-							{
-								this.supplySpawn();
-							}
-							else
-							{
-								this.memory.job = null;
-							}
-							break;
-						case "supplyTower":
-							if (this.room.memory.jobs.generalJobBoard.supplyTower[this.memory.job.targetID])
-							{
-								this.supplyTower();
-							}
-							else
-							{
-								this.memory.job = null;
-							}
-							break;
-						case "supplyStorage":
-							if (this.room.memory.jobs.generalJobBoard.supplyStorage[this.memory.job.targetID])
-							{
-								this.supplyStorage();
-							}
-							else
-							{
-								this.memory.job = null;
-							}
-							break;
-						case "supplyTerminalResource":
-							this.supplyTerminalResource();
-							break;
-						default:
+					case "supplyExtension":
+						if (this.room.memory.jobs.generalJobBoard.supplyExtension[this.memory.job.targetID])
+						{
+							this.supplyExtension();
+						}
+						else
+						{
+							this.memory.job = null;
+						}
+						break;
+					case "supplySpawn":
+						if (this.room.memory.jobs.generalJobBoard.supplySpawn[this.memory.job.targetID])
+						{
+							this.supplySpawn();
+						}
+						else
+						{
+							this.memory.job = null;
+						}
+						break;
+					case "supplyTower":
+						if (this.room.memory.jobs.generalJobBoard.supplyTower[this.memory.job.targetID])
+						{
+							this.supplyTower();
+						}
+						else
+						{
+							this.memory.job = null;
+						}
+						break;
+					case "supplyStorage":
+						if (this.room.memory.jobs.generalJobBoard.supplyStorage[this.memory.job.targetID])
+						{
+							this.supplyStorage();
+						}
+						else
+						{
+							this.memory.job = null;
+						}
+						break;
+					case "supplyTerminalResource":
+						this.supplyTerminalResource();
+						break;
+					default:
 
-							break;
-					}
+						break;
 				}
-				else
-				{
-					this.memory.job = this.getHaulerJob();
-				}
+			}
+			else
+			{
+				this.memory.job = this.getHaulerJob();
 			}
 		}
 	}

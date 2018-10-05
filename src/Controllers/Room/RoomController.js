@@ -14,6 +14,8 @@ let RoomController =
 		{
 			let controller = room.controller;
 
+			room.memory.DEFCON = 5;
+
 			if(controller != undefined)
 			{
 				let roomControllerLevel = controller.level;
@@ -38,22 +40,6 @@ let RoomController =
 					default:
 						numberOfTicksToWaitToCheckIfCreepsNeedToBeSpawned = 25;
 				}*/
-
-				if (roomControllerLevel < 5)
-				{
-					room.memory.DEFCON = 3;
-				}
-				else
-				{
-					if(room.storage)
-					{
-						room.memory.DEFCON = 5;
-					}
-					else
-					{
-						room.memory.DEFCON = 4;
-					}
-				}
 
 				if (roomControllerLevel > 0)
 				{

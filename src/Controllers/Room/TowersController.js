@@ -5,6 +5,7 @@ let TowersController =
 		let towersArray = room.memory.structures.towersArray;
 
 		let towersCount = towersArray.length;
+
 		for(let x=0; x<towersCount; x++)
 		{
 			let tower = towersArray[x];
@@ -18,6 +19,8 @@ let TowersController =
 
 			if(closestHostile != null)
 			{
+				room.memory.DEFCON = 3;
+
 				let hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
 				let hostileCreepsCount = hostileCreeps.length;
 
@@ -48,8 +51,11 @@ let TowersController =
 					}
 				}
 
+
+				console.log(maximumHealCount);
+
 				//console.log(maximumHealCount);
-				if(maximumHealCount < 3 * towersCount)
+				if(maximumHealCount < 5 * towersCount)
 				{
 					if (target != null)
 					{
@@ -62,12 +68,14 @@ let TowersController =
 				}
 				else
 				{
-					//repair whatever wall the fucks are attacking
+					//repair whatever wall the enemies are attacking
 					this.repairRampartOrWall(room.name, tower.id);
 				}
 			}
 			else
 			{
+				room.memory.DEFCON = 5;
+
 				let creepsArray = room.find(FIND_MY_CREEPS);
 				let creepsCount = creepsArray.length;
 
@@ -115,7 +123,7 @@ let TowersController =
 			}
 			else
 			{
-				if (room.memory.structures.rampartsArray[0].hits < room.memory.structures.rampartsArray[0].hitsMax && room.storage && room.storage.store[RESOURCE_ENERGY] > 900000)
+				if (room.memory.structures.rampartsArray[0].hits < room.memory.structures.rampartsArray[0].hitsMax)
 				{
 					action = tower.repair(room.memory.structures.rampartsArray[0]);
 				}
@@ -132,7 +140,7 @@ let TowersController =
 			}
 			else
 			{
-				if (room.memory.structures.wallsArray[0].hits < room.memory.structures.wallsArray[0].hitsMax && room.storage && room.storage.store[RESOURCE_ENERGY] > 900000)
+				if (room.memory.structures.wallsArray[0].hits < room.memory.structures.wallsArray[0].hitsMax)
 				{
 					tower.repair(room.memory.structures.wallsArray[0]);
 				}

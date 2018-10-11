@@ -310,6 +310,7 @@ let GameController =
 		let lowestAmountOfTimeLeftToLiveOfRemoteUpgradeControllerCreeps = 1500;
 
 		let lowestAmountOfTimeLeftToLiveOfStationaryCreeps = 1500;
+		let lowestAmountOfTimeLeftToLiveOfOverseerCreeps = 1500;
 
 		let lowestAmountOfTimeLeftToLiveOfMaintenanceCreeps = 1500;
 
@@ -450,6 +451,17 @@ let GameController =
 						else
 						{
 							room.memory.creeps.stationaryCreeps.push(creep);
+						}
+						break;
+					case 'overseer':
+						if (creep.ticksToLive < lowestAmountOfTimeLeftToLiveOfOverseerCreeps)
+						{
+							room.memory.creeps.overseerCreeps.unshift(creep);
+							lowestAmountOfTimeLeftToLiveOfOverseerCreeps = creep.ticksToLive;
+						}
+						else
+						{
+							room.memory.creeps.overseerCreeps.push(creep);
 						}
 						break;
 					case 'claimer':

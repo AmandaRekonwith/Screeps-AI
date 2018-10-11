@@ -126,6 +126,9 @@ let BrainController =
 							manageStorageAndTerminal: {},
 							harvestEnergy: {},
 							harvestResource: {}
+						},
+						overseerJobBoard: {
+							manageStorageAndTerminal: {}
 						}
 					};
 					let stationaryJobSitesMapArray = new Array();
@@ -158,6 +161,7 @@ let BrainController =
 					haulerCreeps: [],
 					maintenanceCreeps: [],
 					stationaryCreeps: [],
+					overseerCreeps: [],
 					infantryCreeps: []
 				};
 

@@ -5,52 +5,45 @@ module.exports = function ()
 		let room = this.room;
 		let labID = this.memory.job.targetID;
 		let lab = Game.getObjectById(labID);
+		let terminal = this.room.terminal;
+		let resource = Game.getObjectById(this.room.memory.environment.resourcesArray[0]);
+		let currentTask = this.memory.currentTask;
 
-		if (room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal[labID])
+		let action = null;
+
+		if(this.memory.currentTask == "Getting Resource")
 		{
-			let currentTask = this.memory.currentTask;
-
-			if (this.memory.currentTask == null || this.memory.currentTask == "Getting Resource")
+			if(lab.mineralAmount > 0)
 			{
-				this.memory.currentTask = "Getting Resource";
+				action = this.withdraw(lab, resource.mineralType);
 
-				let action = null;
-
-				if(lab.mineralAmount >= 500)
+				if (action == ERR_NOT_IN_RANGE)
 				{
-					let resource = Game.getObjectById(this.room.memory.environment.resourcesArray[0]);
-
-					action = this.withdraw(lab, resource.mineralType);
-
-					if (action == ERR_NOT_IN_RANGE)
-					{
-						this.moveTo(lab, {visualizePathStyle: {stroke: '#ffaa00'}});
-					}
-
-					if ((_.sum(this.carry) == this.carryCapacity) && this.memory.currentTask == "Getting Resource")
-					{
-						this.memory.currentTask = "Working";
-						room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal[labID].creepID = null;
-
-						this.memory.job = null;
-					}
-				}
-				else
-				{
-					if(_.sum(this.carry) > 0)
-					{
-						this.memory.currentTask = "Working";
-						room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal[labID].creepID = null;
-
-						this.memory.job = null;
-					}
-					else
-					{
-						this.memory.currentTask = null;
-						this.memory.job = null;
-					}
+					this.moveTo(lab, {visualizePathStyle: {stroke: '#ffaa00'}});
 				}
 			}
+			else
+			{
+				room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal[labID].creepID = null;
+				this.memory.currentTask = null;
+				this.memory.job = null;
+			}
 		}
+
+		if(this.carry[resource.mineralType] && this.carry[resource.mineralType] > 0)
+		{
+			room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal[labID].creepID = null;
+			this.memory.currentTask = "Working";
+			this.memory.job = {
+					targetID: terminal.id,
+					type: "supplyTerminalResource"
+			}
+		}
+
 	}
 }
+
+
+
+
+					

@@ -51,9 +51,6 @@ let TowersController =
 					}
 				}
 
-
-				console.log(maximumHealCount);
-
 				//console.log(maximumHealCount);
 				if(maximumHealCount < 5 * towersCount)
 				{

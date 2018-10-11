@@ -3,12 +3,11 @@ module.exports = function ()
 	Creep.prototype.supplyTerminalResource = function ()
 	{
 		let terminal = Game.getObjectById(this.memory.job.targetID);
+		let resource = Game.getObjectById(this.room.memory.environment.resourcesArray[0]);
 
 		if (terminal)
 		{
 			let action = null;
-
-			let resource = Game.getObjectById(this.room.memory.environment.resourcesArray[0]);
 
 			action = this.transfer(terminal, resource.mineralType);
 
@@ -17,12 +16,7 @@ module.exports = function ()
 				this.moveTo(terminal, {visualizePathStyle: {stroke: '#ffffff'}});
 			}
 
-			if ( _.sum(terminal.store) == terminal.storeCapacity) // job complete
-			{
-				//this.memory.job = null;
-			}
-
-			if (_.sum(this.carry) == 0)
+			if (_.sum(this.carry[resource.mineralType]) == 0)
 			{
 				this.memory.job = null;
 				this.memory.currentTask = null;

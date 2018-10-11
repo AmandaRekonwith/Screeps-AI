@@ -28,38 +28,45 @@ module.exports = function ()
 
 	Creep.prototype.runMaintainer = function ()
 	{
-		if(this.room.memory.DEFCON == 5)
+		if(this.room.storage)
 		{
-			if (this.memory.currentTask == "Getting Energy" || this.memory.currentTask == null)
+			if(this.room.memory.DEFCON == 5)
 			{
-				if(this.carry[RESOURCE_ENERGY] != this.carryCapacity)
+				if (this.memory.currentTask == "Getting Energy" || this.memory.currentTask == null)
 				{
-					this.memory.currentTask = "Getting Energy";
-					this.getEnergyFromStorage();
-				}
-				else
-				{
-					this.memory.currentTask = "Working";
-				}
-			}
-
-			if (this.memory.currentTask == "Working")
-			{
-				if (this.memory.job != null)
-				{
-					switch (this.memory.job.type)
+					if(this.carry[RESOURCE_ENERGY] != this.carryCapacity)
 					{
-						case "repair":
-							this.repairDefense();
-							break;
-						default:
+						this.memory.currentTask = "Getting Energy";
+						this.getEnergyFromStorage();
+					}
+					else
+					{
+						this.memory.currentTask = "Working";
 					}
 				}
-				else
+
+				if (this.memory.currentTask == "Working")
 				{
-					this.memory.job = this.getMaintainerJob();
+					if (this.memory.job != null)
+					{
+						switch (this.memory.job.type)
+						{
+							case "repair":
+								this.repairDefense();
+								break;
+							default:
+						}
+					}
+					else
+					{
+						this.memory.job = this.getMaintainerJob();
+					}
 				}
 			}
+		}
+		else
+		{
+			this.suicide();
 		}
 	},
 

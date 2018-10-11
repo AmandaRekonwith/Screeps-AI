@@ -88,16 +88,11 @@ module.exports = function ()
 	{
 		for (let labID in this.room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal)
 		{
-
-			if (Game.getObjectById(labID).mineralAmount >= 500)
-			{
-				let job = {
-					targetID: labID,
-					type: "moveResourceFromLabToTerminal"
-				};
-
-				return job;
-			}
+			let job = {
+				targetID: labID,
+				type: "moveResourceFromLabToTerminal"
+			};
+			return job;
 		}
 
 		return null;
@@ -107,62 +102,47 @@ module.exports = function ()
 	{
 		let job = null;
 		let room = this.room;
+		let resource = Game.getObjectById(room.memory.environment.resourcesArray[0]);
 
-		if(this.memory.currentTask == "Working" && _.sum(this.carry) == 0)
-		{
-			this.memory.currentTask = null;
-		}
-
-		if ((this.memory.currentTask == null || this.memory.currentTask == "Getting Energy" || this.memory.currentTask == "Getting Resource")
-			&& (this.memory.job == null || !this.memory.job))
-		{
-			if(_.sum(this.carry) == this.carryCapacity)
+		if ((!this.memory.currentTask || this.memory.currentTask == null || this.memory.currentTask == "Getting Energy" || this.memory.currentTask == "Getting Resource")
+			&& (this.memory.job == null || !this.memory.job)
+			&& (_.sum(this.carry) != this.carryCapacity && !this.carry[resource.mineralType]))
+		{			
+			let percentageChanceCollectResource = 50;
+			let chanceRandomizer = Math.floor((Math.random() * 100));
+			if(chanceRandomizer < percentageChanceCollectResource)
 			{
-				this.memory.currentTask = "Working";
-				this.memory.job = null;
-			}
-			else
-			{
-				this.memory.currentTask = "Getting Energy";
-				job = this.haulerCollectEnergy();
-
-				/*
-
-				let percentageChanceCollectResource = 50;
-				let chanceRandomizer = Math.floor((Math.random() * 100));
-				if(chanceRandomizer < percentageChanceCollectResource)
+				job = this.haulerCollectResource();
+				if(job == null)
 				{
-					job = this.haulerCollectResource();
-					if(job == null)
+					job = this.haulerCollectEnergy();
+					if(job != null)
 					{
-						job = this.haulerCollectEnergy();
-						if(job != null)
-						{
-							this.memory.currentTask = "Getting Energy";
-						}
-					}
-					else
-					{
-						this.memory.currentTask = "Getting Resource";
+						this.memory.currentTask = "Getting Energy";
+						this.memory.job = job;
 					}
 				}
 				else
 				{
-					job = this.haulerCollectEnergy();
-					if(job == null)
+					this.memory.currentTask = "Getting Resource";
+				}
+			}
+			else
+			{
+				job = this.haulerCollectEnergy();
+				if(job == null)
+				{
+					job = this.haulerCollectResource();
+					if(job != null)
 					{
-						job = this.haulerCollectResource();
-						if(job != null)
-						{
-							this.memory.currentTask = "Getting Resource";
-						}
-					}
-					else
-					{
-						this.memory.currentTask = "Getting Energy";
+						this.memory.currentTask = "Getting Resource";
+						this.memory.job = job;
 					}
 				}
-				*/
+				else
+				{
+					this.memory.currentTask = "Getting Energy";
+				}
 			}
 
 			/*
@@ -181,21 +161,24 @@ module.exports = function ()
 			return job;
 		}
 
-		if (this.memory.currentTask == "Working" && (this.memory.job == null || !this.memory.job))
+		if (this.carry[resource.mineralType])
 		{
-			if (_.sum(this.carry) > 0 && this.carry[RESOURCE_ENERGY] == 0)
+			if (room.terminal)
 			{
-				if (room.terminal)
-				{
-					let job = {
-						targetID: room.terminal.id,
-						type: "supplyTerminalResource"
-					}
-
-					return job;
+				let job = {
+					targetID: room.terminal.id,
+					type: "supplyTerminalResource"
 				}
-			}
+				this.memory.currentTask ="Working";
 
+				return job;
+			}
+		}
+
+		if (this.carry[RESOURCE_ENERGY] == this.carryCapacity){ this.memory.currentTask = "Working" }
+
+		if (this.memory.currentTask == "Working")
+		{
 			if(this.carry[RESOURCE_ENERGY] > 0)
 			{
 				let numberOfSmallestWorkerCreeps = room.memory.creeps.workerCreeps.smallestWorkerCreepsArray.length;
@@ -270,116 +253,138 @@ module.exports = function ()
 					}
 				}
 
-				//let jobRandomizer = Math.floor((Math.random() * routineJobsArray.length));
 				return routineJobsArray[closestIndex];
+			}
+			else
+			{
+				this.memory.currentTask = "";
+				this.memory.job = null;
 			}
 		}
 	}
 
 	Creep.prototype.runHauler = function ()
 	{
-		if (this.memory.currentTask == "Getting Energy" || this.memory.currentTask == null || this.memory.currentTask == "Getting Resource")
+		let resource = Game.getObjectById(this.room.memory.environment.resourcesArray[0]);
+
+		if(!this.memory.currentTask || this.memory.currentTask == null)
 		{
-			if(this.memory.job == null || !this.memory.job)
-			{
-				this.memory.job = this.getHaulerJob();
-			}
-			else
-			{
-				switch (this.memory.job.type)
-				{
-					case "moveEnergyFromContainer":
-						if (this.room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[this.memory.job.targetID]) //if job still exists
-						{
-							this.runHaulerMoveEnergyFromContainer();
-						}
-						else
-						{
-							this.memory.job = null;
-						}
-						break;
-					case "moveResourceFromLabToTerminal":
-						if (this.room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal[this.memory.job.targetID]) //if job still exists
-						{
-							this.runHaulerMoveResourceFromLabToTerminal();
-						}
-						else
-						{
-							this.memory.job = null;
-						}
-						break;
-					case "collectDroppedEnergy":
-						if (this.room.memory.jobs.haulerJobBoard.collectDroppedEnergy[this.memory.job.targetID]) //if job still exists
-						{
-							this.runHaulerCollectDroppedEnergy();
-						}
-						else
-						{
-							this.memory.job = null;
-						}
-						break;
-					default:
-				}
-			}
+			this.memory.job = this.getHaulerJob();
 		}
-
-		if (this.memory.currentTask == "Working")
+		else
 		{
-			if(this.memory.job != null)
+			if (this.memory.currentTask == "Getting Energy" || this.memory.currentTask == "Getting Resource")
 			{
-				switch (this.memory.job.type)
+				if(this.memory.job == null || !this.memory.job)
 				{
-					case "supplyExtension":
-						if (this.room.memory.jobs.generalJobBoard.supplyExtension[this.memory.job.targetID])
-						{
-							this.supplyExtension();
-						}
-						else
-						{
-							this.memory.job = null;
-						}
-						break;
-					case "supplySpawn":
-						if (this.room.memory.jobs.generalJobBoard.supplySpawn[this.memory.job.targetID])
-						{
-							this.supplySpawn();
-						}
-						else
-						{
-							this.memory.job = null;
-						}
-						break;
-					case "supplyTower":
-						if (this.room.memory.jobs.generalJobBoard.supplyTower[this.memory.job.targetID])
-						{
-							this.supplyTower();
-						}
-						else
-						{
-							this.memory.job = null;
-						}
-						break;
-					case "supplyStorage":
-						if (this.room.memory.jobs.generalJobBoard.supplyStorage[this.memory.job.targetID])
-						{
-							this.supplyStorage();
-						}
-						else
-						{
-							this.memory.job = null;
-						}
-						break;
-					case "supplyTerminalResource":
-						this.supplyTerminalResource();
-						break;
-					default:
-
-						break;
+					this.memory.job = this.getHaulerJob();
+				}
+				else
+				{
+					switch (this.memory.job.type)
+					{
+						case "moveEnergyFromContainer":
+							if (this.room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[this.memory.job.targetID]) //if job still exists
+							{
+								this.runHaulerMoveEnergyFromContainer();
+							}
+							else
+							{
+								this.memory.job = null;
+							}
+							break;
+						case "moveResourceFromLabToTerminal":
+							if (this.room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal[this.memory.job.targetID]) //if job still exists
+							{
+								this.runHaulerMoveResourceFromLabToTerminal();
+							}
+							else
+							{
+								this.memory.job = null;
+							}
+							break;
+						case "collectDroppedEnergy":
+							if (this.room.memory.jobs.haulerJobBoard.collectDroppedEnergy[this.memory.job.targetID]) //if job still exists
+							{
+								this.runHaulerCollectDroppedEnergy();
+							}
+							else
+							{
+								this.memory.job = null;
+							}
+							break;
+						default:
+					}
 				}
 			}
-			else
+
+			if (this.memory.currentTask == "Working")
 			{
-				this.memory.job = this.getHaulerJob();
+				if(this.memory.job != null)
+				{
+					switch (this.memory.job.type)
+					{
+						case "supplyExtension":
+							if (this.room.memory.jobs.generalJobBoard.supplyExtension[this.memory.job.targetID])
+							{
+								this.supplyExtension();
+							}
+							else
+							{
+								this.memory.job = null;
+							}
+							break;
+						case "supplySpawn":
+							if (this.room.memory.jobs.generalJobBoard.supplySpawn[this.memory.job.targetID])
+							{
+								this.supplySpawn();
+							}
+							else
+							{
+								this.memory.job = null;
+							}
+							break;
+						case "supplyTower":
+							if (this.room.memory.jobs.generalJobBoard.supplyTower[this.memory.job.targetID])
+							{
+								this.supplyTower();
+							}
+							else
+							{
+								this.memory.job = null;
+							}
+							break;
+						case "supplyStorage":
+							if (this.room.memory.jobs.generalJobBoard.supplyStorage[this.memory.job.targetID])
+							{
+								this.supplyStorage();
+							}
+							else
+							{
+								this.memory.job = null;
+							}
+							break;
+						case "supplyTerminalResource":
+							this.supplyTerminalResource();
+							break;
+						case "moveResourceFromLabToTerminal":
+							if (this.room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal[this.memory.job.targetID]) //if job still exists
+							{
+								this.runHaulerMoveResourceFromLabToTerminal();
+							}
+							else
+							{
+								this.memory.job = null;
+							}
+							break;
+						default:
+							break;
+					}
+				}
+				else
+				{
+					this.memory.job = this.getHaulerJob();
+				}
 			}
 		}
 	}

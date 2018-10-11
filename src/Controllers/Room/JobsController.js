@@ -11,6 +11,7 @@ var RoomJobsController =
 		this.scanWorkerJobs(room);
 		this.scanHaulerJobs(room);
 		this.scanStationaryJobs(room);
+		this.scanOverseerJobs(room);
 		//this.scanClaimerJobs(room);
 	},
 
@@ -233,7 +234,7 @@ var RoomJobsController =
 			{
 				if(!Game.getObjectById(storageID))
 				{
-					delete room.memory.jobs.generalJobBoard.supplyStorage[structureID];
+					delete room.memory.jobs.generalJobBoard.supplyStorage[storageID];
 				}
 			}
 		}
@@ -406,43 +407,58 @@ var RoomJobsController =
 	scanStationaryJobs: function (room)
 	{
 		this.scanHarvestEnergyJobs(room);
-		//this.scanHarvestResourceJobs(room);
-		this.scanStationaryManageStorageAndTerminalJobs(room);
+		this.scanHarvestResourceJobs(room);
 	},
 
-	scanStationaryManageStorageAndTerminalJobs: function (room)
+	scanOverseerJobs: function (room)
 	{
-		let manageStorageAndTerminalJobs = room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal;
+		this.scanOverseerManageStorageAndTerminalJobs(room);
+	},
 
-		let numberOfStationaryManageStorageAndTerminalJobsActive = 0;
+	scanOverseerManageStorageAndTerminalJobs: function (room)
+	{
+		/* if(!room.memory.jobs.overseerJobBoard)
+		{
+			room.memory.jobs.overseerJobBoard = {};
+		}
+		if(!room.memory.jobs.overseerJobBoard.manageStorageAndTerminal)
+		{
+			room.memory.jobs.overseerJobBoard.manageStorageAndTerminal = {};
+		}
+		*/
+
+		let manageStorageAndTerminalJobs = room.memory.jobs.overseerJobBoard.manageStorageAndTerminal;
+
+
+		let numberOfOverseerManageStorageAndTerminalJobsActive = 0;
 		for (let storageID in manageStorageAndTerminalJobs)
 		{
 			let storage = Game.getObjectById(storageID);
 			if(storage) //if the storage container exists... then continue... if not.. make sure the job is deleted.
 			{
-				let stationaryManageStorageAndTerminalJob = room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID];
-				let creepID = stationaryManageStorageAndTerminalJob.creepID;
+				let overseerManageStorageAndTerminalJob = room.memory.jobs.overseerJobBoard.manageStorageAndTerminal[storageID];
+				let creepID = overseerManageStorageAndTerminalJob.creepID;
 
 				if (creepID != null)
 				{
 					let creep = Game.getObjectById(creepID);
-					if (stationaryManageStorageAndTerminalJob.active == true && !creep)
+					if (overseerManageStorageAndTerminalJob.active == true && !creep)
 					{
-						room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID].active = false;
-						room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID].creepID = null;
+						room.memory.jobs.overseerJobBoard.manageStorageAndTerminal[storageID].active = false;
+						room.memory.jobs.overseerJobBoard.manageStorageAndTerminal[storageID].creepID = null;
 					} //if creep died, reset job active to false
 					else
 					{
-						if (stationaryManageStorageAndTerminalJob.active == true && creep)
+						if (overseerManageStorageAndTerminalJob.active == true && creep)
 						{
-							numberOfStationaryManageStorageAndTerminalJobsActive += 1;
+							numberOfOverseerManageStorageAndTerminalJobsActive += 1;
 						}
 					}
 				}
 			}
 			else
 			{
-				delete room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID];
+				delete room.memory.jobs.overseerJobBoard.manageStorageAndTerminal[storageID];
 			}
 		}
 
@@ -451,13 +467,13 @@ var RoomJobsController =
 		{
 			let storageID = room.storage.id;
 			let storage = room.storage;
-			if(!room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID])
+			if(!room.memory.jobs.overseerJobBoard.manageStorageAndTerminal[storageID])
 			{
 				let manageStorageAndTerminalJob = {};
 				manageStorageAndTerminalJob.active = false;
 				manageStorageAndTerminalJob.creepID = null;
 
-				room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID] = manageStorageAndTerminalJob;
+				room.memory.jobs.overseerJobBoard.manageStorageAndTerminal[storageID] = manageStorageAndTerminalJob;
 			}
 
 			let jobPosition = null;
@@ -467,9 +483,9 @@ var RoomJobsController =
 
 			//FOR NOW, I am making sure the storage container is within distance of the upgrade controller
 			// (this is not automated, but placed on the game map by hand)
-			//AND am MANUALLY making sure the space above the storage unit is empty, and in range of the upgrade controller.
-			//that will be the site of this job. ... so that said, x-1, y - 1.
-
+			//PROGAMATICALLY PLACE job site to the immediate left of the storage container..
+			//OR ... diagnolly down to the left from the terminal.
+			//I NOW REALIZE THIS IS STUPID FEEL FREE TO CHANGE
 
 			if(room.terminal)
 			{
@@ -490,8 +506,9 @@ var RoomJobsController =
 				}
 			}//terminal
 
-			room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[storageID].pos = jobPosition;
+			room.memory.jobs.overseerJobBoard.manageStorageAndTerminal[storageID].pos = jobPosition;
 		}
+
 	},
 
 	scanHarvestEnergyJobs: function(room)

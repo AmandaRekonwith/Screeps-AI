@@ -296,6 +296,7 @@ module.exports = function ()
 						case "moveResourceFromLabToTerminal":
 							if (this.room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal[this.memory.job.targetID]) //if job still exists
 							{
+								console.log('fucktits');
 								this.runHaulerMoveResourceFromLabToTerminal();
 							}
 							else

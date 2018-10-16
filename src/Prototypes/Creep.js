@@ -141,16 +141,23 @@ module.exports = function ()
 	{
 		let energySource = this.room.storage;
 
-		if(energySource.store[RESOURCE_ENERGY] == 0)
+		if(!energySource)
 		{
 			let where = this.checkWhereToGetEnergy();
 		}
 		else
 		{
-			let action = this.withdraw(energySource, RESOURCE_ENERGY);
-			if (action == ERR_NOT_IN_RANGE)
+			if(energySource.store[RESOURCE_ENERGY] == 0)
 			{
-				this.moveTo(energySource, {visualizePathStyle: {stroke: '#ffaa00'}});
+				let where = this.checkWhereToGetEnergy();
+			}
+			else
+			{
+				let action = this.withdraw(energySource, RESOURCE_ENERGY);
+				if (action == ERR_NOT_IN_RANGE)
+				{
+					this.moveTo(energySource, {visualizePathStyle: {stroke: '#ffaa00'}});
+				}
 			}
 		}
 	}

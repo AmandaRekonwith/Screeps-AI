@@ -307,6 +307,8 @@ var RoomJobsController =
 			{
 				delete room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[containerID];
 			}
+
+
 		}
 
 		//create hauler jobs, based on how many storage and containers exist... will fidget with this eventually
@@ -371,38 +373,10 @@ var RoomJobsController =
 			}
 		}
 
+		
+		
+
 	},
-
-	/*
-	 getNumberOfAvailableStationaryJobs: function (room)
-	 {
-	 let stationaryHarvesterJobs = room.memory.jobs.stationaryJobBoard.harvestEnergy;
-	 let manageStorageAndTerminalJobs = room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal;
-
-	 let numberOfAvailableStationaryHarvesterJobs = 0;
-	 for (let energySourceID in stationaryHarvesterJobs)
-	 {
-	 let stationaryHarvesterJob = stationaryHarvesterJobs[energySourceID];
-
-	 if (stationaryHarvesterJob.creepID == null && stationaryHarvesterJob.active == false)
-	 {
-	 numberOfAvailableStationaryHarvesterJobs += 1;
-	 }
-	 }
-
-	 for (let energySourceID in manageStorageAndTerminalJobs)
-	 {
-	 let manageStorageAndTerminalJob = manageStorageAndTerminalJobs[energySourceID];
-
-	 if (manageStorageAndTerminalJob.creepID == null && manageStorageAndTerminalJob.active == false)
-	 {
-	 numberOfAvailableStationaryHarvesterJobs += 1;
-	 }
-	 }
-
-	 return numberOfAvailableStationaryHarvesterJobs;
-	 },
-	 */
 
 	scanStationaryJobs: function (room)
 	{

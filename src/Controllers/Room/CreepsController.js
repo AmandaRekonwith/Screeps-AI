@@ -179,6 +179,13 @@ let RoomCreepsController =
 			{
 				maximumNumberOfWorkerCreeps = 0;
 			}
+			else
+			{
+				if(numberOfHaulerCreeps != 0 && numberOfStationaryCreeps != 0)
+				{
+					maximumNumberOfWorkerCreeps = 2 * numberOfBuildingJobs;
+				}
+			}
 
 			/*
 			if( (numberOfHaulerCreeps != 0 && numberOfHaulerCreeps == maximumNumberOfContainerHaulerCreeps) &&
@@ -251,11 +258,20 @@ let RoomCreepsController =
 						(ticksTillOldestStationaryCreepDies < ticksItTakesToSpawnNewStationaryCreep && numberOfStationaryCreeps == maximumNumberOfStationaryCreeps))
 						&& room.energyAvailable >= energyRequiredToSpawnStationaryCreep)
 					{
-						let dyingStationaryCreep = room.memory.creeps.stationaryCreeps[0];
-						let dyingStationaryCreepJob = dyingStationaryCreep.memory.job;
-						let potentialClosestSpawn = Game.spawns[dyingStationaryCreep.memory.job.targetID];
 
-						if(dyingStationaryCreep && dyingStationaryCreepJob && potentialClosestSpawn)
+						let dyingStationaryCreep = null;
+						let dyingStationaryCreepJob = null;
+						let potentialClosestSpawn = null;
+
+						if(room.memory.creeps.stationaryCreeps[0]){dyingStationaryCreep = room.memory.creeps.stationaryCreeps[0];}
+
+						if(dyingStationaryCreep != null)
+						{
+							if(dyingStationaryCreep.memory.job){ dyingStationaryCreepJob = dyingStationaryCreep.memory.job; }
+							if(dyingStationaryCreepJob && Game.spawns[dyingStationaryCreep.memory.job.targetID]){  potentialClosestSpawn = Game.spawns[dyingStationaryCreep.memory.job.targetID]; }
+						}
+
+						if(potentialClosestSpawn != null)
 						{
 							potentialClosestSpawn.createStationaryCreep(room.controller.level);
 						}

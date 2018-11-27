@@ -89,7 +89,7 @@ module.exports = function ()
 					{
 						let wall = this.room.memory.structures.wallsArray[0];
 
-						let wallJob = this.room.memory.jobs.workerJobBoard.routineJobs.repairWall[wall.id];
+						if(this.room.memory.jobs.workerJobBoard.routineJobs.repairStructure[wall.id])
 						if (wallJob)
 						{
 							let job = {
@@ -111,7 +111,7 @@ module.exports = function ()
 					{
 						let rampart = this.room.memory.structures.rampartsArray[0];
 
-						let rampartJob = this.room.memory.jobs.workerJobBoard.routineJobs.repairRampart[rampart.id];
+						let rampartJob = this.room.memory.jobs.workerJobBoard.routineJobs.repairStructure[rampart.id];
 						if (rampartJob)
 						{
 							let job = {

@@ -12,39 +12,50 @@ var MarketController =
 
 			if(resource != null)
 			{
-				let marketBuyOrdersArray = Game.market.getAllOrders({type: ORDER_BUY, resourceType: resource});
+				this.examineMarketTryToSellResource(room, resource);
+			}
 
-				let marketBuyOrdersCount = marketBuyOrdersArray.length;
+			if(room.storage.store[RESOURCE_ENERGY] > 900000 && room.terminal.store[RESOURCE_ENERGY] >= 5000)
+			{
+				resource = RESOURCE_ENERGY;
+				this.examineMarketTryToSellResource(room, resource);
+			}
+		}
+	},
 
-				if(marketBuyOrdersCount > 0)
+	examineMarketTryToSellResource: function (room, resource)
+	{
+		let marketBuyOrdersArray = Game.market.getAllOrders({type: ORDER_BUY, resourceType: resource});
+
+		let marketBuyOrdersCount = marketBuyOrdersArray.length;
+
+		if(marketBuyOrdersCount > 0)
+		{
+			let highestMarketBuyOrderPrice = 0;
+			let highestMarketBuyOrder = null;
+
+			for (let x = 0; x < marketBuyOrdersCount; x++)
+			{
+				let marketBuyOrder = marketBuyOrdersArray[x];
+
+				if(marketBuyOrder.price > highestMarketBuyOrderPrice && marketBuyOrder.remainingAmount > 1)
 				{
-					let highestMarketBuyOrderPrice = 0;
-					let highestMarketBuyOrder = null;
+					highestMarketBuyOrderPrice = marketBuyOrder.price;
+					highestMarketBuyOrder = marketBuyOrder;
+				}
+			}
 
-					for (let x = 0; x < marketBuyOrdersCount; x++)
-					{
-						let marketBuyOrder = marketBuyOrdersArray[x];
+			let result = null;
 
-						if(marketBuyOrder.price > highestMarketBuyOrderPrice && marketBuyOrder.remainingAmount > 1)
-						{
-							highestMarketBuyOrderPrice = marketBuyOrder.price;
-							highestMarketBuyOrder = marketBuyOrder;
-						}
-					}
-
-					let result = null;
-
-					if(highestMarketBuyOrderPrice >= .01)
-					{
-						if(highestMarketBuyOrder.remainingAmount >= 500)
-						{
-							result = Game.market.deal(highestMarketBuyOrder.id, 500, room.name);
-						}
-						else
-						{
-							result = Game.market.deal(highestMarketBuyOrder.id, highestMarketBuyOrder.remainingAmount, room.name);
-						}
-					}
+			if(highestMarketBuyOrderPrice >= .01)
+			{
+				if(highestMarketBuyOrder.remainingAmount >= 500)
+				{
+					result = Game.market.deal(highestMarketBuyOrder.id, 500, room.name);
+				}
+				else
+				{
+					result = Game.market.deal(highestMarketBuyOrder.id, highestMarketBuyOrder.remainingAmount, room.name);
 				}
 			}
 		}

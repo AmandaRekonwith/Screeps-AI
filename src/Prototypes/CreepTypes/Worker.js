@@ -156,7 +156,12 @@ module.exports = function ()
 		let room = this.room;
 
 
-		if(this.room.energyAvailable < this.room.energyCapacityAvailable / 1.2)
+		if(this.room.memory.creeps.stationaryCreeps.length > 0 && this.room.memory.creeps.haulerCreeps.length > 0)
+		{
+			job = this.getFirstPriorityJob();
+		}
+
+		if(job == null && this.room.energyAvailable < this.room.energyCapacityAvailable / 1.2)
 		{
 			job = this.getRoutineJob();
 		}

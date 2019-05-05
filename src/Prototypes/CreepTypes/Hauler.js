@@ -107,7 +107,19 @@ module.exports = function ()
 		if ((!this.memory.currentTask || this.memory.currentTask == null || this.memory.currentTask == "Getting Energy" || this.memory.currentTask == "Getting Resource")
 			&& (this.memory.job == null || !this.memory.job)
 			&& (_.sum(this.carry) != this.carryCapacity && !this.carry[resource.mineralType]))
-		{			
+		{
+
+			//prioritizing this, because civilization falls apart if the containers get full of extra resources
+			for (let containerID in this.room.memory.jobs.haulerJobBoard.moveResourceFromContainerToTerminal)
+			{
+				let job = {
+					targetID: containerID,
+					type: "moveResourceFromContainerToTerminal"
+				};
+				this.memory.currentTask = "Getting Resource";
+				return job;
+			}
+
 			let percentageChanceCollectResource = 50;
 			let chanceRandomizer = Math.floor((Math.random() * 100));
 			if(chanceRandomizer < percentageChanceCollectResource)
@@ -265,6 +277,9 @@ module.exports = function ()
 
 	Creep.prototype.runHauler = function ()
 	{
+		/*if(this.pos.x*this.pos.y === 0 || this.pos.x === 49 || this.pos.y === 49)
+		this.moveTo(new RoomPosition(25,25,this.room.name));*/
+
 		let resource = Game.getObjectById(this.room.memory.environment.resourcesArray[0]);
 
 		if(!this.memory.currentTask || this.memory.currentTask == null)
@@ -283,6 +298,16 @@ module.exports = function ()
 				{
 					switch (this.memory.job.type)
 					{
+						case "moveResourceFromContainerToTerminal":
+							if (this.room.memory.jobs.haulerJobBoard.moveResourceFromContainerToTerminal[this.memory.job.targetID]) //if job still exists
+							{
+								this.runHaulerMoveResourceFromContainerToTerminal();
+							}
+							else
+							{
+								this.memory.job = null;
+							}
+							break;
 						case "moveEnergyFromContainer":
 							if (this.room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[this.memory.job.targetID]) //if job still exists
 							{
@@ -371,6 +396,16 @@ module.exports = function ()
 							if (this.room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal[this.memory.job.targetID]) //if job still exists
 							{
 								this.runHaulerMoveResourceFromLabToTerminal();
+							}
+							else
+							{
+								this.memory.job = null;
+							}
+							break;
+						case "moveResourceFromContainerToTerminal":
+							if (this.room.memory.jobs.haulerJobBoard.moveResourceFromContainerToTerminal[this.memory.job.targetID]) //if job still exists
+							{
+								this.runHaulerMoveResourceFromContainerToTerminal();
 							}
 							else
 							{

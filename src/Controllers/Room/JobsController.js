@@ -135,11 +135,12 @@ var RoomJobsController =
 	{
 		let supplyExtensionJobs = room.memory.jobs.generalJobBoard.supplyExtension;
 
+
 		for(let structureID in supplyExtensionJobs)
 		{
-			if(!Game.getObjectById(structureID))
+			if(Game.getObjectById(structureID) == null)
 			{
-				delete room.memory.jobs.workerJobBoard.generalJobBoard.supplyExtension[structureID];
+				delete room.memory.jobs.generalJobBoard.supplyExtension[structureID];
 			}
 		}
 
@@ -289,6 +290,28 @@ var RoomJobsController =
 		let storageCount = room.memory.structures.storageArray.length;
 
 		//delete hauler jobs first if objects disappeared...or there is no energy in containers.
+		for(let containerID in room.memory.jobs.haulerJobBoard.moveResourceFromContainerToTerminal)
+		{
+			if (!Game.getObjectById(containerID))
+			{
+				delete room.memory.jobs.haulerJobBoard.moveResourceFromContainerToTerminal[containerID];
+			}
+			else
+			{
+				let totalStorage = _.sum(Game.getObjectById(containerID).store);
+				if (totalStorage - Game.getObjectById(containerID).store[RESOURCE_ENERGY] <= 0)
+				{
+					delete room.memory.jobs.haulerJobBoard.moveResourceFromContainerToTerminal[containerID];
+				}
+			}
+
+			if (!room.terminal)
+			{
+				delete room.memory.jobs.haulerJobBoard.moveResourceFromContainerToTerminal[containerID];
+			}
+		}
+
+		//delete hauler jobs first if objects disappeared...or there is no energy in containers.
 		for(let containerID in room.memory.jobs.haulerJobBoard.moveEnergyFromContainer)
 		{
 			if (!Game.getObjectById(containerID))
@@ -307,13 +330,18 @@ var RoomJobsController =
 			{
 				delete room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[containerID];
 			}
-
-
 		}
 
 		//create hauler jobs, based on how many storage and containers exist... will fidget with this eventually
 		if (storageCount > 0)
 		{
+			for(let containerID in room.memory.jobs.haulerJobBoard.moveResourceFromContainerToTerminal)
+			{
+				if (!Game.getObjectById(containerID))
+				{
+					delete room.memory.jobs.haulerJobBoard.moveResourceFromContainerToTerminal[containerID];
+				}
+			}
 
 			for(let containerID in room.memory.jobs.haulerJobBoard.moveEnergyFromContainer)
 			{
@@ -349,6 +377,23 @@ var RoomJobsController =
 				if (!room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[structureContainersArray[x].id])
 				{
 					room.memory.jobs.haulerJobBoard.moveEnergyFromContainer[structureContainersArray[x].id] = {};
+				}
+			}
+
+			if(room.terminal)
+			{
+				let structureContainersArray = room.find(FIND_STRUCTURES, {
+					filter: (i) => i.structureType == STRUCTURE_CONTAINER
+					&& _.sum(i.store) - i.store[RESOURCE_ENERGY] > 0
+				});
+				let structureContainersCount = structureContainersArray.length;
+
+				for (let x = 0; x < structureContainersCount; x++)
+				{
+					if (!room.memory.jobs.haulerJobBoard.moveResourceFromContainerToTerminal[structureContainersArray[x].id])
+					{
+						room.memory.jobs.haulerJobBoard.moveResourceFromContainerToTerminal[structureContainersArray[x].id] = {};
+					}
 				}
 			}
 		}

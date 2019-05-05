@@ -2,6 +2,20 @@ module.exports = function ()
 {
 	Creep.prototype.getMaintainerJob = function ()
 	{
+		if(this.room.memory.structures.roadsArray.length > 0)
+		{
+			let road = this.room.memory.structures.roadsArray[0];
+
+			if (road.hits / road.hitsMax <= .5)
+			{
+				let job = {
+					targetID: road.id,
+					type: "repair"
+				};
+				return job;
+			}
+		}
+
 		let typeOfJobRandomizer = Math.floor((Math.random() * 100));
 		let percentageChanceOfWorkingRampartRepairJob = 70;
 
@@ -81,6 +95,19 @@ module.exports = function ()
 
             if (action == ERR_NOT_IN_RANGE)
             {
+				let structuresInRange = this.room.lookForAtArea(LOOK_STRUCTURES, this.pos.y-1, this.pos.x-1, this.pos.y+1, this.pos.x+1, true);
+				let structuresInRangeCount = structuresInRange.length;
+
+				let structureToRepair = null;
+				if(structuresInRangeCount > 0)
+				{
+					for(let x=0; x<structuresInRangeCount; x++)
+					{
+						let structureInRange = structuresInRange[x].structure;
+						let action = this.repair(structureInRange);
+					}
+				}
+
                 this.moveTo(structure, {visualizePathStyle: {stroke: '#ffffff'}});
             }
 
@@ -88,6 +115,11 @@ module.exports = function ()
             {
                 this.memory.job = null;
                 this.memory.currentTask = null;
+            }
+
+            if(structure.hits == structure.hitsMax)
+            {
+				this.memory.job = null;
             }
         }
         else

@@ -15,6 +15,7 @@ module.exports = function ()
 			this.createCreep(body, creepName, {
 				size: "smallest",
 				type: "worker",
+				homeRoom: this.room.name,
 				currentTask: null,
 				energySource: null,
 				job: null
@@ -32,6 +33,7 @@ module.exports = function ()
 			this.createCreep(body, creepName, {
 				size: "smaller",
 				type: "worker",
+				homeRoom: this.room.name,
 				currentTask: null,
 				energySource: null,
 				job: null
@@ -49,6 +51,7 @@ module.exports = function ()
 			this.createCreep(body, creepName, {
 				size: "small",
 				type: "worker",
+				homeRoom: this.room.name,
 				currentTask: null,
 				energySource: null,
 				job: null
@@ -66,6 +69,7 @@ module.exports = function ()
 			this.createCreep(body, creepName, {
 				size: "big",
 				type: "worker",
+				homeRoom: this.room.name,
 				currentTask: null,
 				energySource: null,
 				job: null
@@ -83,6 +87,7 @@ module.exports = function ()
 			this.createCreep(body, creepName, {
 				size: "bigger",
 				type: "worker",
+				homeRoom: this.room.name,
 				currentTask: null,
 				energySource: null,
 				job: null
@@ -100,6 +105,7 @@ module.exports = function ()
 			this.createCreep(body, creepName, {
 				size: "biggest",
 				type: "worker",
+				homeRoom: this.room.name,
 				currentTask: null,
 				energySource: null,
 				job: null
@@ -118,6 +124,7 @@ module.exports = function ()
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				type: "hauler",
+				homeRoom: this.room.name,
 				currentTask: null,
 				job: null
 			});
@@ -188,6 +195,7 @@ module.exports = function ()
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				type: "stationary",
+				homeRoom: this.room.name,
 				size: size,
 				currentTask: null,
 				energySource: null,
@@ -207,6 +215,7 @@ module.exports = function ()
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				type: "stationary",
+				homeRoom: this.room.name,
 				size: "big",
 				currentTask: null,
 				energySource: null,
@@ -218,16 +227,49 @@ module.exports = function ()
 	StructureSpawn.prototype.createOverseerCreep =
 		function ()
 		{
-			var body = [WORK, WORK,
+			var totalStoredEnergy = this.room.storage.store[RESOURCE_ENERGY];
+			if(this.room.controller.level >= 7 && this.room.storage && totalStoredEnergy > 850000)
+			{
+				var body = [WORK, WORK, WORK, WORK, WORK, 
+							WORK, WORK, WORK, WORK, WORK, 
+							WORK, WORK, WORK, WORK, WORK,
+							CARRY, CARRY, CARRY,
+							MOVE, MOVE, MOVE];
+
+				if(totalStoredEnergy > 900000)
+				{
+					body = [WORK, WORK, WORK, WORK, WORK, 
+							WORK, WORK, WORK, WORK, WORK, 
+							WORK, WORK, WORK, WORK, WORK,
+							CARRY, CARRY, CARRY, CARRY, CARRY,
+							CARRY, CARRY, CARRY, CARRY, CARRY,
+							CARRY, CARRY,
+							MOVE, MOVE, MOVE, MOVE];
+				}
+
+				var creepName = controllerCreepsNameGenerator.getName();
+				this.createCreep(body, creepName, {
+					type: "overseer",
+					homeRoom: this.room.name,
+					currentTask: null,
+					energySource: null,
+					job: null
+				});
+			}
+			else
+			{
+				var body = [WORK, WORK, WORK, WORK, WORK,
 					CARRY, CARRY,
 					MOVE, MOVE];
-			var creepName = controllerCreepsNameGenerator.getName();
-			this.createCreep(body, creepName, {
-				type: "overseer",
-				currentTask: null,
-				energySource: null,
-				job: null
-			});
+				var creepName = controllerCreepsNameGenerator.getName();
+				this.createCreep(body, creepName, {
+					type: "overseer",
+					homeRoom: this.room.name,
+					currentTask: null,
+					energySource: null,
+					job: null
+				});
+			}
 		};
 
 	//850 energy required
@@ -240,6 +282,7 @@ module.exports = function ()
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				type: "maintainer",
+				homeRoom: this.room.name,
 				currentTask: null,
 				job: null
 			});
@@ -253,6 +296,7 @@ module.exports = function ()
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				type: "claimer",
+				homeRoom: this.room.name,
 				currentTask: null,
 				job: null
 			});
@@ -266,6 +310,7 @@ module.exports = function ()
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				type: "remoteUpgradeController",
+				homeRoom: this.room.name,
 				currentTask: null,
 				job: null
 			});
@@ -287,6 +332,7 @@ module.exports = function ()
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				type: "remoteBuildStructure",
+				homeRoom: this.room.name,
 				currentTask: null,
 				job: null
 			});
@@ -309,6 +355,7 @@ module.exports = function ()
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				type: "infantry",
+				homeRoom: this.room.name,
 				currentTask: null,
 				job: null
 			});

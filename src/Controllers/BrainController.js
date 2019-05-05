@@ -117,6 +117,7 @@ let BrainController =
 						haulerJobBoard: {
 							collectDroppedEnergy: {},
 							moveEnergyFromContainer: {},
+							moveResourceFromContainerToTerminal: {},
 							moveResourceFromLabToTerminal: {},
 							supplyTerminalResource: {}
 						},
@@ -178,7 +179,8 @@ let BrainController =
 					terminalsArray: [],
 					towersArray: [],
 					wallsArray: [],
-					rampartsArray: []
+					rampartsArray: [],
+					roadsArray: []
 				};
 
 				room.memory.flags = {

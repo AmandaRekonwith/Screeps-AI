@@ -2,20 +2,16 @@ var MarketController =
 {
 	run: function (room)
 	{
-		if(room.terminal.store[RESOURCE_ENERGY] >= 1000)
+		if(room.terminal.store[RESOURCE_ENERGY] >= 10000)
 		{
-			let resource = null;
-			if(room.terminal.store[RESOURCE_HYDROGEN] >= 20000){ resource = RESOURCE_HYDROGEN; }
-			if(room.terminal.store[RESOURCE_OXYGEN] >= 20000){ resource = RESOURCE_OXYGEN; }
-			if(room.terminal.store[RESOURCE_LEMERGIUM] >= 20000){ resource = RESOURCE_LEMERGIUM; }
-			if(room.terminal.store[RESOURCE_UTRIUM] >= 20000){ resource = RESOURCE_UTRIUM; }
+			let resource = Game.getObjectById(room.memory.environment.resourcesArray[0]);
 
-			if(resource != null)
+			if(room.terminal.store[resource.mineralType] >= 50000)
 			{
-				this.examineMarketTryToSellResource(room, resource);
+				this.examineMarketTryToSellResource(room, resource.mineralType);
 			}
 
-			if(room.storage.store[RESOURCE_ENERGY] > 900000 && room.terminal.store[RESOURCE_ENERGY] >= 5000)
+			if(room.storage.store[RESOURCE_ENERGY] > 975000 && room.terminal.store[RESOURCE_ENERGY] >= 10000)
 			{
 				resource = RESOURCE_ENERGY;
 				this.examineMarketTryToSellResource(room, resource);
@@ -49,9 +45,9 @@ var MarketController =
 
 			if(highestMarketBuyOrderPrice >= .01)
 			{
-				if(highestMarketBuyOrder.remainingAmount >= 500)
+				if(highestMarketBuyOrder.remainingAmount >= 1000)
 				{
-					result = Game.market.deal(highestMarketBuyOrder.id, 500, room.name);
+					result = Game.market.deal(highestMarketBuyOrder.id, 1000, room.name);
 				}
 				else
 				{

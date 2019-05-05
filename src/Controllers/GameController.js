@@ -186,9 +186,28 @@ let GameController =
 					room.memory.structures.wallsArray.push(structureWall);
 				}
 			}
+
+
+
+			let structureRoadsArray = room.find(FIND_STRUCTURES, {
+				filter: (i) => i.structureType == STRUCTURE_ROAD
+			});
+			structureRoadsArray.sort(function (a, b)
+			{
+				return (a.hits > b.hits) ? 1 : ((b.hits > a.hits) ? -1 : 0);
+			});
+			let structureRoadsCount = structureRoadsArray.length;
+			for (let x = 0; x < structureRoadsCount; x++)
+			{
+				let structureRoad = structureRoadsArray[x];
+
+				room.memory.structures.mapArray[structureRoad.pos.x][structureRoad.pos.y] = 3;
+				room.memory.structures.roadsArray.push(structureRoad);
+			}
 		}
 
 		let lowestHealthRampartsArray = {};
+		let lowestHealthRoadsArray = {};
 
 		for (let name in Game.structures)
 		{
@@ -212,9 +231,6 @@ let GameController =
 				case 'extension':
 					structure.room.memory.structures.mapArray[structure.pos.x][structure.pos.y] = 2;
 					structure.room.memory.structures.extensionsArray.push(structure);
-					break;
-				case 'road':
-					structure.room.memory.structures.mapArray[structure.pos.x][structure.pos.y] = 3;
 					break;
 				case 'constructedWall':
 					structure.room.memory.structures.mapArray[structure.pos.x][structure.pos.y] = 4;

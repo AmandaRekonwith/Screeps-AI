@@ -176,9 +176,12 @@ module.exports = function ()
 			job = this.getRoutineJob();
 		}
 
-		if(job == null)
+		if(this.room.memory.creeps.overseerCreeps.length == 0)
 		{
-			job = this.getUpgradeControllerJob();
+			if(job == null)
+			{
+				job = this.getUpgradeControllerJob();
+			}
 		}
 
 		return job;

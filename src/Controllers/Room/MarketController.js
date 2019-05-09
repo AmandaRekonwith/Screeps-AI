@@ -2,7 +2,7 @@ var MarketController =
 {
 	run: function (room)
 	{
-		if(room.terminal.store[RESOURCE_ENERGY] >= 10000)
+		if(room.terminal.store[RESOURCE_ENERGY] >= 100000)
 		{
 			let resource = Game.getObjectById(room.memory.environment.resourcesArray[0]);
 

@@ -445,39 +445,40 @@ var RoomJobsController =
 			room.memory.jobs.overseerJobBoard.manageStorageAndTerminal = {};
 		}
 		*/
-
-		let manageStorageAndTerminalJobs = room.memory.jobs.overseerJobBoard.manageStorageAndTerminal;
-
-
-		let numberOfOverseerManageStorageAndTerminalJobsActive = 0;
-		for (let storageID in manageStorageAndTerminalJobs)
+		if(room.memory.jobs.overseerJobBoard.manageStorageAndTerminal)
 		{
-			let storage = Game.getObjectById(storageID);
-			if(storage) //if the storage container exists... then continue... if not.. make sure the job is deleted.
+			let manageStorageAndTerminalJobs = room.memory.jobs.overseerJobBoard.manageStorageAndTerminal;
+		
+			let numberOfOverseerManageStorageAndTerminalJobsActive = 0;
+			for (let storageID in manageStorageAndTerminalJobs)
 			{
-				let overseerManageStorageAndTerminalJob = room.memory.jobs.overseerJobBoard.manageStorageAndTerminal[storageID];
-				let creepID = overseerManageStorageAndTerminalJob.creepID;
-
-				if (creepID != null)
+				let storage = Game.getObjectById(storageID);
+				if(storage) //if the storage container exists... then continue... if not.. make sure the job is deleted.
 				{
-					let creep = Game.getObjectById(creepID);
-					if (overseerManageStorageAndTerminalJob.active == true && !creep)
+					let overseerManageStorageAndTerminalJob = room.memory.jobs.overseerJobBoard.manageStorageAndTerminal[storageID];
+					let creepID = overseerManageStorageAndTerminalJob.creepID;
+
+					if (creepID != null)
 					{
-						room.memory.jobs.overseerJobBoard.manageStorageAndTerminal[storageID].active = false;
-						room.memory.jobs.overseerJobBoard.manageStorageAndTerminal[storageID].creepID = null;
-					} //if creep died, reset job active to false
-					else
-					{
-						if (overseerManageStorageAndTerminalJob.active == true && creep)
+						let creep = Game.getObjectById(creepID);
+						if (overseerManageStorageAndTerminalJob.active == true && !creep)
 						{
-							numberOfOverseerManageStorageAndTerminalJobsActive += 1;
+							room.memory.jobs.overseerJobBoard.manageStorageAndTerminal[storageID].active = false;
+							room.memory.jobs.overseerJobBoard.manageStorageAndTerminal[storageID].creepID = null;
+						} //if creep died, reset job active to false
+						else
+						{
+							if (overseerManageStorageAndTerminalJob.active == true && creep)
+							{
+								numberOfOverseerManageStorageAndTerminalJobsActive += 1;
+							}
 						}
 					}
 				}
-			}
-			else
-			{
-				delete room.memory.jobs.overseerJobBoard.manageStorageAndTerminal[storageID];
+				else
+				{
+					delete room.memory.jobs.overseerJobBoard.manageStorageAndTerminal[storageID];
+				}
 			}
 		}
 
@@ -543,9 +544,8 @@ var RoomJobsController =
 			if(creepID != null)
 			{
 				let creep = Game.getObjectById(creepID);
-				if (stationaryHarvestEnergyJob.active == true && !creep)
+				if (!creep)
 				{
-					room.memory.jobs.stationaryJobBoard.harvestEnergy[energySourceID].active = false;
 					room.memory.jobs.stationaryJobBoard.harvestEnergy[energySourceID].creepID = null;
 				} //if creep died, reset job active to false
 			}
@@ -577,8 +577,8 @@ var RoomJobsController =
 				{
 					if(!room.memory.jobs.stationaryJobBoard.harvestEnergy[energySource.id])
 					{
-						room.memory.jobs.stationaryJobBoard.harvestEnergy[energySource.id] = {
-							active: false,
+						room.memory.jobs.stationaryJobBoard.harvestEnergy[energySource.id] = 
+						{
 							containerID: structure.id,
 							creepID: null
 						}
@@ -590,10 +590,13 @@ var RoomJobsController =
 
 	scanHarvestResourceJobs: function(room)
 	{
+
+			/*
 		let stationaryHarvestResourceJobs = room.memory.jobs.stationaryJobBoard.harvestResource;
 
 		for (let resourceID in stationaryHarvestResourceJobs)
 		{
+
 			let stationaryHarvestResourceJob = stationaryHarvestResourceJobs[resourceID];
 
 			let creepID = stationaryHarvestResourceJob.creepID;
@@ -607,8 +610,10 @@ var RoomJobsController =
 					room.memory.jobs.stationaryJobBoard.harvestResource[resourceID].creepID = null;
 				} //if creep died, reset job active to false
 			}
-		}
+			
+		}*/
 
+/*
 		//now scan.
 
 		let resourcesArray = room.memory.environment.resourcesArray;
@@ -632,6 +637,8 @@ var RoomJobsController =
 			}*/
 
 
+
+/*
 
 			if(extractorsCount > 0)
 			{
@@ -809,6 +816,8 @@ var RoomJobsController =
 				}
 			}
 		}
+
+	*/
 	}
 }
 

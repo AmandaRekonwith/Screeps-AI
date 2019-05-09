@@ -247,76 +247,86 @@ module.exports = function ()
 
 	Creep.prototype.run = function ()
 	{
-		if(this.memory.type == "worker")
+		let move = false;
+		if(this.pos.x == 0){ this.moveTo(2, this.pos.y); move = true;}
+		if(this.pos.x == 49){ this.moveTo(47, this.pos.y); move = true;}
+		if(this.pos.y == 0){ this.moveTo(this.pos.x, 2); move = true;}
+		if(this.pos.y == 49){ this.moveTo(this.pos.x, 47); move = true;}
+
+		if(move == false)
 		{
-			if (this.memory.currentTask == null || (this.memory.currentTask == "Getting Energy" && this.memory.energySource == null))
-			{
-				this.memory.currentTask = "Getting Energy";
-				let where = this.checkWhereToGetEnergy();
-			}
 
-			if (this.memory.currentTask == "Getting Energy")
+			if(this.memory.type == "worker")
 			{
-				this.getEnergy();
-			}
-
-			if (this.memory.currentTask != "Working" && this.carry[RESOURCE_ENERGY] == this.carryCapacity)
-			{
-				this.memory.currentTask = "Working";
-
-				if (this.memory.remoteSourceFlagName)
+				if (this.memory.currentTask == null || (this.memory.currentTask == "Getting Energy" && this.memory.energySource == null))
 				{
-					delete this.memory.remoteSourceFlagName;
+					this.memory.currentTask = "Getting Energy";
+					let where = this.checkWhereToGetEnergy();
 				}
-				if (this.memory.remoteSourceID)
-				{
-					delete this.memory.remoteSourceID;
-				}
-				if (this.memory.remoteSource)
-				{
-					delete this.memory.remoteSource;
-				}
-			}
 
-			if (this.memory.currentTask == "Working")
-			{
-				if (this.room.controller.level == 0)
+				if (this.memory.currentTask == "Getting Energy")
 				{
-					let flags = this.room.find(FIND_FLAGS);
-					let brownFlags = new Array();
-					let flagsCount = flags.length;
-					for (let x = 0; x < flagsCount; x++)
+					this.getEnergy();
+				}
+
+				if (this.memory.currentTask != "Working" && this.carry[RESOURCE_ENERGY] == this.carryCapacity)
+				{
+					this.memory.currentTask = "Working";
+
+					if (this.memory.remoteSourceFlagName)
 					{
-						let flag = flags[x];
-						if (flag.color == COLOR_BROWN)
+						delete this.memory.remoteSourceFlagName;
+					}
+					if (this.memory.remoteSourceID)
+					{
+						delete this.memory.remoteSourceID;
+					}
+					if (this.memory.remoteSource)
+					{
+						delete this.memory.remoteSource;
+					}
+				}
+
+				if (this.memory.currentTask == "Working")
+				{
+					if (this.room.controller.level == 0)
+					{
+						let flags = this.room.find(FIND_FLAGS);
+						let brownFlags = new Array();
+						let flagsCount = flags.length;
+						for (let x = 0; x < flagsCount; x++)
 						{
-							brownFlags.push(flag);
+							let flag = flags[x];
+							if (flag.color == COLOR_BROWN)
+							{
+								brownFlags.push(flag);
+							}
+						}
+
+						if (brownFlags.length > 0)
+						{
+							this.moveTo(brownFlags[0].pos.x, brownFlags[0].pos.y);
 						}
 					}
 
-					if (brownFlags.length > 0)
-					{
-						this.moveTo(brownFlags[0].pos.x, brownFlags[0].pos.y);
-					}
+					this.runWorker();
 				}
-
-				this.runWorker();
 			}
-		}
 
 
-/* NEED TO REVISE THE ABOVE CODE IN THE FUTURE. VERY MESSY. */
+	/* NEED TO REVISE THE ABOVE CODE IN THE FUTURE. VERY MESSY. */
 
-		switch (this.memory.type)
-		{
-			case "hauler":
-				this.runHauler();
-				break;
-			case "stationary":
-				this.runStationary();
-				break;
-			default:
-				"";
+			switch (this.memory.type)
+			{
+				case "hauler":
+					this.runHauler();
+					break;
+				case "stationary":
+					this.runStationary();
+					break;
+				default:
+					"";
+			}
 		}
 	}
 

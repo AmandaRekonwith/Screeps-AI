@@ -8,26 +8,15 @@ module.exports = function ()
 
 		for(let energySourceID in room.memory.jobs.stationaryJobBoard.harvestEnergy)
 		{
-
 			let harvestEnergyJob = room.memory.jobs.stationaryJobBoard.harvestEnergy[energySourceID];
-			if (harvestEnergyJob.active == false)
+			if (harvestEnergyJob.creepID == null)
 			{
 				job = {
 					targetID: energySourceID,
 					type: "harvestEnergy"
 				};
-			}
-		}
 
-		for(let energySourceID in room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal)
-		{
-			let manageStorageAndTerminalJob = room.memory.jobs.stationaryJobBoard.manageStorageAndTerminal[energySourceID];
-			if (manageStorageAndTerminalJob.active == false)
-			{
-				job = {
-					targetID: room.controller.id,
-					type: "manageStorageAndTerminal"
-				};
+				return job;
 			}
 		}
 
@@ -40,6 +29,8 @@ module.exports = function ()
 					targetID: resourceID,
 					type: "harvestResource"
 				};
+
+				return job;
 			}
 		}
 
@@ -78,10 +69,6 @@ module.exports = function ()
 						{
 							this.runStationaryEnergyHarvester();
 						}
-						else
-						{
-							this.memory.job = null;
-						}
 						break;
 					case "harvestResource":
 						if (this.room.memory.jobs.stationaryJobBoard.harvestResource[this.memory.job.targetID]) //if job still exists
@@ -93,6 +80,7 @@ module.exports = function ()
 							this.memory.job = null;
 						}
 						break;
+					/*
 					case "manageStorageAndTerminal":
 						if (this.room.memory.structures.storageArray[0])
 						{
@@ -108,12 +96,18 @@ module.exports = function ()
 							}
 						}
 						break;
+					*/
 					default:
 				}
 			}
 			else
 			{
-				this.memory.job = this.getStationaryJob();
+				let job = this.getStationaryJob();
+				if( job != null)
+				{
+					this.memory.job = job;
+					this.room.memory.jobs.stationaryJobBoard.harvestEnergy[job.targetID].creepID = this.id;
+				}
 			}
 		}
 	}

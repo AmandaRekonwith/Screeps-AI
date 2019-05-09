@@ -46,12 +46,15 @@ module.exports = function ()
 		}
 		else
 		{
+			if(this.carry.energy == this.carryCapacity){ this.memory.currentTask = "Working";}
+			if (this.carry.energy == 0){ this.memory.currentTask = "Harvesting";}
+
+			let link = this.pos.findInRange(FIND_MY_STRUCTURES, 1,
+			{filter: {structureType: STRUCTURE_LINK}})[0];
 			//AT JOB SITE
+
 			if(this.memory.currentTask == "Harvesting")
 			{
-				let link = this.pos.findInRange(FIND_MY_STRUCTURES, 1,
-				{filter: {structureType: STRUCTURE_LINK}})[0];
-
 				if(link && link.energy > 0)
 				{
 					this.withdraw(link, RESOURCE_ENERGY);
@@ -70,109 +73,113 @@ module.exports = function ()
 				let jobType = null;
 				let jobTarget = null;
 				//FIGURE OUT WHAT JOB TO DO FIRST
-				if(this.room.storage.store[RESOURCE_ENERGY] > 10000)
+				if(this.room.storage.store[RESOURCE_ENERGY] > 990000)
 				{
-					let structuresInRange = this.room.lookForAtArea(LOOK_STRUCTURES, this.pos.y-1, this.pos.x-1, this.pos.y+1, this.pos.x+1, true);
-					let structuresInRangeCount = structuresInRange.length;
-					let towerToSupply = null;
-					if(structuresInRangeCount > 0)
+					if(this.room.terminal)
 					{
-						for(let x=0; x<structuresInRangeCount; x++)
-						{
-							let structure = structuresInRange[x].structure;
-							if(structure.structureType == "tower" && structure.energy < structure.energyCapacity - 150)
-							{
-								towerToSupply = structure;
-							}
-						}
+						jobTarget = this.room.terminal;
+						jobType = "supplyStructure";
 					}
-					if(towerToSupply != null)
-					{
-						jobType = "supplyTower";
-						jobTarget = towerToSupply;
-					}
-					else
-					{
-						let manageStorageAndTerminalJobsArray = new Array();
-
-						let checkForConstructionSiteArray = this.room.lookForAtArea(LOOK_CONSTRUCTION_SITES, this.pos.y - 1, this.pos.x - 1, this.pos.y + 1, this.pos.x + 1, true);
-						if (checkForConstructionSiteArray.length > 0)
-						{
-							let constructionSite = this.room.lookForAt(LOOK_CONSTRUCTION_SITES, checkForConstructionSiteArray[0].x, checkForConstructionSiteArray[0].y);
-							let constructionJob = {
-								target: constructionSite[0],
-								type: "build"
-							};
-							manageStorageAndTerminalJobsArray.push(constructionJob);
-						}
-
-						let upgradeJob = {
-							target: this.room.controller,
-							type: "upgradeController"
-						};
-						manageStorageAndTerminalJobsArray.push(upgradeJob);
-
-
-						if(this.room.terminal && this.room.terminal.store[RESOURCE_ENERGY] < 10000 && _.sum(this.room.terminal.store) <= 299000)
-						{
-							let storageJob = {
-								target: this.room.terminal,
-								type: "supplyTerminal"
-							};	
-							manageStorageAndTerminalJobsArray.push(storageJob);
-						}
-						else
-						{
-							if(this.room.storage && room.storage.store[RESOURCE_ENERGY] < 500000 )
-							{
-								let storageJob = {
-									target: this.room.storage,
-									type: "storeEnergy"
-								};	
-								manageStorageAndTerminalJobsArray.push(storageJob);
-							}
-						}
-
-
-						let jobRandomizer = Math.floor((Math.random() * manageStorageAndTerminalJobsArray.length));
-
-						let randomJob = manageStorageAndTerminalJobsArray[jobRandomizer];
-
-
-
-						jobType = randomJob.type;
-						jobTarget = randomJob.target;
-					}
-
-
-
-
 				}
 				else
 				{
-					if(this.room.storage)
+
+					if(this.room.storage.store[RESOURCE_ENERGY] > 10000)
 					{
-						if(_.sum(this.room.storage.store) < this.room.storage.storeCapacity)
+						let structuresInRange = this.room.lookForAtArea(LOOK_STRUCTURES, this.pos.y-1, this.pos.x-1, this.pos.y+1, this.pos.x+1, true);
+						let structuresInRangeCount = structuresInRange.length;
+						let towerToSupply = null;
+						if(structuresInRangeCount > 0)
 						{
-							jobType = "storeEnergy";
+							for(let x=0; x<structuresInRangeCount; x++)
+							{
+								let structure = structuresInRange[x].structure;
+								if(structure.structureType == "tower" && structure.energy < structure.energyCapacity - 150)
+								{
+									towerToSupply = structure;
+								}
+							}
+						}
+						if(towerToSupply != null)
+						{
+							jobTarget = towerToSupply;
+							jobType = "supplyStructure";
+						}
+						else
+						{
+							if(link && link.energy > 0)
+							{
+								jobTarget = this.room.storage;
+								jobType = "supplyStructure";
+							}
+							else
+							{
+								let spawn = Game.spawns[this.room.controller.id];
+
+								let jobFound = false;
+
+								if(spawn)
+								{
+									if(spawn.energy < spawn.energyCapacity)
+									{
+										jobTarget = spawn;
+										jobType = "supplyStructure";
+										jobFound = true;
+									}
+									if(this.ticksToLive < 1400)
+				        			{
+				        				spawn.renewCreep(this);
+				        			}
+								}
+
+								if(jobFound == false)
+								{
+
+									let manageStorageAndTerminalJobsArray = [];
+
+									let upgradeJob = {
+										target: this.room.controller,
+										type: "upgradeController"
+									};
+									manageStorageAndTerminalJobsArray.push(upgradeJob);
+
+
+									if(this.room.storage && room.storage.store[RESOURCE_ENERGY] < 500000 )
+									{
+										let storageJob = {
+											target: this.room.storage,
+											type: "supplyStructure"
+										};	
+										manageStorageAndTerminalJobsArray.push(storageJob);
+									}
+
+
+									let jobRandomizer = Math.floor((Math.random() * manageStorageAndTerminalJobsArray.length));
+
+									let randomJob = manageStorageAndTerminalJobsArray[jobRandomizer];
+
+									jobType = randomJob.type;
+									jobTarget = randomJob.target;
+								}
+							}
+						}
+					}
+					else
+					{
+						if(this.room.storage)
+						{
+							jobType = "supplyStructure";
 							jobTarget = this.room.storage;
 						}
 					}
-				}
+				}//storage greater than 950000 energy
 
 				//now do JOB
-
 				let action = null;
 
 				switch (jobType) {
-				    case "supplyTower":
+				    case "supplyStructure":
 				        action = this.transfer(jobTarget, RESOURCE_ENERGY);
-				        break; 
-				    case "supplyTerminal":
-				        action = this.transfer(jobTarget, RESOURCE_ENERGY);
-				        break; 
-				    case "storeEnergy":
-						action = this.transfer(jobTarget, RESOURCE_ENERGY);
 						break;
 					case "build":
 						action = this.build(jobTarget);
@@ -181,17 +188,6 @@ module.exports = function ()
 						action = this.upgradeController(jobTarget);
 						break;
 				}
-
-			}
-
-			if(this.carry.energy == this.carryCapacity)
-			{
-				this.memory.currentTask = "Working";
-			}
-
-			if (this.carry.energy == 0)
-			{
-				this.memory.currentTask = "Harvesting";
 			}
 		}//job site
 	}

@@ -120,7 +120,7 @@ module.exports = function ()
 		function ()
 		{
 			var body = [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
-				MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
+				MOVE, MOVE, MOVE, MOVE, MOVE];
 			var creepName = controllerCreepsNameGenerator.getName();
 			this.createCreep(body, creepName, {
 				type: "hauler",
@@ -187,9 +187,9 @@ module.exports = function ()
 			}
 			if(roomLevel >= 4)
 			{
-				body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
-					CARRY, CARRY,
-					MOVE, MOVE];
+				body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, 
+					CARRY,
+					MOVE];
 				size = "big";
 			}
 			var creepName = controllerCreepsNameGenerator.getName();
@@ -230,22 +230,7 @@ module.exports = function ()
 			var totalStoredEnergy = this.room.storage.store[RESOURCE_ENERGY];
 			if(this.room.controller.level >= 7 && this.room.storage && totalStoredEnergy > 850000)
 			{
-				var body = [WORK, WORK, WORK, WORK, WORK, 
-							WORK, WORK, WORK, WORK, WORK, 
-							WORK, WORK, WORK, WORK, WORK,
-							CARRY, CARRY, CARRY,
-							MOVE, MOVE, MOVE];
-
-				if(totalStoredEnergy > 900000)
-				{
-					body = [WORK, WORK, WORK, WORK, WORK, 
-							WORK, WORK, WORK, WORK, WORK, 
-							WORK, WORK, WORK, WORK, WORK,
-							CARRY, CARRY, CARRY, CARRY, CARRY,
-							CARRY, CARRY, CARRY, CARRY, CARRY,
-							CARRY, CARRY,
-							MOVE, MOVE, MOVE, MOVE];
-				}
+				var body = [WORK, CARRY, CARRY, CARRY];
 
 				var creepName = controllerCreepsNameGenerator.getName();
 				this.createCreep(body, creepName, {

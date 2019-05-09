@@ -109,66 +109,43 @@ module.exports = function ()
 			&& (_.sum(this.carry) != this.carryCapacity && !this.carry[resource.mineralType]))
 		{
 
-			//prioritizing this, because civilization falls apart if the containers get full of extra resources
-			for (let containerID in this.room.memory.jobs.haulerJobBoard.moveResourceFromContainerToTerminal)
+			let targetLabID = null;
+			for (let labID in this.room.memory.jobs.haulerJobBoard.moveResourceFromLabToTerminal)
 			{
-				let job = {
-					targetID: containerID,
-					type: "moveResourceFromContainerToTerminal"
-				};
-				this.memory.currentTask = "Getting Resource";
-				return job;
+				targetLabID = labID; 
 			}
 
-			let percentageChanceCollectResource = 50;
-			let chanceRandomizer = Math.floor((Math.random() * 100));
-			if(chanceRandomizer < percentageChanceCollectResource)
+			if(targetLabID != null)
 			{
-				job = this.haulerCollectResource();
-				if(job == null)
+				lab = Game.getObjectById(targetLabID);
+
+				let currentHighestAmountOfEnergyInContainers = 0;
+				for (let containerID in this.room.memory.jobs.haulerJobBoard.moveEnergyFromContainer)
 				{
-					job = this.haulerCollectEnergy();
-					if(job != null)
-					{
-						this.memory.currentTask = "Getting Energy";
-						this.memory.job = job;
-					}
+					let container = Game.getObjectById(containerID);
+					if(container.store[RESOURCE_ENERGY] > currentHighestAmountOfEnergyInContainers){ currentHighestAmountOfEnergyInContainers = container.store[RESOURCE_ENERGY]; }
+
+				}
+
+				if(lab.mineralAmount > currentHighestAmountOfEnergyInContainers)
+				{
+					job = this.memory.job = {
+						targetID: lab.id,
+						type: "moveResourceFromLabToTerminal"
+					};
+					this.memory.currentTask = "Getting Resource";
 				}
 				else
 				{
-					this.memory.currentTask = "Getting Resource";
+					job = this.haulerCollectEnergy();
+					this.memory.currentTask = "Getting Energy";
 				}
 			}
 			else
 			{
 				job = this.haulerCollectEnergy();
-				if(job == null)
-				{
-					job = this.haulerCollectResource();
-					if(job != null)
-					{
-						this.memory.currentTask = "Getting Resource";
-						this.memory.job = job;
-					}
-				}
-				else
-				{
-					this.memory.currentTask = "Getting Energy";
-				}
+				this.memory.currentTask = "Getting Energy";
 			}
-
-			/*
-			if(_.sum(this.carry) - this.carry[RESOURCE_ENERGY] == 0 && _.sum(this.carry > 0))
-			{
-				job = this.haulerCollectEnergy();
-			}
-
-
-			if (_.sum(this.carry) - this.carry[RESOURCE_ENERGY] > 0)
-			{
-				job = this.haulerCollectResource();
-			}
-			*/
 
 			return job;
 		}
@@ -203,7 +180,7 @@ module.exports = function ()
 
 				let routineJobsArray = new Array();
 
-				if (totalNumberOfWorkerCreeps == 0 || !room.storage)
+				if (room.energyAvailable < room.energyCapacityAvailable)
 				{
 					for (let extensionID in this.room.memory.jobs.generalJobBoard.supplyExtension)
 					{
@@ -234,14 +211,16 @@ module.exports = function ()
 					}
 					*/
 				}
-
-				if (room.storage)
+				else
 				{
-					let job = {
-						targetID: room.storage.id,
-						type: "supplyStorage"
+					if (room.storage)
+					{
+						let job = {
+							targetID: room.storage.id,
+							type: "supplyStorage"
+						}
+						routineJobsArray.push(job);
 					}
-					routineJobsArray.push(job);
 				}
 
 				//find closest target
@@ -288,6 +267,12 @@ module.exports = function ()
 		}
 		else
 		{
+			if(this.memory.currentTask == "Renewing")
+			{
+				this.runHaulerRenew();
+			}
+
+
 			if (this.memory.currentTask == "Getting Energy" || this.memory.currentTask == "Getting Resource")
 			{
 				if(this.memory.job == null || !this.memory.job)

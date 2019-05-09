@@ -10,9 +10,6 @@ module.exports = function ()
 		let container = Game.getObjectById(containerID);
 		let currentTask = this.memory.currentTask;
 
-		room.memory.jobs.stationaryJobBoard.harvestEnergy[energySourceID].creepID = this.id;
-		room.memory.jobs.stationaryJobBoard.harvestEnergy[energySourceID].active = true;
-
 		if ((this.pos.x != container.pos.x) || (this.pos.y != container.pos.y))
 		{
 			this.moveTo(container, {visualizePathStyle: {stroke: '#ffaa00'}});
@@ -20,66 +17,93 @@ module.exports = function ()
 		}
 		else
 		{
-			if (this.carry[RESOURCE_ENERGY] == this.carryCapacity){ this.memory.currentTask = "Working"; }
-			if (this.carry[RESOURCE_ENERGY] == 0){ this.memory.currentTask = "Harvesting"; }
+			let spawn = Game.spawns[energySourceID];
+			let link = this.pos.findInRange(FIND_MY_STRUCTURES, 1,
+			{filter: {structureType: STRUCTURE_LINK}})[0];
 
+			let action = null;
 			//AT JOB SITE
+
+			//if (this.carry[RESOURCE_ENERGY] == this.carryCapacity){ this.memory.currentTask = "Working"; }
+			if(energySource.energy == 0)
+			{ 
+				if(_.sum(this.carry) == this.carryCapacity){ this.memory.currentTask = "Waiting-Working"; }
+				else
+				{
+					this.memory.currentTask = "Waiting-GatheringEnergy";
+				}
+			}
+			else
+			{
+				if(_.sum(this.carry) == this.carryCapacity){ this.memory.currentTask = "Working"; }
+				else
+				{
+
+					this.memory.currentTask = "Harvesting";
+				}
+			}
+
 			switch(this.memory.currentTask) 
 			{
 				case "Harvesting":
-		        	let action = this.harvest(energySource);
-		       	 	break;
+					action = this.harvest(energySource);
+					break;
 	       	 	case "Working":
-		        	if(container.hits < container.hitsMax)
+					if(link) 
 					{
-						let action = this.repair(container);
+						if(link.energy < link.energyCapacity)
+						{
+							action = this.transfer(link, RESOURCE_ENERGY);
+						}
 					}
-					else
+
+					if(action != 0 && spawn)
 					{
-						//if(container.store[RESOURCE_ENERGY] == container.storeCapacity)
-						/* I've run into an issue where the containers are somehow getting resources that are not energy put into them.
-						I need to develop a fix. Until then, hardcoding 2000, to ensure that the above check is passed. 
-
-						Additionally, I'm testing the hypothesis that it's more efficient to simply zap energy to the main base,
-						if a link exists. Thus, if links exist, prioritize links first (instead of containers), and reduce the number of haulers...
-
-						I've since found that hypothesis to work, but seems less efficient than hauling.
-						Now trying container priority with one hauler.*/
-						
-						if(_.sum(container.store) < 2000)
+						if(spawn.energy < spawn.energyCapacity)
 						{
-							let action = this.transfer(container, RESOURCE_ENERGY);
+							action = this.transfer(spawn, RESOURCE_ENERGY);
 						}
-						else
-						{
-							let link = this.pos.findInRange(FIND_MY_STRUCTURES, 1,
-							{filter: {structureType: STRUCTURE_LINK}})[0];
+					}
 
-							if(link && (link.energyCapacity - link.energy) > this.carry[RESOURCE_ENERGY])
-							{
-								this.transfer(link, RESOURCE_ENERGY);
-							}
-						}
+					if(action != 0 && _.sum(container.store) < 2000)
+					{
+						action = this.transfer(container, RESOURCE_ENERGY);
 					}
 					break;
+				case "Waiting-GatheringEnergy":
+						this.withdraw(container, RESOURCE_ENERGY);
+					break;
+				case "Waiting-Working":
+						if(spawn)
+						{
+							if(spawn.energy < spawn.energyCapacity)
+							{
+								action = this.transfer(spawn, RESOURCE_ENERGY);
+							}
+
+							if(this.ticksToLive < 1400)
+		        			{
+		        				spawn.renewCreep(this);
+		        			}
+		        		}
+
+		        		if(action != 0)
+		        		{
+			        		if(container.hits < container.hitsMax)
+							{
+								action = this.repair(container);
+							}
+						}
+
+						if(link && action != 0)
+						{
+							if(link.energyCapacity - link.energy > 0)
+							{
+								action = this.transfer(link, RESOURCE_ENERGY);
+							}
+						}
+					break;
 		    }
-
-			//NOW CHECK TO CHANGE JOB STATUS
-			
-
 		}//at job site
-
-
-
-		/*
-		 if(this.carry.energy == this.carryCapacity && this.memory.currentTask == "Harvesting")
-		 {
-		 this.memory.currentTask = "DoneHarvesting";
-		 }
-		 */
-		//let containersPositionsArray = job.containersPositionsArray;
-
-
-
 	}
 }

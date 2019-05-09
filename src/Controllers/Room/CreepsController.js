@@ -29,6 +29,7 @@ require('Prototypes_CreepTypes_Overseer')();
 require('Prototypes_CreepTypes_OverseerJobs_ManageStorageAndTerminal')();
 
 require('Prototypes_CreepTypes_Hauler')();
+require('Prototypes_CreepTypes_HaulerJobs_Renew')();
 require('Prototypes_CreepTypes_HaulerJobs_MoveEnergyFromContainer')();
 require('Prototypes_CreepTypes_HaulerJobs_MoveResourceFromContainerToTerminal')();
 require('Prototypes_CreepTypes_HaulerJobs_MoveResourceFromLabToTerminal')();
@@ -99,10 +100,13 @@ let RoomCreepsController =
 		}
 
 		let maximumNumberOfStationaryCreeps = 0;
-		if(room.controller.level >= 2){	maximumNumberOfStationaryCreeps = maximumNumberOfHarvesterStationaryCreeps + maximumNumberOfHarvestResourceCreeps; }
+		if(room.controller.level >= 2){	maximumNumberOfStationaryCreeps = maximumNumberOfHarvesterStationaryCreeps; }
 
 		let maximumNumberOfContainerHaulerCreeps = 0;
-		if(room.controller.level >= 4){	maximumNumberOfContainerHaulerCreeps = room.memory.structures.containersArray.length + 1; }
+		if(room.controller.level >= 4)
+		{	maximumNumberOfContainerHaulerCreeps = (room.memory.structures.containersArray.length + 2)
+			- (room.memory.structures.linksArray.length * 2);
+		}
 
 		let numberOfClaimerCreeps = room.memory.creeps.remoteCreeps.claimerCreepsArray.length;
 		let maximumNumberOfClaimerCreeps = 0;
@@ -176,15 +180,34 @@ let RoomCreepsController =
 				maximumNumberOfWorkerCreeps = 2;
 			}*/
 
-			if(numberOfHaulerCreeps != 0 && numberOfStationaryCreeps != 0 && numberOfBuildingJobs == 0)
+			if((numberOfHaulerCreeps != 0 || maximumNumberOfContainerHaulerCreeps <= 0) && (numberOfStationaryCreeps != 0 && numberOfBuildingJobs == 0))
 			{
 				maximumNumberOfWorkerCreeps = 0;
+
+				if(maximumNumberOfContainerHaulerCreeps <= 0)
+				{
+					if(room.energyAvailable < (room.energyCapacityAvailable - (room.memory.structures.spawnsArray.length * 300)))
+					{
+						maximumNumberOfWorkerCreeps = 1;
+					}
+				} 
 			}
 			else
 			{
 				if(numberOfHaulerCreeps != 0 && numberOfStationaryCreeps != 0)
 				{
-					maximumNumberOfWorkerCreeps = 2 * numberOfBuildingJobs;
+					maximumNumberOfWorkerCreeps = numberOfBuildingJobs;
+
+					//to fix a problem with placing too many construction sites.
+					if(maximumNumberOfWorkerCreeps > 4)
+					{
+						maximumNumberOfWorkerCreeps = 2;
+					}
+				}
+
+				if(room.controller.level >= 7 && room.storage)
+				{
+					maximumNumberOfWorkerCreeps = 1;
 				}
 			}
 
@@ -265,14 +288,21 @@ let RoomCreepsController =
 					{
 						potentialClosestSpawn.createStationaryCreep(room.controller.level);
 					}
+					else
+					{
+						let numberOfSpawns = room.memory.structures.spawnsArray.length;
+						let spawnRandomizer = Math.floor((Math.random() * numberOfSpawns));
+						let spawn = room.memory.structures.spawnsArray[spawnRandomizer];
+						spawn.createStationaryCreep(room.controller.level);
+					}
 				}
 
 				if(numberOfOverseerCreeps < maximumNumberOfOverseerCreeps)
 				{
-					let resourceID = room.memory.environment.resourcesArray[0];
-					if(Game.spawns[resourceID])
+					let controllerID = room.controller.id;
+					if(Game.spawns[controllerID])
 					{
-						Game.spawns[resourceID].createOverseerCreep();
+						Game.spawns[controllerID].createOverseerCreep();
 					}
 					else
 					{

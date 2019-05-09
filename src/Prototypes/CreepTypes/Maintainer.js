@@ -14,8 +14,41 @@ module.exports = function ()
 				};
 				return job;
 			}
+
+			
+			/*
+			for (let container in this.room.memory.structures.containersArray)
+			{
+				if(container.hits / container.hitsMax <= .5)
+				{
+					let job = {
+						targetID: containerID,
+						type: "repair"
+					};
+					return job;
+				}
+			}
+			*/
 		}
 
+		if(this.room.memory.structures.rampartsArray[0].hits < this.room.memory.structures.wallsArray[0].hits)
+		{
+			let job = {
+				targetID: this.room.memory.structures.rampartsArray[0].id,
+				type: "repair"
+			};
+			return job;
+		}
+		else
+		{
+			let job = {
+				targetID: this.room.memory.structures.wallsArray[0].id,
+				type: "repair"
+			};
+			return job;
+		}
+
+		/*
 		let typeOfJobRandomizer = Math.floor((Math.random() * 100));
 		let percentageChanceOfWorkingRampartRepairJob = 70;
 
@@ -38,6 +71,7 @@ module.exports = function ()
 			};
 			return job;
 		}
+		*/
 	},
 
 	Creep.prototype.runMaintainer = function ()
@@ -52,6 +86,39 @@ module.exports = function ()
 					{
 						this.memory.currentTask = "Getting Energy";
 						this.getEnergyFromStorage();
+					}
+					else
+					{
+						if(this.ticksToLive < 1400)
+	        			{
+							this.memory.currentTask = "MoveToSpawnToRenew";
+						}
+						else
+						{
+							this.memory.currentTask = "Working";
+						}
+					}
+				}
+
+				if(this.memory.currentTask == "MoveToSpawnToRenew")
+				{
+					let spawn = Game.spawns[this.room.controller.id];
+					if(spawn)
+					{
+
+
+						if(this.ticksToLive < 1400)
+	        			{
+	        				let attemptRenew = spawn.renewCreep(this);
+	        				if(attemptRenew == ERR_NOT_IN_RANGE)
+	        				{
+	        					let action = this.moveTo(spawn);
+	        				}
+	        			}
+	        			else
+	        			{
+	        				this.memory.currentTask = "Working";
+	        			}
 					}
 					else
 					{
